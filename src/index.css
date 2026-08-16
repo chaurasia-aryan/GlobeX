@@ -1,0 +1,307 @@
+@import "./components/agent-elements/agent-ui.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* ── GLOBEX AI Institutional Design Tokens ─────────────────────
+     *  Based on UX_DECISIONS.md "Typographic and color system correction"
+     *  Cyan (--accent) restricted to ONE accent role per screen max.
+     *  Monospace fonts used exclusively for codes, hashes, IDs.
+     * ─────────────────────────────────────────────────────────────── */
+
+    /* Surface hierarchy — Deep Obsidian & Tonal Elevation */
+    --ink:          #070A0E;  /* deepest obsidian canvas */
+    --panel:        rgba(13, 18, 26, 0.75);  /* glass panel surface */
+    --panel-raised: rgba(18, 25, 36, 0.85);  /* elevated card surface */
+    --hairline:     rgba(255, 255, 255, 0.08); /* 1px border separators */
+    --hairline-strong: rgba(255, 255, 255, 0.14);
+
+    /* Semantic accent palette */
+    --accent:  #5EC9DB;  /* interactive / AI elements (cyan) — ONE per screen */
+    --accent-dim: rgba(94, 201, 219, 0.12);
+    --emerald: #34C795;  /* verified, positive trust, escrow satisfied */
+    --amber:   #E8A73D;  /* document discrepancies, warnings */
+    --red:     #E5605C;  /* errors, critical risk, disputes */
+
+    /* Typography token palette */
+    --text-primary:   #F1F5F9;  /* headings, primary body (Slate 100) */
+    --text-secondary: #94A3B8;  /* labels, secondary captions (Slate 400) */
+    --text-tertiary:  #64748B;  /* metadata, codes (Slate 500) */
+    --text-muted:     #475569;  /* placeholders, disabled */
+  }
+}
+
+@layer base {
+  * {
+    border-color: theme('colors.outline-variant');
+  }
+
+  body {
+    background-color: theme('colors.background');
+    color: theme('colors.on-background');
+    font-family: theme('fontFamily.body-lg');
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* Neo-Glass Card */
+  .neo-glass-card {
+    background: rgba(25, 28, 30, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid theme('colors.outline-variant');
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.2);
+    border-radius: theme('borderRadius.lg');
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .neo-glass-card:hover {
+    border-color: theme('colors.primary');
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 12px 40px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(0, 218, 243, 0.1);
+  }
+
+  /* Extruded Neumorphic Button (Primary Actions) */
+  .neumorphic-button-extruded {
+    background: theme('colors.surface-container-high');
+    border: 1px solid theme('colors.outline-variant');
+    box-shadow: 
+      -4px -4px 10px rgba(255, 255, 255, 0.03),
+      4px 4px 10px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: theme('colors.primary');
+    border-radius: theme('borderRadius.DEFAULT');
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .neumorphic-button-extruded:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      -6px -6px 14px rgba(255, 255, 255, 0.04),
+      6px 6px 14px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    color: theme('colors.primary-fixed-dim');
+  }
+
+  .neumorphic-button-extruded:active {
+    transform: translateY(1px);
+    box-shadow: 
+      inset 2px 2px 5px rgba(0, 0, 0, 0.5),
+      inset -2px -2px 5px rgba(255, 255, 255, 0.02);
+  }
+
+  /* Sunken Neumorphic Button (Secondary/Toggle Actions) */
+  .neumorphic-button-sunken {
+    background: theme('colors.surface-container');
+    border: 1px solid transparent;
+    box-shadow: 
+      inset 3px 3px 6px rgba(0, 0, 0, 0.6),
+      inset -3px -3px 6px rgba(255, 255, 255, 0.03);
+    color: theme('colors.on-surface-variant');
+    border-radius: theme('borderRadius.DEFAULT');
+    transition: all 0.2s ease;
+  }
+
+  .neumorphic-button-sunken:hover {
+    color: theme('colors.on-surface');
+    box-shadow: 
+      inset 4px 4px 8px rgba(0, 0, 0, 0.7),
+      inset -4px -4px 8px rgba(255, 255, 255, 0.04);
+  }
+
+  .neumorphic-button-sunken.active {
+    color: theme('colors.primary');
+    box-shadow: 
+      inset 3px 3px 6px rgba(0, 0, 0, 0.6),
+      inset -3px -3px 6px rgba(255, 255, 255, 0.03),
+      0 0 10px rgba(0, 218, 243, 0.2);
+    border-color: rgba(0, 218, 243, 0.3);
+  }
+
+  /* Ghost Glass Button (Tertiary/Navigation) */
+  .ghost-glass-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: theme('colors.on-surface-variant');
+    transition: all 0.2s ease;
+  }
+
+  .ghost-glass-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: theme('colors.outline-variant');
+    color: theme('colors.on-surface');
+  }
+
+  /* Neumorphic Input Field */
+  .neumorphic-input {
+    background: theme('colors.surface-container-lowest');
+    border: 1px solid theme('colors.outline-variant');
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+    color: theme('colors.on-surface');
+    transition: all 0.3s ease;
+  }
+
+  .neumorphic-input:focus {
+    outline: none;
+    border-color: theme('colors.primary');
+    box-shadow: 
+      inset 2px 2px 5px rgba(0, 0, 0, 0.5),
+      0 0 0 2px rgba(0, 218, 243, 0.15);
+  }
+
+  .neumorphic-input::placeholder {
+    color: theme('colors.on-surface-variant');
+    opacity: 0.5;
+  }
+
+  /* Scanline Animation Effect */
+  .scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, theme('colors.primary'), transparent);
+    opacity: 0.5;
+    animation: scan 2s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Glowing Edge Accent */
+  .glow-edge {
+    position: relative;
+  }
+  .glow-edge::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(45deg, theme('colors.primary'), transparent, theme('colors.secondary'));
+    z-index: -1;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .glow-edge:hover::before {
+    opacity: 0.5;
+  }
+
+  /* Data Line for technical stats */
+  .data-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px dashed theme('colors.outline-variant');
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  /* Status Indicators */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .status-dot.active {
+    background-color: theme('colors.primary');
+    box-shadow: 0 0 8px theme('colors.primary');
+  }
+  .status-dot.warning {
+    background-color: theme('colors.error');
+    box-shadow: 0 0 8px theme('colors.error');
+  }
+
+  /* Typography utilities mapped to new config */
+  .font-label-sm { 
+    font-family: theme('fontFamily.label-sm'); 
+    font-size: theme('fontSize.label-sm.0');
+    line-height: theme('fontSize.label-sm.1.lineHeight');
+    letter-spacing: theme('fontSize.label-sm.1.letterSpacing');
+    font-weight: theme('fontSize.label-sm.1.fontWeight');
+  }
+  .font-body-lg { 
+    font-family: theme('fontFamily.body-lg'); 
+    font-size: theme('fontSize.body-lg.0');
+    line-height: theme('fontSize.body-lg.1.lineHeight');
+    font-weight: theme('fontSize.body-lg.1.fontWeight');
+  }
+  .font-display-lg { 
+    font-family: theme('fontFamily.display-lg'); 
+    font-size: theme('fontSize.display-lg.0');
+    line-height: theme('fontSize.display-lg.1.lineHeight');
+    letter-spacing: theme('fontSize.display-lg.1.letterSpacing');
+    font-weight: theme('fontSize.display-lg.1.fontWeight');
+  }
+  .font-headline-lg { 
+    font-family: theme('fontFamily.headline-lg'); 
+    font-size: theme('fontSize.headline-lg.0');
+    line-height: theme('fontSize.headline-lg.1.lineHeight');
+    font-weight: theme('fontSize.headline-lg.1.fontWeight');
+  }
+  .font-headline-md { 
+    font-family: theme('fontFamily.headline-md'); 
+    font-size: theme('fontSize.headline-md.0');
+    line-height: theme('fontSize.headline-md.1.lineHeight');
+    font-weight: theme('fontSize.headline-md.1.fontWeight');
+  }
+  .font-label-md { 
+    font-family: theme('fontFamily.label-md'); 
+    font-size: theme('fontSize.label-md.0');
+    line-height: theme('fontSize.label-md.1.lineHeight');
+    letter-spacing: theme('fontSize.label-md.1.letterSpacing');
+    font-weight: theme('fontSize.label-md.1.fontWeight');
+  }
+  .font-body-md { 
+    font-family: theme('fontFamily.body-md'); 
+    font-size: theme('fontSize.body-md.0');
+    line-height: theme('fontSize.body-md.1.lineHeight');
+    font-weight: theme('fontSize.body-md.1.fontWeight');
+  }
+
+  /* Keep old classes for backward compatibility during transition */
+  .glass-panel { @apply neo-glass-card; }
+  .glass-panel-raised { @apply neo-glass-card; }
+  .neo-btn { @apply neumorphic-button-extruded; }
+  .neo-btn-sunken { @apply neumorphic-button-sunken; }
+  .mesh-bg { @apply bg-background; } /* Remove old mesh, rely on WebGL */
+}
+
+/* ── React Bits StarBorder Keyframes ── */
+@keyframes star-movement-bottom {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100%, 0%);
+    opacity: 0;
+  }
+}
+
+@keyframes star-movement-top {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100%, 0%);
+    opacity: 0;
+  }
+}
+
+.animate-star-movement-bottom {
+  animation: star-movement-bottom 4s linear infinite alternate;
+}
+
+.animate-star-movement-top {
+  animation: star-movement-top 4s linear infinite alternate;
+}
