@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Search, ArrowRight, HelpCircle, CheckCircle2, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, HelpCircle, X } from "lucide-react";
+import SpecularButton from "@/components/ui/SpecularButton";
 
 interface AIMatchResultsPanelProps {
   initialQuery?: string;
@@ -53,29 +53,33 @@ export const AIMatchResultsPanel = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type cross-border trade intent in natural language..."
-            className="flex-1 px-4 py-2.5 glass-panel-raised focus:border-[var(--hairline-strong)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] transition-all outline-none font-sans"
+            className="flex-1 px-4 py-2.5 glass-panel-raised focus:border-[var(--hairline-strong)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] transition-all outline-none font-sans rounded-xl"
           />
-          <button
+          <SpecularButton
             type="submit"
+            size="sm"
+            radius={12}
+            variant="emerald"
             disabled={isProcessing}
-            className="neo-btn px-6 py-2.5 text-[var(--accent)] hover:text-white font-sans font-semibold text-xs flex items-center gap-1.5 transition-colors flex-shrink-0"
+            isLoading={isProcessing}
+            icon={<Search className="w-3.5 h-3.5" />}
+            iconPosition="left"
           >
-            <Search className={`w-3.5 h-3.5 ${isProcessing ? "animate-spin" : ""}`} />
-            <span>{isProcessing ? "Matching..." : "Search"}</span>
-          </button>
+            {isProcessing ? "Matching..." : "Search"}
+          </SpecularButton>
         </div>
       </form>
 
-      {/* Top Ranked Result: Background Shift (Level 2), not nested card */}
-      <div className="p-4 glass-panel-raised space-y-3">
+      {/* Top Ranked Result */}
+      <div className="p-4 glass-panel-raised space-y-3 rounded-2xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="space-y-0.5 font-sans">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-sans font-semibold text-[var(--accent)]">TOP RANKED MATCH</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--emerald)]" />
+              <span className="text-[11px] font-sans font-semibold text-emerald-400">TOP RANKED MATCH</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             </div>
             <h4 className="text-base font-semibold text-[var(--text-primary)]">
-              ABC Global Exports Ltd — 1121 Steam Basmati Rice
+              Acme Exports Ltd — 1121 Steam Basmati Rice
             </h4>
             <p className="text-xs text-[var(--text-secondary)]">
               Mumbai, India • FOB $1,100 / tonne • 500 Tonnes available
@@ -84,36 +88,40 @@ export const AIMatchResultsPanel = ({
 
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <div className="text-3xl font-display font-medium text-[var(--accent)] leading-none">
+              <div className="text-3xl font-display font-medium text-emerald-400 leading-none">
                 94%
               </div>
               <div className="text-[10px] font-sans text-[var(--text-tertiary)] uppercase mt-0.5">AI Match</div>
             </div>
 
-            <button
+            <SpecularButton
               type="button"
               onClick={() => setShowExplainDrawer(true)}
-              className="neo-btn px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-sans flex items-center gap-1.5 transition-colors"
+              variant="outline"
+              size="xs"
+              radius={10}
+              icon={<HelpCircle className="w-3.5 h-3.5 text-emerald-400" />}
+              iconPosition="left"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span>Breakdown</span>
-            </button>
+              Breakdown
+            </SpecularButton>
           </div>
         </div>
       </div>
 
-      {/* Explainability Drawer */}
+      {/* Explainability Modal */}
       {showExplainDrawer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg p-6 glass-panel space-y-5 shadow-2xl">
+          <div className="w-full max-w-lg p-6 glass-panel space-y-5 shadow-2xl rounded-2xl">
             <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-3">
               <div>
                 <h4 className="font-sans font-semibold text-sm text-[var(--text-primary)]">Match Score Breakdown</h4>
-                <p className="text-xs text-[var(--text-secondary)]">Weighted scoring analysis for ABC Global Exports</p>
+                <p className="text-xs text-[var(--text-secondary)]">Weighted scoring analysis for Acme Exports Ltd</p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowExplainDrawer(false)}
-                className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -123,11 +131,11 @@ export const AIMatchResultsPanel = ({
               {breakdownFactors.map((item) => (
                 <div
                   key={item.label}
-                  className="p-3 glass-panel-raised space-y-1 font-sans"
+                  className="p-3 glass-panel-raised space-y-1 font-sans rounded-xl"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-medium text-[var(--text-primary)]">{item.label}</span>
-                    <span className="font-display font-medium text-xs text-[var(--emerald)]">{item.score} pts</span>
+                    <span className="font-display font-medium text-xs text-emerald-400">{item.score} pts</span>
                   </div>
                   <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">{item.desc}</p>
                 </div>
@@ -135,12 +143,14 @@ export const AIMatchResultsPanel = ({
             </div>
 
             <div className="flex justify-end pt-2">
-              <button
+              <SpecularButton
                 onClick={() => setShowExplainDrawer(false)}
-                className="neo-btn px-5 py-2 text-xs font-sans text-[var(--text-primary)]"
+                size="sm"
+                radius={10}
+                variant="secondary"
               >
                 Close
-              </button>
+              </SpecularButton>
             </div>
           </div>
         </div>

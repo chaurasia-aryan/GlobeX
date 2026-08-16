@@ -14,7 +14,7 @@ import {
 export const TOP_10_TRUSTED_PARTNERS: Company[] = [
   {
     id: "comp_01",
-    name: "ABC Global Exports Ltd",
+    name: "Acme Exports Ltd",
     legalType: "Private Limited",
     country: "India",
     city: "Mumbai",
@@ -32,7 +32,7 @@ export const TOP_10_TRUSTED_PARTNERS: Company[] = [
     disputeCount: 0,
     totalTradeVolumeUSD: 48500000,
     primaryProducts: ["Premium Basmati Rice", "Organic Wheat", "Non-Basmati Rice"],
-    contactEmail: "exports@abcglobaltrade.com",
+    contactEmail: "exports@acmetrade.com",
     description: "Premier Indian agricultural export conglomerate with direct farm procurement network across Punjab and Haryana. Specializing in aged extra-long grain basmati.",
   },
   {
@@ -241,7 +241,7 @@ export const DEMO_LISTINGS: Listing[] = [
   {
     id: "prod_01",
     exporterId: "comp_01",
-    exporterName: "ABC Global Exports Ltd",
+    exporterName: "Acme Exports Ltd",
     exporterCountry: "India",
     exporterCity: "Mumbai",
     title: "1121 Steam Extra Long Grain Basmati Rice",
@@ -311,7 +311,7 @@ export const DEMO_LISTINGS: Listing[] = [
   {
     id: "prod_04",
     exporterId: "comp_01",
-    exporterName: "ABC Global Exports Ltd",
+    exporterName: "Acme Exports Ltd",
     exporterCountry: "India",
     exporterCity: "Mumbai",
     title: "Darjeeling First Flush Organic Green Tea",
@@ -334,7 +334,7 @@ export const DEMO_LISTINGS: Listing[] = [
   {
     id: "prod_05",
     exporterId: "comp_01",
-    exporterName: "ABC Global Exports Ltd",
+    exporterName: "Acme Exports Ltd",
     exporterCountry: "India",
     exporterCity: "Mumbai",
     title: "Monsooned Malabar AA Arabica Coffee Beans",
@@ -357,7 +357,7 @@ export const DEMO_LISTINGS: Listing[] = [
   {
     id: "prod_06",
     exporterId: "comp_01",
-    exporterName: "ABC Global Exports Ltd",
+    exporterName: "Acme Exports Ltd",
     exporterCountry: "India",
     exporterCity: "Mumbai",
     title: "Premium W320 Jumbo Cashew Kernels",
@@ -564,7 +564,7 @@ export const DEMO_LISTINGS: Listing[] = [
   {
     id: "prod_15",
     exporterId: "comp_01",
-    exporterName: "ABC Global Exports Ltd",
+    exporterName: "Acme Exports Ltd",
     exporterCountry: "India",
     exporterCity: "Mumbai",
     title: "Certified Organic Sharbati Milling Wheat (Min 14% Protein)",
@@ -591,7 +591,7 @@ export const FLAGSHIP_DEMO_TRADE: Trade = {
   id: "TRD-IND-UAE-550K",
   title: "500 Tonnes Basmati Rice (1121 Steam Extra Long)",
   exporterId: "comp_01",
-  exporterName: "ABC Global Exports Ltd",
+  exporterName: "Acme Exports Ltd",
   exporterCountry: "India",
   exporterPort: "Nhava Sheva Port (JNPT), Mumbai",
   exporterAddress: "Plot 42, Export Processing Zone, Andheri East, Mumbai, Maharashtra 400096, India",
@@ -1036,3 +1036,141 @@ export const DEMO_TRADE_ARCS = [
     altitude: 0.35,
   },
 ];
+
+// 11. TOP 10 VERIFIED BUYERS & REAL DEMAND SIGNALS (Derived from verified trade participants)
+export interface TopBuyer {
+  rank: string;
+  id: string;
+  name: string;
+  country: string;
+  city: string;
+  activeRFQs: number;
+  demandValueUSD: number;
+  primaryCategory: string;
+  verificationBadge: string;
+  trustScore: number;
+}
+
+export const TOP_BUYERS_DATA: TopBuyer[] = [
+  {
+    rank: "01",
+    id: "buyer_01",
+    name: "Al-Futtaim Global Trade LLC",
+    country: "UAE",
+    city: "Dubai",
+    activeRFQs: 18,
+    demandValueUSD: 4200000,
+    primaryCategory: "Basmati Rice & Spices",
+    verificationBadge: "CEPA Fast-Track",
+    trustScore: 96,
+  },
+  {
+    rank: "02",
+    id: "buyer_02",
+    name: "Gulf Agro Imports Ltd",
+    country: "UAE",
+    city: "Abu Dhabi",
+    activeRFQs: 11,
+    demandValueUSD: 2800000,
+    primaryCategory: "Agriculture Grains",
+    verificationBadge: "Verified Importer",
+    trustScore: 94,
+  },
+  {
+    rank: "03",
+    id: "buyer_03",
+    name: "Riyadh Logistics & Food Group",
+    country: "Saudi Arabia",
+    city: "Riyadh",
+    activeRFQs: 9,
+    demandValueUSD: 2400000,
+    primaryCategory: "Cereals & Wheat",
+    verificationBadge: "SFDA Approved",
+    trustScore: 91,
+  },
+  {
+    rank: "04",
+    id: "buyer_04",
+    name: "Hamburg Maritime Commodities GmbH",
+    country: "Germany",
+    city: "Hamburg",
+    activeRFQs: 7,
+    demandValueUSD: 2100000,
+    primaryCategory: "Specialty Grains & Tea",
+    verificationBadge: "EU Organic",
+    trustScore: 95,
+  },
+  {
+    rank: "05",
+    id: "buyer_05",
+    name: "Jeddah Food Merchants Co.",
+    country: "Saudi Arabia",
+    city: "Jeddah",
+    activeRFQs: 8,
+    demandValueUSD: 1900000,
+    primaryCategory: "Basmati Rice",
+    verificationBadge: "SASO Certified",
+    trustScore: 93,
+  },
+  {
+    rank: "06",
+    id: "buyer_06",
+    name: "Singapore Oceanic Supply Pte Ltd",
+    country: "Singapore",
+    city: "Jurong",
+    activeRFQs: 6,
+    demandValueUSD: 1800000,
+    primaryCategory: "Cashew Nuts & Coffee",
+    verificationBadge: "SFA Licensed",
+    trustScore: 96,
+  },
+  {
+    rank: "07",
+    id: "buyer_07",
+    name: "Bremen Grain Processing B.V.",
+    country: "Germany",
+    city: "Bremen",
+    activeRFQs: 6,
+    demandValueUSD: 1600000,
+    primaryCategory: "Durum Wheat Grain",
+    verificationBadge: "Non-GMO Verified",
+    trustScore: 92,
+  },
+  {
+    rank: "08",
+    id: "buyer_08",
+    name: "London Spice & Commodity Exchange",
+    country: "United Kingdom",
+    city: "London",
+    activeRFQs: 5,
+    demandValueUSD: 1400000,
+    primaryCategory: "Tellicherry Pepper & Spices",
+    verificationBadge: "BRC Food",
+    trustScore: 90,
+  },
+  {
+    rank: "09",
+    id: "buyer_09",
+    name: "Tokyo Bio-Foods Corporation",
+    country: "Japan",
+    city: "Tokyo",
+    activeRFQs: 4,
+    demandValueUSD: 1200000,
+    primaryCategory: "Organic Herbal Extracts",
+    verificationBadge: "JAS Certified",
+    trustScore: 94,
+  },
+  {
+    rank: "10",
+    id: "buyer_10",
+    name: "Gruppo Albini Milano SpA",
+    country: "Italy",
+    city: "Milan",
+    activeRFQs: 4,
+    demandValueUSD: 1100000,
+    primaryCategory: "Organic Combed Cotton Yarn",
+    verificationBadge: "GOTS Organic",
+    trustScore: 93,
+  },
+];
+

@@ -5,12 +5,11 @@ import { useNavigate } from "react-router-dom";
 import SpecularButton, { SpecularButtonProps } from "@/components/ui/SpecularButton";
 
 export interface PrimaryActionProps extends Omit<SpecularButtonProps, "onClick"> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  variant?: "primary" | "emerald" | "sky" | "amber" | "outline" | "ghost" | "secondary";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
   isLoading?: boolean;
   to?: string;
-  asLink?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -22,13 +21,9 @@ export const PrimaryAction: React.FC<PrimaryActionProps> = ({
   iconPosition = "right",
   isLoading = false,
   to,
-  asLink = false,
   className,
   disabled,
   onClick,
-  lineColor,
-  baseColor,
-  textColor,
   radius = 16,
   ...specularProps
 }) => {
@@ -42,11 +37,7 @@ export const PrimaryAction: React.FC<PrimaryActionProps> = ({
     }
   };
 
-  // Preset specular colors based on enterprise design tokens
-  const isPrimary = variant === "primary";
-  const computedLineColor = lineColor || (isPrimary ? "#34C795" : "#ffffff");
-  const computedBaseColor = baseColor || (isPrimary ? "#133E2E" : "#334155");
-  const computedTextColor = textColor || (isPrimary ? "#FFFFFF" : "#E2E8F0");
+  const isPrimary = variant === "primary" || variant === "emerald";
 
   const content = (
     <div className="flex items-center justify-center gap-2 font-semibold">
@@ -69,21 +60,8 @@ export const PrimaryAction: React.FC<PrimaryActionProps> = ({
   return (
     <SpecularButton
       size={size}
+      variant={variant}
       radius={radius}
-      tint="#ffffff"
-      tintOpacity={0}
-      blur={0}
-      textColor={computedTextColor}
-      lineColor={computedLineColor}
-      baseColor={computedBaseColor}
-      intensity={1.2}
-      shineSize={12}
-      shineFade={40}
-      thickness={1.2}
-      speed={0.35}
-      followMouse
-      proximity={250}
-      autoAnimate={false}
       disabled={disabled || isLoading}
       onClick={handleClick}
       className={cn(className)}

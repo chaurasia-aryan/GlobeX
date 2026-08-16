@@ -246,10 +246,10 @@ export const PillNav: React.FC<PillNavProps> = ({
     ['--pill-bg']: pillColor,
     ['--hover-text']: hoveredPillTextColor,
     ['--pill-text']: resolvedPillTextColor,
-    ['--nav-h']: '34px',
-    ['--logo']: '30px',
-    ['--pill-pad-x']: '14px',
-    ['--pill-gap']: '4px'
+    ['--nav-h']: '44px',
+    ['--logo']: '34px',
+    ['--pill-pad-x']: '18px',
+    ['--pill-gap']: '6px'
   } as React.CSSProperties;
 
   const navContent = (
@@ -378,7 +378,7 @@ export const PillNav: React.FC<PillNavProps> = ({
             );
 
             const basePillClasses =
-              'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-medium text-xs tracking-normal whitespace-nowrap cursor-pointer px-0 transition-all duration-200 hover:text-white';
+              'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-medium text-sm tracking-normal whitespace-nowrap cursor-pointer px-0 transition-all duration-200 hover:text-white';
 
             return (
               <li key={item.href} role="none" className="flex h-full">

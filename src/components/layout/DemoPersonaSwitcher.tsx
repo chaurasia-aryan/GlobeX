@@ -71,7 +71,7 @@ export const DemoPersonaSwitcher = () => {
                 <Building className="w-3.5 h-3.5 text-[var(--emerald)]" />
                 <div>
                   <div className="font-medium">Exporter / Seller</div>
-                  <div className="text-[10px] text-[var(--text-tertiary)]">ABC Global Exports Ltd</div>
+                  <div className="text-[10px] text-[var(--text-tertiary)]">Acme Exports Ltd</div>
                 </div>
               </div>
               {currentUser.role === "exporter" && (

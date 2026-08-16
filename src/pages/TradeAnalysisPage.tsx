@@ -5,9 +5,9 @@ import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { PrimaryAction } from "@/components/common/PrimaryAction";
-import { Section } from "@/components/common/Section";
-import { Award, FileCheck2, AlertTriangle, Server, ArrowRight } from "lucide-react";
+import SpecularButton from "@/components/ui/SpecularButton";
+import { MetricStrip } from "@/components/common/MetricStrip";
+import { Award, FileCheck2, AlertTriangle, Server, ArrowRight, Percent, ShieldCheck, Coins } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const TradeAnalysisPage: React.FC = () => {
@@ -44,7 +44,7 @@ export const TradeAnalysisPage: React.FC = () => {
 
   return (
     <AppShell maxWidth="lg">
-      <div className="space-y-6">
+      <div className="space-y-5 select-none">
         
         {/* Page Header */}
         <PageHeader
@@ -52,48 +52,56 @@ export const TradeAnalysisPage: React.FC = () => {
             { label: "Dashboard", href: "/dashboard" },
             { label: "Trade Analysis" },
           ]}
-          title="Autonomous Trade Intelligence & RAG Synthesizer"
-          subtitle={`Simulating ${FLAGSHIP_DEMO_TRADE.title} · India (JNPT) ➔ UAE (Jebel Ali)`}
-          badge={<StatusBadge status="verified" label="RAG Pipeline Active" size="md" />}
+          title="Trade Intelligence & RAG Synthesizer"
+          subtitle={`Autonomous synthesis for ${FLAGSHIP_DEMO_TRADE.title} · India (JNPT) ➔ UAE (Jebel Ali)`}
+          badge={<StatusBadge status="verified" label="RAG Engine Active" size="md" />}
           action={
             <Link to="/trades/TRD-IND-UAE-550K">
-              <PrimaryAction>
+              <SpecularButton size="sm" radius={10}>
                 Open Active Trade →
-              </PrimaryAction>
+              </SpecularButton>
             </Link>
           }
         />
 
-        {/* 4 Metric Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono text-xs">
-          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase block">Match Confidence</span>
-            <div className="text-xl font-bold text-emerald-400">96%</div>
-            <span className="text-[10px] text-slate-500">Sentence-Transformers</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase block">CEPA Preferential Duty</span>
-            <div className="text-xl font-bold text-sky-400">0.0%</div>
-            <span className="text-[10px] text-emerald-400">Saved $27,500 vs 5% MFN</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase block">Transaction Risk</span>
-            <div className="text-xl font-bold text-emerald-400">18 / 100</div>
-            <span className="text-[10px] text-emerald-400">Low Risk Corridor</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase block">Collateral Vault</span>
-            <div className="text-xl font-bold text-white">$550,000</div>
-            <span className="text-[10px] text-slate-500">USDC Multi-Sig</span>
-          </div>
-        </div>
+        {/* 4 Metric KPI Strip */}
+        <MetricStrip
+          columns={4}
+          metrics={[
+            {
+              label: "Match Confidence",
+              value: "96%",
+              subtext: "Sentence-Transformers",
+              icon: Award,
+              accentColor: "emerald",
+            },
+            {
+              label: "CEPA Preferential Duty",
+              value: "0.0%",
+              subtext: "Saved $27,500 vs 5% MFN",
+              icon: Percent,
+              accentColor: "sky",
+            },
+            {
+              label: "Transaction Risk",
+              value: "18 / 100",
+              subtext: "Low Risk Corridor",
+              icon: ShieldCheck,
+              accentColor: "emerald",
+            },
+            {
+              label: "Collateral Vault",
+              value: "$550,000",
+              subtext: "USDC Multi-Sig",
+              icon: Coins,
+              accentColor: "slate",
+            },
+          ]}
+        />
 
         {/* Lens Navigation & Tabs */}
-        <div className="p-5 rounded-2xl bg-[#0B1019] border border-white/[0.08] space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+        <div className="p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
             <div className="flex flex-wrap items-center gap-1.5">
               {[
                 { id: "synthesis", label: "Supplier Ranking", icon: Award },
@@ -128,11 +136,11 @@ export const TradeAnalysisPage: React.FC = () => {
 
           {/* Tab Content */}
           {selectedLens === "synthesis" && analysis && (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {analysis.matchingExporters.map((exporter, idx) => (
                 <div
                   key={exporter.exporterId}
-                  className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -156,7 +164,7 @@ export const TradeAnalysisPage: React.FC = () => {
 
           {selectedLens === "regulatory" && analysis && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
+              <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
                 <span className="text-[10px] font-mono uppercase text-sky-400 font-bold block">
                   Bilateral Treaty Framework
                 </span>
@@ -174,7 +182,7 @@ export const TradeAnalysisPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
+              <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
                 <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">
                   Non-Tariff Barriers & Inspection (NTMs)
                 </span>
@@ -192,17 +200,17 @@ export const TradeAnalysisPage: React.FC = () => {
 
           {selectedLens === "risk" && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
                 <span className="text-slate-400">Counterparty Risk</span>
                 <div className="text-base font-bold text-emerald-400">12 / 100 (Low)</div>
                 <span className="text-[10px] text-slate-500 font-sans">128 successful trades</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
                 <span className="text-slate-400">Maritime Transit Risk</span>
                 <div className="text-base font-bold text-emerald-400">22 / 100 (Normal)</div>
                 <span className="text-[10px] text-slate-500 font-sans">4-day Arabian Sea route</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
                 <span className="text-slate-400">Document Variance Risk</span>
                 <div className="text-base font-bold text-emerald-400">16 / 100 (Low)</div>
                 <span className="text-[10px] text-slate-500 font-sans">OCR hash verified</span>
@@ -215,7 +223,7 @@ export const TradeAnalysisPage: React.FC = () => {
               <span className="text-slate-400 uppercase text-[10px] block">FastAPI AI Microservice Connectors</span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {apiStatus.endpoints.map((ep) => (
-                  <div key={ep} className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between">
+                  <div key={ep} className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.06] flex items-center justify-between">
                     <span className="text-sky-400">{ep}</span>
                     <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">POST</span>
                   </div>

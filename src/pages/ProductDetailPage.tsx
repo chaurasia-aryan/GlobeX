@@ -9,7 +9,7 @@ import { Section } from "@/components/common/Section";
 import TrustScoreGauge from "@/components/trust/TrustScoreGauge";
 import TradeRiskCompositeCard from "@/components/risk/TradeRiskCompositeCard";
 import ComplianceChecklistWidget from "@/components/compliance/ComplianceChecklistWidget";
-import { MapPin, ShieldCheck, Coins, ArrowRight } from "lucide-react";
+import { MapPin, ShieldCheck, Coins } from "lucide-react";
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ export const ProductDetailPage: React.FC = () => {
 
   return (
     <AppShell maxWidth="lg">
-      <div className="space-y-6">
+      <div className="space-y-5 select-none">
         
         {/* Page Header */}
         <PageHeader
@@ -36,21 +36,21 @@ export const ProductDetailPage: React.FC = () => {
                 {listing.exporterCity}, {listing.exporterCountry}
               </span>
               <span>•</span>
-              <span>HS {listing.hsCode}</span>
+              <span className="font-mono">HS {listing.hsCode}</span>
             </div>
           }
           badge={<StatusBadge status="verified" label="Verified Export Ready" size="md" />}
           action={
             <Link to="/trades/TRD-IND-UAE-550K">
-              <PrimaryAction icon={<Coins className="w-4 h-4" />} iconPosition="left">
+              <PrimaryAction icon={<Coins className="w-4 h-4" />} iconPosition="left" size="sm">
                 Initiate Trade (${(listing.minimumOrderQuantity * listing.unitPriceUSD).toLocaleString()})
               </PrimaryAction>
             </Link>
           }
         />
 
-        {/* Flat Overview Spec Row */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0B1019] border border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+        {/* Overview Spec Row */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
           <div>
             <span className="text-[10px] text-slate-400 uppercase block">FOB Unit Price</span>
             <strong className="text-white text-base">${listing.unitPriceUSD.toLocaleString()} / {listing.unit}</strong>
@@ -65,7 +65,7 @@ export const ProductDetailPage: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] text-slate-400 uppercase block">Tariff Schedule</span>
-            <strong className="text-sky-400 text-base">0% CEPA Duty Free</strong>
+            <strong className="text-sky-400 text-base">0.0% CEPA Free</strong>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export const ProductDetailPage: React.FC = () => {
         <Section title="Commodity Specifications & Lab Parameters">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
             {Object.entries(listing.specs).map(([key, val]) => (
-              <div key={key} className="p-3 rounded-xl bg-[#0B1019] border border-white/[0.06]">
+              <div key={key} className="p-3 rounded-xl bg-[#0C121D] border border-white/[0.06]">
                 <span className="text-slate-400 text-[10px] uppercase block">{key}</span>
                 <span className="font-bold text-white text-xs">{val}</span>
               </div>
@@ -87,7 +87,7 @@ export const ProductDetailPage: React.FC = () => {
             {listing.certifications.map((c) => (
               <span
                 key={c}
-                className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-slate-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-[#0C121D] border border-white/[0.07] text-xs font-mono text-slate-300 flex items-center gap-1.5"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{c}</span>
@@ -97,7 +97,7 @@ export const ProductDetailPage: React.FC = () => {
         </Section>
 
         {/* Supplier Trust & Risk Assessment */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <TrustScoreGauge score={supplier.trustScore} title="Supplier Trust Dossier" />
           <TradeRiskCompositeCard score={supplier.riskScore} />
         </div>

@@ -4,11 +4,11 @@ import { MARKET_OPPORTUNITY_COUNTRIES } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { PrimaryAction } from "@/components/common/PrimaryAction";
 import { Section } from "@/components/common/Section";
+import SpecularButton from "@/components/ui/SpecularButton";
 import TradeGlobe from "@/components/TradeGlobe";
 import { SAMPLE_DATA, aggregateByCountry } from "@/lib/tradeData";
-import { Globe2, ArrowRight } from "lucide-react";
+import { Globe2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const MarketIntelligencePage: React.FC = () => {
@@ -24,7 +24,7 @@ export const MarketIntelligencePage: React.FC = () => {
 
   return (
     <AppShell maxWidth="lg">
-      <div className="space-y-6">
+      <div className="space-y-5 select-none">
         
         {/* Page Header */}
         <PageHeader
@@ -37,7 +37,7 @@ export const MarketIntelligencePage: React.FC = () => {
           badge={<StatusBadge status="verified" label={`Active: India ➔ ${selectedCountry}`} size="md" />}
           action={
             <Link to="/trade-analysis">
-              <PrimaryAction>
+              <PrimaryAction size="sm">
                 Simulate Trade in {activeMarket.country} →
               </PrimaryAction>
             </Link>
@@ -45,10 +45,10 @@ export const MarketIntelligencePage: React.FC = () => {
         />
 
         {/* 3D Globe + Corridor Spec Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           
           {/* Globe Container */}
-          <div className="lg:col-span-7 h-[380px] rounded-2xl border border-white/[0.08] bg-[#0B1019] relative overflow-hidden flex items-center justify-center">
+          <div className="lg:col-span-7 h-[380px] rounded-2xl border border-white/[0.07] bg-[#0C121D] relative overflow-hidden flex items-center justify-center">
             <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/[0.08] text-[11px] font-mono text-slate-400">
               <Globe2 className="w-3.5 h-3.5 text-sky-400" />
               <span>Interactive 3D Corridor Radar</span>
@@ -66,7 +66,7 @@ export const MarketIntelligencePage: React.FC = () => {
           </div>
 
           {/* Focused Corridor Card */}
-          <div className="lg:col-span-5 p-5 rounded-2xl border border-white/[0.08] bg-[#0B1019] flex flex-col justify-between space-y-4">
+          <div className="lg:col-span-5 p-5 rounded-2xl border border-white/[0.07] bg-[#0C121D] flex flex-col justify-between space-y-4">
             <div className="space-y-4">
               <div className="flex items-start justify-between border-b border-white/[0.06] pb-3">
                 <div>
@@ -87,11 +87,11 @@ export const MarketIntelligencePage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.05]">
                   <span className="text-[10px] text-slate-500 uppercase block">Demand Growth</span>
                   <span className="text-emerald-400 font-bold">{activeMarket.demandGrowth}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.05]">
                   <span className="text-[10px] text-slate-500 uppercase block">Preferential Duty</span>
                   <span className="text-sky-400 font-bold">{activeMarket.tariffRate}</span>
                 </div>
@@ -103,7 +103,7 @@ export const MarketIntelligencePage: React.FC = () => {
                   {activeMarket.topImportCategories.map((cat) => (
                     <span
                       key={cat}
-                      className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-xs font-sans text-slate-300"
+                      className="px-2 py-0.5 rounded-md bg-[#070A0E] border border-white/[0.06] text-xs font-sans text-slate-300"
                     >
                       {cat}
                     </span>
@@ -112,10 +112,10 @@ export const MarketIntelligencePage: React.FC = () => {
               </div>
             </div>
 
-            <Link to="/trade-analysis">
-              <PrimaryAction size="sm" className="w-full">
+            <Link to="/trade-analysis" className="block w-full">
+              <SpecularButton size="sm" radius={10} className="w-full justify-center">
                 Simulate Trade in {activeMarket.country} →
-              </PrimaryAction>
+              </SpecularButton>
             </Link>
           </div>
 
@@ -134,8 +134,8 @@ export const MarketIntelligencePage: React.FC = () => {
                   className={cn(
                     "p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 cursor-pointer",
                     isSelected
-                      ? "bg-white/[0.08] border-sky-400 ring-1 ring-sky-400/50"
-                      : "bg-[#0B1019] border-white/[0.06] hover:border-white/[0.15] hover:bg-white/[0.02]"
+                      ? "bg-white/[0.08] border-sky-400"
+                      : "bg-[#0C121D] border-white/[0.06] hover:border-white/[0.14]"
                   )}
                 >
                   <div className="space-y-0.5">
@@ -148,8 +148,8 @@ export const MarketIntelligencePage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="text-[10px] font-mono text-slate-400 truncate">
-                    {dest.demandGrowth}
+                  <div className="text-[10px] font-mono text-slate-400">
+                    Tariff: <strong className="text-sky-400">{dest.tariffRate}</strong>
                   </div>
                 </button>
               );

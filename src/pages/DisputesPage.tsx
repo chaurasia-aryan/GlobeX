@@ -9,10 +9,6 @@ export const DisputesPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "Disputes & Arbitration" },
-          ]}
           title="Dispute Resolution & Arbitrator Portal"
           subtitle="AI synthesizes weighbridge discrepancy proofs, OCR variances, and contract clauses to provide settlement recommendations for certified Human Arbitrators."
           badge={<StatusBadge status="warning" label="Human-in-the-Loop Protocol" size="md" />}

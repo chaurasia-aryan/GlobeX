@@ -9,10 +9,6 @@ export const BlockchainLedgerPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "Audit Ledger" },
-          ]}
           title="On-Chain Evidence & Audit Ledger"
           subtitle="Cryptographic SHA-256 verification of registered trade documents, escrow locks, vessel dispatch timestamps, and smart contract executions."
           badge={<StatusBadge status="verified" label="Ethereum Sepolia Live" size="md" />}

@@ -9,10 +9,6 @@ export const EscrowPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "Smart Escrow Vault" },
-          ]}
           title="Programmable Smart Escrow"
           subtitle="Multi-sig EVM smart contracts enforce conditional payment releases upon document verification and GPS port geofence entry."
           badge={<StatusBadge status="verified" label="USDC Smart Vault Active" size="md" />}

@@ -55,7 +55,7 @@ const LIVE_EVENTS: LiveEvent[] = [
     iconColor: "text-[var(--emerald)]",
     badge: "KYC TIER-1",
     badgeColor: "text-[var(--emerald)] bg-[rgba(16,185,129,0.1)] border-[rgba(16,185,129,0.2)]",
-    title: "ABC Global Exports Ltd upgraded to 96/100 Trust Score",
+    title: "Acme Exports Ltd upgraded to 96/100 Trust Score",
     subtitle: "Zero dispute record across 342 verified maritime shipments",
     time: "6 mins ago",
     link: "/marketplace",

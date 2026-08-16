@@ -38,7 +38,6 @@ export const CryptoEscrowCard = ({
   ];
 
   const handleSimulateFastTrackRelease = async () => {
-    // Simulate satisfying all delivery conditions
     const updatedConditions = {
       buyerVerified: true,
       sellerVerified: true,
@@ -69,7 +68,6 @@ export const CryptoEscrowCard = ({
 
     setReleaseTx(receipt.txHash);
 
-    // Trigger Celebration Confetti
     confetti({
       particleCount: 120,
       spread: 80,
@@ -81,9 +79,9 @@ export const CryptoEscrowCard = ({
   };
 
   return (
-    <div className="p-6 bg-[#0b1329] border border-white/[0.08] rounded-2xl space-y-6 shadow-xl">
+    <div className="p-6 bg-[#0C121D] border border-white/[0.07] rounded-2xl space-y-6 select-none">
       {/* Header & Lock State */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
             <Coins className="w-5 h-5" />
@@ -102,115 +100,83 @@ export const CryptoEscrowCard = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {escrowState.status === "Funded" ? (
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono font-bold">
+          {escrowState.status === "Locked" ? (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold">
               <Lock className="w-3.5 h-3.5" />
-              <span>COLLATERAL LOCKED</span>
+              <span>$550,000.00 USDC Locked</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs font-mono font-bold">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold">
               <Unlock className="w-3.5 h-3.5" />
-              <span>SETTLED & RELEASED</span>
+              <span>Funds Disbursed to Seller</span>
             </span>
           )}
         </div>
       </div>
 
-      {/* Escrow Financial Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-          <div className="text-[10px] font-mono uppercase text-slate-400">Locked Value</div>
-          <div className="text-2xl font-mono font-bold text-white mt-1">
-            ${escrowState.amountUSDC.toLocaleString()}
-            <span className="text-xs text-slate-400 font-normal"> USDC</span>
-          </div>
-          <div className="text-[10px] font-mono text-emerald-400 mt-1">
-            100% Fully Collateralized
-          </div>
+      {/* Multi-Sig Conditions Matrix */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-xs font-mono text-slate-400 uppercase">
+          <span>Programmable Release Triggers</span>
+          <span>Status</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-          <div className="text-[10px] font-mono uppercase text-slate-400">Depositor Wallet (Buyer)</div>
-          <div className="text-xs font-mono font-bold text-sky-400 truncate mt-1 select-all">
-            {escrowState.buyerAddress}
-          </div>
-          <div className="text-[10px] font-mono text-slate-400 mt-1">
-            Al-Futtaim Global Treasury
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-          <div className="text-[10px] font-mono uppercase text-slate-400">Beneficiary Wallet (Seller)</div>
-          <div className="text-xs font-mono font-bold text-emerald-400 truncate mt-1 select-all">
-            {escrowState.sellerAddress}
-          </div>
-          <div className="text-[10px] font-mono text-slate-400 mt-1">
-            ABC Global Exports Treasury
-          </div>
-        </div>
-      </div>
-
-      {/* Multi-Condition Checklist */}
-      <div className="space-y-2.5">
-        <div className="text-xs font-mono font-semibold uppercase text-slate-400 tracking-wider">
-          Smart Contract Release Conditions
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2">
           {conditionList.map((cond) => (
             <div
               key={cond.key}
-              className={`p-2.5 rounded-lg border text-xs flex items-center justify-between transition-colors ${
-                cond.met
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-slate-200"
-                  : "bg-white/[0.02] border-white/[0.06] text-slate-400"
-              }`}
+              className="flex items-center justify-between p-3 rounded-xl bg-[#070A0E] border border-white/[0.05] text-xs"
             >
-              <div className="flex items-center gap-2">
-                <CheckCircle2
-                  className={`w-4 h-4 flex-shrink-0 ${cond.met ? "text-emerald-400" : "text-slate-600"}`}
-                />
-                <span className="text-[11px] leading-tight">{cond.label}</span>
+              <div className="flex items-center gap-2.5">
+                {cond.met ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-slate-500 shrink-0" />
+                )}
+                <span className={cond.met ? "text-slate-200 font-medium font-sans" : "text-slate-500 font-sans"}>
+                  {cond.label}
+                </span>
               </div>
-              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${cond.met ? "bg-emerald-500/20 text-emerald-400" : "bg-white/[0.05] text-slate-500"}`}>
-                {cond.met ? "SATISFIED" : "PENDING"}
+              <span className="text-[10px] font-mono font-bold">
+                {cond.met ? (
+                  <span className="text-emerald-400">SATISFIED</span>
+                ) : (
+                  <span className="text-slate-500">PENDING</span>
+                )}
               </span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Release Execution Action (StatefulButton) */}
-      <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-xs text-slate-400">
-          <div className="font-semibold text-white flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-sky-400" />
-            <span>Interactive Demo Action: Trigger Conditional Release</span>
+      {/* Release Transaction Evidence */}
+      {releaseTx && (
+        <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold font-mono">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Escrow Payment Executed On-Chain</span>
           </div>
-          <p className="text-[11px] mt-0.5 text-slate-400">
-            Simulates final cargo acceptance and releases $550,000 USDC directly to exporter wallet on-chain.
-          </p>
+          <div className="text-[11px] font-mono text-slate-300 break-all">
+            TxHash: {releaseTx}
+          </div>
         </div>
+      )}
 
-        {escrowState.status === "Released" ? (
-          <div className="text-right">
-            <div className="text-xs font-mono text-emerald-400 font-bold">
-              ✓ Successfully Settled on EVM Testnet
-            </div>
-            {releaseTx && (
-              <div className="text-[10px] font-mono text-slate-400 truncate max-w-[220px]">
-                Tx: {releaseTx}
-              </div>
-            )}
+      {/* Fast-Track Simulation Button */}
+      {escrowState.status === "Locked" && (
+        <div className="pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-slate-400 font-sans">
+            Once vessel arrives and customs sign-off is submitted, escrow automatically executes.
           </div>
-        ) : (
           <StatefulButton
             onClick={handleSimulateFastTrackRelease}
-            className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs"
+            className="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            Authorize & Release $550,000 USDC
+            <Zap className="w-3.5 h-3.5" />
+            <span>Simulate Port Sign-off & Release</span>
           </StatefulButton>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

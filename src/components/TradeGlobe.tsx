@@ -361,6 +361,8 @@ export interface TradeGlobeProps {
   className?: string;
   cameraPosition?: { lat: number; lng: number; altitude: number; duration?: number };
   disableCountryAutoFocus?: boolean;
+  isPaused?: boolean;
+  lifecyclePhase?: "idle" | "rotating" | "zooming" | "mumbai" | "auth-reveal" | "auth-ready";
 }
 
 export interface TradeGlobeRef {
@@ -421,6 +423,8 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
   className = "",
   cameraPosition,
   disableCountryAutoFocus = false,
+  isPaused = false,
+  lifecyclePhase = "idle",
 }, ref) => {
   const globeRef = useRef<any>(null);
   const [countries, setCountries] = useState<any>({ features: [] });
@@ -428,6 +432,7 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [hoveredArcData, setHoveredArcData] = useState<any | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const shouldPauseGlobe = isPaused || lifecyclePhase === "auth-ready";
 
   useImperativeHandle(ref, () => ({
     pointOfView: (pov, duration = 1000) => {
@@ -510,7 +515,7 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
     const setupControls = () => {
       const controls = globe.controls();
       if (controls) {
-        controls.autoRotate = autoRotate;
+        controls.autoRotate = !shouldPauseGlobe && autoRotate;
         controls.autoRotateSpeed = 0.25;
         controls.enableZoom = false;
         controls.enableDamping = true;
@@ -528,9 +533,20 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
       scene.background = null;
     }
 
+    const handleVisibilityChange = () => {
+      const controls = globe.controls();
+      if (controls) {
+        controls.autoRotate = !document.hidden && !shouldPauseGlobe && autoRotate;
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const timer = setTimeout(setupControls, 200);
-    return () => clearTimeout(timer);
-  }, [autoRotate, dimensions]);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [autoRotate, dimensions, shouldPauseGlobe]);
 
   // Sync camera position if prop changes
   useEffect(() => {
@@ -890,22 +906,40 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
   const [animClock, setAnimClock] = useState({ cycleIndex: 0, progress: 0.5 });
 
   useEffect(() => {
-    if (!ALL_GLOBAL_ROUTES || ALL_GLOBAL_ROUTES.length === 0) return;
+    if (!ALL_GLOBAL_ROUTES || ALL_GLOBAL_ROUTES.length === 0 || shouldPauseGlobe) return;
     let animId: number;
+    let lastFrameTime = 0;
     const CYCLE_MS = 5000; // 5.0 seconds per route lifecycle transition
     const start = performance.now();
 
     const frame = (now: number) => {
-      const totalElapsed = now - start;
-      const cycleIndex = Math.abs(Math.floor(totalElapsed / CYCLE_MS)) % ALL_GLOBAL_ROUTES.length;
-      const progress = (totalElapsed % CYCLE_MS) / CYCLE_MS; // 0.0 -> 1.0 within cycle
-      setAnimClock({ cycleIndex, progress });
+      // Throttle React state updates to max 30fps (every ~33ms) to save CPU/GPU
+      if (now - lastFrameTime >= 32) {
+        lastFrameTime = now;
+        const totalElapsed = now - start;
+        const cycleIndex = Math.abs(Math.floor(totalElapsed / CYCLE_MS)) % ALL_GLOBAL_ROUTES.length;
+        const progress = (totalElapsed % CYCLE_MS) / CYCLE_MS; // 0.0 -> 1.0 within cycle
+        setAnimClock({ cycleIndex, progress });
+      }
       animId = requestAnimationFrame(frame);
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animId);
+      } else if (!shouldPauseGlobe) {
+        animId = requestAnimationFrame(frame);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     animId = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(animId);
-  }, [ALL_GLOBAL_ROUTES]);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [ALL_GLOBAL_ROUTES, shouldPauseGlobe]);
 
   // Derive exactly 5-6 active shipping lines with Projectile Ejection ➔ Static Hold ➔ Reverse Retraction
   const arcsData = useMemo(() => {

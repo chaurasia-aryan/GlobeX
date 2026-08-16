@@ -23,6 +23,8 @@ export const CountUp: React.FC<CountUpProps> = ({
 
   useEffect(() => {
     let startTimestamp: number | null = null;
+    let rafId: number;
+
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1);
@@ -31,11 +33,15 @@ export const CountUp: React.FC<CountUpProps> = ({
       setCount(from + (to - from) * easeProgress);
 
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        rafId = window.requestAnimationFrame(step);
       }
     };
 
-    window.requestAnimationFrame(step);
+    rafId = window.requestAnimationFrame(step);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
   }, [to, from, duration]);
 
   const formatted =

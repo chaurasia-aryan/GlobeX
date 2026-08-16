@@ -11,7 +11,7 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({
   children,
-  maxWidth = "lg",
+  maxWidth = "full",
   className,
   showHeader = true,
 }) => {
@@ -36,18 +36,21 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {showHeader && <RoleNavigation />}
 
-      <main
-        className={cn(
-          "flex-1 w-full mx-auto px-4 sm:px-6 py-6 space-y-6",
-          maxWidthClasses,
-          className
-        )}
-      >
-        {children}
-      </main>
+      <div className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 py-4 relative">
+        {/* Full-width Main Operations Surface */}
+        <main
+          className={cn(
+            "w-full min-w-0 space-y-6",
+            maxWidthClasses,
+            className
+          )}
+        >
+          {children}
+        </main>
+      </div>
 
       {/* Clean minimal footer */}
-      <footer className="border-t border-white/[0.06] py-6 px-4 text-center text-xs text-slate-400 font-sans">
+      <footer className="border-t border-white/[0.06] py-5 px-4 text-center text-xs text-slate-400 font-sans">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>GLOBEX AI — Verified Cross-Border Trade & Programmable Escrow Settlement</span>
           <span className="font-mono text-[11px] text-slate-400">CEPA Schedule Rules · EVM Verified</span>

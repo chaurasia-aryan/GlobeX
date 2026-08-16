@@ -9,10 +9,6 @@ export const ShipmentsPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "Shipment Telemetry" },
-          ]}
           title="Live Shipment & Vessel Telemetry"
           subtitle="AIS satellite tracking for ocean freighters, live speed, heading, and container temperature monitoring across active trade corridors."
           badge={<StatusBadge status="in_transit" label="AIS Live Satellite Connected" size="md" />}

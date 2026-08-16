@@ -3,30 +3,20 @@ import { Link } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { PrimaryAction } from "@/components/common/PrimaryAction";
-import { Section } from "@/components/common/Section";
+import { MetricStrip } from "@/components/common/MetricStrip";
+import { FilterBar } from "@/components/common/FilterBar";
+import SpecularButton from "@/components/ui/SpecularButton";
+import LineSidebar from "@/components/ui/LineSidebar";
 import {
-  Package,
   PlusCircle,
-  Search,
-  Building2,
-  CheckCircle2,
   DollarSign,
-  Layers,
-  ArrowUpRight,
-  Sparkles,
-  Award,
-  Globe2,
-  FileCheck2,
-  Tag,
   Boxes,
-  Eye,
-  Edit,
+  Globe2,
+  Award,
   Trash2,
+  ArrowUpRight,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface OrganizationExportProduct {
   id: string;
@@ -173,7 +163,6 @@ export const MyListingsPage: React.FC = () => {
 
     setProducts((prev) => [created, ...prev]);
     setShowAddModal(false);
-    // Reset form
     setNewTitle("");
   };
 
@@ -182,197 +171,150 @@ export const MyListingsPage: React.FC = () => {
   };
 
   return (
-    <AppShell maxWidth="xl">
-      <div className="space-y-6 select-none">
-        
-        {/* ── Page Header ─────────────────────────────────────────────────── */}
-        <PageHeader
-          breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "My Export Listings" },
-          ]}
-          section="Exporter Perspective"
-          title="My Organization's Export Catalog"
-          subtitle={`Active export commodities, inventory stock, and international buyer inquiries listed by ${user.companyName}.`}
-          badge={
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{products.length} Active Listings for Export</span>
-            </div>
-          }
-          action={
-            <div className="flex items-center gap-2">
-              <Link to="/trade-requests?duty=export">
-                <button className="px-3.5 py-2 rounded-xl bg-[#111824] hover:bg-[#162232] border border-white/[0.08] text-slate-300 text-xs font-medium transition-all">
-                  <span>View Trade Inquiries</span>
-                </button>
-              </Link>
+    <AppShell maxWidth="full" className="space-y-5">
+      {/* ── Page Header (Section 12: No redundant breadcrumb hierarchy) ── */}
+      <PageHeader
+            title="Organization Export Catalog"
+            subtitle={`Active export listings, available inventory stock, and international buyer inquiries for ${user.companyName}.`}
+            badge={
+              <span className="text-xs font-mono text-slate-400">
+                {products.length} active listings
+              </span>
+            }
+            action={
+              <div className="flex items-center gap-2">
+                <Link to="/trade-requests?duty=export">
+                  <SpecularButton
+                    variant="outline"
+                    size="sm"
+                    radius={10}
+                  >
+                    View Inbound RFQs →
+                  </SpecularButton>
+                </Link>
 
-              <PrimaryAction
-                onClick={() => setShowAddModal(true)}
-                icon={<PlusCircle className="w-4 h-4" />}
-                iconPosition="left"
-              >
-                <span>Add Export Product</span>
-              </PrimaryAction>
-            </div>
-          }
-        />
+                <SpecularButton
+                  onClick={() => setShowAddModal(true)}
+                  icon={<PlusCircle className="w-4 h-4" />}
+                  iconPosition="left"
+                  size="sm"
+                  radius={10}
+                >
+                  Add Export Product
+                </SpecularButton>
+              </div>
+            }
+          />
 
-        {/* ── Organization Exporter KPIs ──────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-[#0A171D] border border-emerald-500/20 space-y-1">
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase">
-              <span>Catalog Valuation</span>
-              <DollarSign className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-mono font-bold text-emerald-300">
-              $5.48M <span className="text-xs font-sans text-slate-400 font-normal">FOB</span>
-            </div>
-            <div className="text-[11px] font-mono text-emerald-400">
-              Across {products.length} verified products
-            </div>
-          </div>
+          {/* ── Large Business Numbers / Compact Metric Strip ──────────────── */}
+          <MetricStrip
+            columns={4}
+            metrics={[
+              {
+                label: "Catalog Valuation",
+                value: "$5.48M FOB",
+                subtext: `Across ${products.length} verified listings`,
+                icon: DollarSign,
+                accentColor: "emerald",
+              },
+              {
+                label: "Available Stock",
+                value: "9,950 MT",
+                subtext: "Staged for port dispatch",
+                icon: Boxes,
+                accentColor: "slate",
+              },
+              {
+                label: "Active Inquiries",
+                value: "16 Quotes",
+                subtext: "UAE, Saudi, Germany",
+                icon: Globe2,
+                accentColor: "sky",
+              },
+              {
+                label: "Export Compliance",
+                value: "100% Passed",
+                subtext: "APEDA, FSSAI & COO",
+                icon: Award,
+                accentColor: "emerald",
+              },
+            ]}
+          />
 
-          <div className="p-4 rounded-2xl bg-[#0A171D] border border-emerald-500/20 space-y-1">
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase">
-              <span>Available Export Stock</span>
-              <Boxes className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-mono font-bold text-white">
-              9,950 <span className="text-xs font-sans text-slate-400 font-normal">MT</span>
-            </div>
-            <div className="text-[11px] font-mono text-slate-400">
-              Ready for immediate port staging
-            </div>
-          </div>
+          {/* ── Filter Bar & Search ─────────────────────────────────────────── */}
+          <FilterBar
+            categories={CATEGORIES}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search catalog by title, port, HS code..."
+          />
 
-          <div className="p-4 rounded-2xl bg-[#0A171D] border border-emerald-500/20 space-y-1">
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase">
-              <span>Active Buyer Inquiries</span>
-              <Globe2 className="w-4 h-4 text-sky-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-mono font-bold text-sky-300">
-              16 Inquiries
-            </div>
-            <div className="text-[11px] font-mono text-slate-400">
-              From UAE, Saudi, Germany, Ivory Coast
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#0A171D] border border-emerald-500/20 space-y-1">
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase">
-              <span>Export Compliance</span>
-              <Award className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-mono font-bold text-emerald-400">
-              100% Passed
-            </div>
-            <div className="text-[11px] font-mono text-slate-400">
-              APEDA, FSSAI & Chamber COO Verified
-            </div>
-          </div>
-        </div>
-
-        {/* ── Search & Filter Bar ─────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl bg-[#0B1019] border border-white/[0.08]">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={cn(
-                  "px-3 py-1.5 rounded-xl text-xs font-sans whitespace-nowrap transition-colors cursor-pointer",
-                  selectedCategory === cat
-                    ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold"
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#101726] border border-white/[0.08] focus-within:border-emerald-500/40 w-full sm:w-64 shrink-0">
-            <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search catalog or HS code..."
-              className="w-full bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-500 font-sans"
-            />
-          </div>
-        </div>
-
-        {/* ── Export Listings Table / Grid ────────────────────────────────── */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-3.5">
+          {/* ── Compact Entity List Rows ───────────────────────────────────── */}
+          <div className="space-y-2.5">
             {filteredProducts.map((prod) => (
               <div
                 key={prod.id}
-                className="p-4 sm:p-5 rounded-2xl bg-[#0B121C] border border-white/[0.08] hover:border-emerald-500/40 transition-all space-y-3"
+                className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded">
-                        HS {prod.hsCode}
-                      </span>
-                      <span className="text-xs font-mono text-slate-400">{prod.category}</span>
-                      <span className="text-xs font-mono text-slate-400">•</span>
-                      <span className="text-xs font-mono text-slate-300">{prod.originPort}</span>
-                    </div>
-
-                    <h3 className="text-base font-display font-bold text-white">
-                      {prod.title}
-                    </h3>
+                {/* Product Info */}
+                <div className="space-y-1 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-1.5 py-0.5 rounded">
+                      HS {prod.hsCode}
+                    </span>
+                    <span className="text-xs font-sans text-slate-400">{prod.category}</span>
+                    <span className="text-slate-600">·</span>
+                    <span className="text-xs font-sans text-slate-400 truncate">{prod.originPort}</span>
                   </div>
 
-                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 shrink-0">
-                    <div className="text-lg font-mono font-bold text-emerald-300">
-                      ${prod.unitPriceUSD.toLocaleString()} <span className="text-xs font-sans text-slate-400 font-normal">/ {prod.unit} FOB</span>
-                    </div>
-                    <div className="text-xs font-mono text-slate-400">
-                      Stock: <strong className="text-white">{prod.availableStock.toLocaleString()} {prod.unit}</strong> (Min: {prod.minOrderQty} {prod.unit})
-                    </div>
-                  </div>
-                </div>
+                  <h3 className="text-sm font-display font-bold text-white group-hover:text-emerald-400 transition-colors">
+                    {prod.title}
+                  </h3>
 
-                {/* Certifications & Inquiries */}
-                <div className="pt-3 border-t border-white/[0.06] flex flex-col md:flex-row md:items-center justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-1.5">
+                  {/* Certifications row */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                     {prod.certifications.map((cert) => (
                       <span
                         key={cert}
-                        className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono text-slate-300"
+                        className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.05] text-[10px] font-mono text-slate-400"
                       >
                         {cert}
                       </span>
                     ))}
                   </div>
+                </div>
 
-                  {/* Active Inquiries Alert */}
-                  <div className="flex items-center gap-3">
-                    <div className="text-xs font-mono text-sky-400 flex items-center gap-1.5 bg-sky-950/50 border border-sky-500/30 px-2.5 py-1 rounded-xl">
-                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-                      <span>{prod.inquiriesCount} Buyer Inquiries</span>
+                {/* Price, Stock & Actions */}
+                <div className="flex items-center justify-between md:justify-end gap-5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.04]">
+                  <div className="text-left md:text-right">
+                    <div className="text-base font-mono font-bold text-white">
+                      ${prod.unitPriceUSD.toLocaleString()}{" "}
+                      <span className="text-xs font-sans text-slate-400 font-normal">
+                        / {prod.unit} FOB
+                      </span>
                     </div>
+                    <div className="text-[11px] font-mono text-slate-500">
+                      Stock: {prod.availableStock.toLocaleString()} {prod.unit} (MOQ: {prod.minOrderQty})
+                    </div>
+                  </div>
 
+                  {/* Inquiries & Actions */}
+                  <div className="flex items-center gap-2">
                     <Link
                       to="/trade-requests?duty=export"
-                      className="text-xs font-mono text-emerald-400 hover:underline flex items-center gap-1"
+                      className="flex items-center gap-1 text-xs font-sans text-sky-400 hover:text-sky-300 bg-sky-950/40 border border-sky-500/30 px-2.5 py-1.5 rounded-xl transition-colors"
                     >
-                      <span>View RFQ Bids</span>
+                      <span>{prod.inquiriesCount} Inquiries</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </Link>
 
                     <button
                       type="button"
                       onClick={() => handleDeleteProduct(prod.id)}
-                      className="text-slate-500 hover:text-rose-400 transition-colors p-1"
-                      title="Remove product"
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-white/[0.04] transition-colors cursor-pointer"
+                      title="Remove product listing"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -380,153 +322,168 @@ export const MyListingsPage: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
 
-        {/* ── ADD NEW PRODUCT TO EXPORT CATALOG MODAL ─────────────────────── */}
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <div className="w-full max-w-xl p-6 rounded-3xl bg-[#0C121D] border border-white/[0.12] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-              
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <PlusCircle className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-white text-base">
-                      Add Product to Export Catalog
-                    </h3>
-                    <p className="text-[11px] text-slate-400 font-mono">
-                      Published under {user.companyName}
-                    </p>
-                  </div>
-                </div>
+            {filteredProducts.length === 0 && (
+              <div className="p-12 text-center rounded-2xl border border-dashed border-white/[0.08] bg-[#0C121D] space-y-2">
+                <p className="text-xs text-slate-400">No export listings match the selected filters.</p>
                 <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white"
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory("All Commodities");
+                    setSearchQuery("");
+                  }}
+                  className="text-xs text-emerald-400 hover:underline font-mono cursor-pointer"
                 >
-                  <X className="w-4 h-4" />
+                  Reset filters
                 </button>
               </div>
+            )}
+          </div>
 
-              <form onSubmit={handleAddProduct} className="space-y-3.5">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-mono text-slate-400 uppercase">Product Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="e.g. 1509 Golden Sella Basmati Rice Extra Long"
-                    className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-mono text-slate-400 uppercase">Category</label>
-                    <select
-                      value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none cursor-pointer"
-                    >
-                      <option value="Agriculture">Agriculture & Grains</option>
-                      <option value="Spices">Spices & Extracts</option>
-                      <option value="Textiles">Textiles & Apparel</option>
-                      <option value="Chemicals">Chemicals & Minerals</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-mono text-slate-400 uppercase">HS Code</label>
-                    <input
-                      type="text"
-                      required
-                      value={newHsCode}
-                      onChange={(e) => setNewHsCode(e.target.value)}
-                      placeholder="e.g. 1006.30.20"
-                      className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-mono text-slate-400 uppercase">Price ($ USD)</label>
-                    <input
-                      type="number"
-                      required
-                      value={newPrice}
-                      onChange={(e) => setNewPrice(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-mono text-slate-400 uppercase">Stock (Qty)</label>
-                    <input
-                      type="number"
-                      required
-                      value={newStock}
-                      onChange={(e) => setNewStock(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-mono text-slate-400 uppercase">Min Order</label>
-                    <input
-                      type="number"
-                      required
-                      value={newMinOrder}
-                      onChange={(e) => setNewMinOrder(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[11px] font-mono text-slate-400 uppercase">Origin Port / Staging Hub</label>
-                  <input
-                    type="text"
-                    required
-                    value={newPort}
-                    onChange={(e) => setNewPort(e.target.value)}
-                    placeholder="e.g. JNPT Nhava Sheva (INNSA)"
-                    className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[11px] font-mono text-slate-400 uppercase">Certifications (comma separated)</label>
-                  <input
-                    type="text"
-                    value={newCerts}
-                    onChange={(e) => setNewCerts(e.target.value)}
-                    placeholder="APEDA, FSSAI, Halal, ISO 22000"
-                    className="w-full px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.08] text-xs text-white outline-none font-mono"
-                  />
-                </div>
-
-                <div className="pt-2 flex items-center justify-end gap-2">
+          {/* ── Add Product Modal ────────────────────────────────────────────── */}
+          {showAddModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="w-full max-w-lg p-6 rounded-3xl bg-[#0C121D] border border-white/[0.12] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+                
+                <div className="flex items-center justify-between border-b border-white/[0.07] pb-3">
+                  <h3 className="font-display font-bold text-white text-base">
+                    Add Product to Export Catalog
+                  </h3>
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white"
+                    className="p-1 rounded-lg text-slate-500 hover:text-white"
                   >
-                    Cancel
+                    <X className="w-4 h-4" />
                   </button>
-                  <PrimaryAction type="submit" size="md">
-                    <span>Publish to Global Exporters Network</span>
-                  </PrimaryAction>
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
 
-      </div>
+                <form onSubmit={handleAddProduct} className="space-y-3.5 text-xs font-sans">
+                  <div className="space-y-1">
+                    <label className="text-slate-300">Commodity Title</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="e.g. Sona Masoori Raw Rice 100% Sortexed"
+                      className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Category</label>
+                      <select
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none cursor-pointer"
+                      >
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Spices">Spices</option>
+                        <option value="Textiles">Textiles</option>
+                        <option value="Chemicals">Chemicals</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-slate-300">HS Code</label>
+                      <input
+                        type="text"
+                        required
+                        value={newHsCode}
+                        onChange={(e) => setNewHsCode(e.target.value)}
+                        placeholder="1006.30.20"
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Unit Price ($ USD)</label>
+                      <input
+                        type="number"
+                        required
+                        value={newPrice}
+                        onChange={(e) => setNewPrice(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Unit</label>
+                      <input
+                        type="text"
+                        value={newUnit}
+                        onChange={(e) => setNewUnit(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Stock (MT)</label>
+                      <input
+                        type="number"
+                        value={newStock}
+                        onChange={(e) => setNewStock(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Minimum Order Qty</label>
+                      <input
+                        type="number"
+                        value={newMinOrder}
+                        onChange={(e) => setNewMinOrder(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-slate-300">Origin Port</label>
+                      <input
+                        type="text"
+                        value={newPort}
+                        onChange={(e) => setNewPort(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-300">Certifications (comma separated)</label>
+                    <input
+                      type="text"
+                      value={newCerts}
+                      onChange={(e) => setNewCerts(e.target.value)}
+                      placeholder="APEDA, FSSAI, ISO 22000"
+                      className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-2">
+                    <SpecularButton
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      radius={10}
+                      onClick={() => setShowAddModal(false)}
+                    >
+                      Cancel
+                    </SpecularButton>
+                    <SpecularButton type="submit" size="sm" radius={10}>
+                      Publish Listing
+                    </SpecularButton>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          )}
     </AppShell>
   );
 };

@@ -15,8 +15,7 @@ import {
   TrendingUp,
   Ship,
   Lock,
-} from "lucide-react";
-import InteractiveButton from "@/components/ui/interactive-button";
+import SpecularButton from "@/components/ui/SpecularButton";
 
 interface StepData {
   id: number;
@@ -275,7 +274,7 @@ export const SequencedTradeSimulator = () => {
                   </div>
                   <div className="space-y-1">
                     <h5 className="font-sans font-semibold text-sm text-[var(--text-primary)]">
-                      ABC Global Exports Ltd (Mumbai, India)
+                      Acme Exports Ltd (Mumbai, India)
                     </h5>
                     <p className="text-xs text-[var(--text-secondary)]">
                       342 verified completed export shipments • 0 dispute defaults • APEDA certified
@@ -330,12 +329,16 @@ export const SequencedTradeSimulator = () => {
             Ready to test this intelligence on your own product or trade corridor?
           </p>
 
-          <Link to="/get-started">
-            <InteractiveButton variant="primary" className="h-10 px-5 text-xs">
-              <Compass className="w-3.5 h-3.5 text-[var(--ink)]" />
-              <span>Launch Live Trade Intent Engine</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[var(--ink)]" />
-            </InteractiveButton>
+          <Link to="/trade-requests">
+            <SpecularButton
+              size="md"
+              radius={12}
+              variant="emerald"
+              icon={<ArrowRight className="w-4 h-4" />}
+              iconPosition="right"
+            >
+              Launch Live Trade Intent Engine
+            </SpecularButton>
           </Link>
         </div>
       </div>

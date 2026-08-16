@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RotateCcw, Home } from "lucide-react";
+import SpecularButton from "@/components/ui/SpecularButton";
 
 interface Props {
   children: ReactNode;
@@ -69,21 +70,29 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
 
             <div className="flex items-center gap-3 pt-2">
-              <button
+              <SpecularButton
                 onClick={this.handleRetry}
-                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-2"
+                variant="outline"
+                size="sm"
+                radius={12}
+                icon={<RotateCcw className="w-3.5 h-3.5" />}
+                iconPosition="left"
+                className="flex-1"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Retry Action</span>
-              </button>
+                Retry Action
+              </SpecularButton>
 
-              <button
+              <SpecularButton
                 onClick={this.handleReset}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-colors flex items-center justify-center gap-2 shadow-lg"
+                variant="emerald"
+                size="sm"
+                radius={12}
+                icon={<Home className="w-3.5 h-3.5" />}
+                iconPosition="left"
+                className="flex-1"
               >
-                <Home className="w-3.5 h-3.5" />
-                <span>Command Center</span>
-              </button>
+                Command Center
+              </SpecularButton>
             </div>
           </div>
         </div>

@@ -1,9 +1,10 @@
 import { Listing } from "@/types/trade";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShieldCheck, Box, Anchor, ArrowRight, Building2, MapPin } from "lucide-react";
+import { X, ShieldCheck, ArrowRight, Building2, MapPin } from "lucide-react";
 import NumberFlow from "@number-flow/react";
 import { Link } from "react-router-dom";
 import MatchExplanation from "@/components/ai/MatchExplanation";
+import SpecularButton from "@/components/ui/SpecularButton";
 
 interface ListingDetailDrawerProps {
   listing: Listing | null;
@@ -58,8 +59,9 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                 </div>
 
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition-colors shrink-0"
+                  className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition-colors shrink-0 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -128,13 +130,19 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
               )}
             </div>
 
-            {/* Bottom Dominant CTA */}
+            {/* Bottom Dominant CTA with SpecularButton */}
             <div className="pt-6 border-t border-white/[0.08] mt-6">
-              <Link to="/trades/TRD-IND-UAE-550K" onClick={onClose}>
-                <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-colors flex items-center justify-center gap-2 shadow-lg">
-                  <span>Start Trade & Lock Escrow ($550k)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <Link to="/trades/TRD-IND-UAE-550K" onClick={onClose} className="block w-full">
+                <SpecularButton
+                  size="md"
+                  radius={12}
+                  variant="emerald"
+                  className="w-full justify-center"
+                  icon={<ArrowRight className="w-4 h-4" />}
+                  iconPosition="right"
+                >
+                  Start Trade & Lock Escrow ($550k)
+                </SpecularButton>
               </Link>
             </div>
           </motion.aside>

@@ -27,11 +27,11 @@ export interface UserSession {
 
 const DEFAULT_USER: UserSession = {
   userId: "usr_abc_01",
-  name: "Rajesh Sharma",
-  email: "rajesh.sharma@abcglobaltrade.com",
+  name: "John Doe",
+  email: "john.doe@acmeglobaltrade.com",
   role: "admin",
   roleTitle: "Admin",
-  companyName: "ABC Global Exports & Imports Ltd",
+  companyName: "Acme Global Trading Ltd.",
   country: "India",
   isLoggedIn: true,
   documents: [
@@ -132,7 +132,7 @@ class AppwriteService {
       email: email || this.currentUser.email,
       role,
       roleTitle: getRoleTitle(role),
-      companyName: organizationName || this.currentUser.companyName || "ABC Global Exports & Imports Ltd",
+      companyName: organizationName || this.currentUser.companyName || "Acme Global Trading Ltd.",
       isLoggedIn: true,
     };
     localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));

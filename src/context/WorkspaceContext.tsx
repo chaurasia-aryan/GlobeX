@@ -36,7 +36,7 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserSession>(() => appwriteService.getCurrentUser());
-  const [dutyMode, setDutyMode] = useState<DutyMode>("dual");
+  const [dutyMode, setDutyMode] = useState<DutyMode>("import");
 
   useEffect(() => {
     const handleStorageChange = () => {

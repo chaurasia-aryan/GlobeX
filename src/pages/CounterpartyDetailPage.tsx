@@ -8,7 +8,7 @@ import { PrimaryAction } from "@/components/common/PrimaryAction";
 import { Section } from "@/components/common/Section";
 import TrustScoreGauge from "@/components/trust/TrustScoreGauge";
 import TradeRiskCompositeCard from "@/components/risk/TradeRiskCompositeCard";
-import { MapPin, Mail, ShieldCheck, PlusCircle } from "lucide-react";
+import { MapPin, ShieldCheck, PlusCircle } from "lucide-react";
 
 export const CounterpartyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +16,7 @@ export const CounterpartyDetailPage: React.FC = () => {
 
   return (
     <AppShell maxWidth="lg">
-      <div className="space-y-6">
+      <div className="space-y-5 select-none">
         
         {/* Page Header */}
         <PageHeader
@@ -33,23 +33,23 @@ export const CounterpartyDetailPage: React.FC = () => {
                 {partner.city}, {partner.country}
               </span>
               <span>•</span>
-              <span>REG: {partner.registrationNumber}</span>
+              <span className="font-mono">REG: {partner.registrationNumber}</span>
               <span>•</span>
               <span>{partner.contactEmail}</span>
             </div>
           }
           badge={<StatusBadge status="verified" label="KYC Verified Tier-1" size="md" />}
           action={
-            <Link to="/get-started">
-              <PrimaryAction icon={<PlusCircle className="w-4 h-4" />} iconPosition="left">
+            <Link to="/trade-requests?duty=import">
+              <PrimaryAction icon={<PlusCircle className="w-4 h-4" />} iconPosition="left" size="sm">
                 Start Trade with Partner
               </PrimaryAction>
             </Link>
           }
         />
 
-        {/* Flat Overview Spec Row */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0B1019] border border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+        {/* Overview Spec Row */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
           <div>
             <span className="text-[10px] text-slate-400 uppercase block">Historical Trade Volume</span>
             <strong className="text-emerald-400 text-base">
@@ -72,7 +72,7 @@ export const CounterpartyDetailPage: React.FC = () => {
 
         {/* Entity Narrative Description */}
         <Section title="Institutional Profile">
-          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+          <div className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
             {partner.description}
           </div>
         </Section>
@@ -83,7 +83,7 @@ export const CounterpartyDetailPage: React.FC = () => {
             {partner.certifications.map((c) => (
               <span
                 key={c}
-                className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-slate-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-[#0C121D] border border-white/[0.07] text-xs font-mono text-slate-300 flex items-center gap-1.5"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{c}</span>
@@ -93,7 +93,7 @@ export const CounterpartyDetailPage: React.FC = () => {
         </Section>
 
         {/* Trust & Risk Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <TrustScoreGauge score={partner.trustScore} title="Institutional Trust Score" />
           <TradeRiskCompositeCard score={partner.riskScore} />
         </div>

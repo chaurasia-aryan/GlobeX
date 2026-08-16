@@ -12,9 +12,8 @@ import {
   Trash2,
   ShieldCheck,
   ArrowRight,
-  Layers,
 } from "lucide-react";
-import PrimaryAction from "@/components/common/PrimaryAction";
+import SpecularButton from "@/components/ui/SpecularButton";
 import { UploadedDoc } from "@/services/appwrite/client";
 
 export const OnboardingPage: React.FC = () => {
@@ -22,9 +21,9 @@ export const OnboardingPage: React.FC = () => {
   const { register } = useWorkspace();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [orgName, setOrgName] = useState("ABC Global Exports & Imports Ltd");
-  const [adminName, setAdminName] = useState("Rajesh Sharma");
-  const [email, setEmail] = useState("rajesh.sharma@abcglobaltrade.com");
+  const [orgName, setOrgName] = useState("Acme Global Trading Ltd.");
+  const [adminName, setAdminName] = useState("John Doe");
+  const [email, setEmail] = useState("john.doe@acmeglobaltrade.com");
   const [role, setSelectedRole] = useState<RoleType>("admin");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -123,7 +122,7 @@ export const OnboardingPage: React.FC = () => {
                   required
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
-                  placeholder="e.g. ABC Global Exports & Imports Ltd"
+                  placeholder="e.g. Acme Global Trading Ltd."
                   className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
                 />
               </div>
@@ -139,7 +138,7 @@ export const OnboardingPage: React.FC = () => {
                   required
                   value={adminName}
                   onChange={(e) => setAdminName(e.target.value)}
-                  placeholder="e.g. Rajesh Sharma"
+                  placeholder="e.g. John Doe"
                   className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
                 />
               </div>
@@ -199,14 +198,17 @@ export const OnboardingPage: React.FC = () => {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <button
+                <SpecularButton
                   type="button"
+                  variant="sky"
+                  size="xs"
+                  radius={10}
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 text-xs font-medium cursor-pointer"
+                  icon={<Upload className="w-3.5 h-3.5" />}
+                  iconPosition="left"
                 >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Upload Documents</span>
-                </button>
+                  Upload Documents
+                </SpecularButton>
               </div>
 
               <div className="space-y-1.5">
@@ -226,7 +228,7 @@ export const OnboardingPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveDoc(doc.id)}
-                      className="text-slate-500 hover:text-rose-400 p-1"
+                      className="text-slate-500 hover:text-rose-400 p-1 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -235,13 +237,19 @@ export const OnboardingPage: React.FC = () => {
               </div>
             </div>
 
-            <PrimaryAction
-              type="submit"
-              isLoading={isSubmitting}
-              className="w-full"
-            >
-              <span>Launch Unified Workspace →</span>
-            </PrimaryAction>
+            <div className="pt-2">
+              <SpecularButton
+                type="submit"
+                size="md"
+                radius={12}
+                isLoading={isSubmitting}
+                className="w-full justify-center"
+                icon={<ArrowRight className="w-4 h-4" />}
+                iconPosition="right"
+              >
+                Launch Unified Workspace
+              </SpecularButton>
+            </div>
           </form>
 
           <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
@@ -259,4 +267,3 @@ export const OnboardingPage: React.FC = () => {
 };
 
 export default OnboardingPage;
-

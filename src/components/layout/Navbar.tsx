@@ -52,7 +52,7 @@ export const Navbar = () => {
       group: "Trade Actions",
       items: [
         { label: "Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Manage your active trade, papers & safe payment" },
-        { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Inbound RFQs & Outbound trade intents" },
+        { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Review trade requests received by your organization" },
       ],
     },
     {
