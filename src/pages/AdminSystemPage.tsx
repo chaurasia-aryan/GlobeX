@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   Activity,
   Workflow,
-  Sparkles,
   Server,
 } from "lucide-react";
 
@@ -113,7 +112,7 @@ export const AdminSystemPage = () => {
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-700/60 flex items-center justify-center text-primary">
-                <Sparkles className="w-4 h-4" />
+                <Cpu className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="font-mono text-sm font-bold text-foreground">FastAPI AI / ML Microservices</h3>

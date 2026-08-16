@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, ArrowRight, HelpCircle, CheckCircle2, X } from "lucide-react";
+import { Search, ArrowRight, HelpCircle, CheckCircle2, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface AIMatchResultsPanelProps {
@@ -60,7 +60,7 @@ export const AIMatchResultsPanel = ({
             disabled={isProcessing}
             className="neo-btn px-6 py-2.5 text-[var(--accent)] hover:text-white font-sans font-semibold text-xs flex items-center gap-1.5 transition-colors flex-shrink-0"
           >
-            <Sparkles className={`w-3.5 h-3.5 ${isProcessing ? "animate-spin" : ""}`} />
+            <Search className={`w-3.5 h-3.5 ${isProcessing ? "animate-spin" : ""}`} />
             <span>{isProcessing ? "Matching..." : "Search"}</span>
           </button>
         </div>

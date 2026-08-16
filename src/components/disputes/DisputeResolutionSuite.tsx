@@ -5,7 +5,7 @@ import { appwriteService } from "@/services/appwrite/client";
 import { blockchainEscrowService } from "@/services/blockchain/escrowService";
 import {
   Scale,
-  Sparkles,
+  Bot,
   UserCheck,
   AlertCircle,
   FileText,
@@ -120,7 +120,7 @@ export const DisputeResolutionSuite = ({
       <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-800/60 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <Bot className="w-4 h-4 text-cyan-400" />
             <span className="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
               AI Evidence Synthesis & Contract Reconciler
             </span>

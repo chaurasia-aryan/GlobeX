@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { MARKET_OPPORTUNITY_COUNTRIES } from "@/data/mockTradeData";
 import {
   TrendingUp,
-  Sparkles,
   Globe2,
   Percent,
   ArrowRight,
@@ -11,7 +10,6 @@ import {
   Home,
   CheckCircle2,
   Ship,
-  Sparkle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {

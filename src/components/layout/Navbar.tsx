@@ -19,7 +19,7 @@ import {
   Scale,
   Database,
   ShieldAlert,
-  Sparkles,
+  PlusCircle,
   ExternalLink,
   Layers,
   Zap,
@@ -41,7 +41,7 @@ export const Navbar = () => {
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Marketplace", href: "/marketplace", icon: Store },
-    { label: "New Trade", href: "/get-started", icon: Sparkles },
+    { label: "New Trade", href: "/get-started", icon: PlusCircle },
     { label: "Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, isLive: true },
   ];
 
@@ -50,7 +50,7 @@ export const Navbar = () => {
       group: "Trade Actions",
       items: [
         { label: "Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Manage your active trade, papers & safe payment" },
-        { label: "Start a New Trade", href: "/get-started", icon: Sparkles, desc: "Find best verified partners and calculate tax savings" },
+        { label: "Start a New Trade", href: "/get-started", icon: PlusCircle, desc: "Find best verified partners and calculate tax savings" },
       ],
     },
     {

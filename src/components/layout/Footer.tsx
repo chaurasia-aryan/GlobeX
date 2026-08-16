@@ -1,4 +1,4 @@
-import { Shield, Sparkles, Cpu, Layers } from "lucide-react";
+import { Shield, Cpu, Layers } from "lucide-react";
 
 export const Footer = () => {
   return (

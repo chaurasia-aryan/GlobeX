@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Sparkles, CheckCircle2 } from "lucide-react";
+import { ChevronDown, CheckCircle2, TrendingUp } from "lucide-react";
 
 interface MatchExplanationProps {
   matchScore?: number;
@@ -25,7 +25,7 @@ export function MatchExplanation({
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       <CollapsibleTrigger className="flex items-center justify-between w-full py-1 text-xs font-mono text-[var(--accent)] hover:text-emerald-300 transition-colors group cursor-pointer">
         <span className="flex items-center gap-1.5 font-semibold">
-          <Sparkles className="w-3 h-3 text-emerald-400" />
+          <TrendingUp className="w-3 h-3 text-emerald-400" />
           Why this match? ({matchScore}%)
         </span>
         <ChevronDown

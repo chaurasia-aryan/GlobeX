@@ -7,7 +7,7 @@ import {
   IconTerminal2 as Terminal,
   IconCircleX as XCircle,
   IconFileCode as FileCode2,
-  IconSparkles as Sparkles,
+  IconCompass as Compass,
   IconGlobe as Globe,
   IconFilePlus as FilePlus,
   IconChecklist as ListTodo,
@@ -70,7 +70,7 @@ function calculateDiffStats(oldString: string, newString: string) {
 
 export const toolRegistry: Record<string, ToolMeta> = {
   "tool-Task": {
-    icon: Sparkles,
+    icon: Compass,
     title: (part) => {
       const isPending =
         part.state !== "output-available" && part.state !== "output-error";
@@ -87,7 +87,7 @@ export const toolRegistry: Record<string, ToolMeta> = {
   },
   // Agent tool — renamed from "Task" in claude-agent-sdk 0.2.63+
   "tool-Agent": {
-    icon: Sparkles,
+    icon: Compass,
     title: (part) => {
       const isPending =
         part.state !== "output-available" && part.state !== "output-error";
@@ -103,7 +103,7 @@ export const toolRegistry: Record<string, ToolMeta> = {
     variant: "simple",
   },
   "tool-Skill": {
-    icon: Sparkles,
+    icon: Compass,
     title: () => "Skill",
     subtitle: (part) => part.input?.skill || "",
     variant: "simple",
@@ -260,7 +260,7 @@ export const toolRegistry: Record<string, ToolMeta> = {
     variant: "simple",
   },
   "tool-PlanWrite": {
-    icon: Sparkles,
+    icon: Compass,
     title: (part) => {
       const isPending =
         part.state !== "output-available" && part.state !== "output-error";
@@ -348,7 +348,7 @@ export const toolRegistry: Record<string, ToolMeta> = {
     variant: "simple",
   },
   "tool-Thinking": {
-    icon: Sparkles,
+    icon: Compass,
     title: (part) => {
       const isPending =
         part.state !== "output-available" && part.state !== "output-error";

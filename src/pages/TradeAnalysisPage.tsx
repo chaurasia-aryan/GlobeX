@@ -12,7 +12,6 @@ import {
   FileCheck2,
   Coins,
   Ship,
-  Sparkles,
   ArrowRight,
   ChevronRight,
   Server,

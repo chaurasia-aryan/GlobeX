@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Globe2,
   Search,
-  Sparkles,
+  Compass,
   ShieldCheck,
   Ship,
   FileCheck2,
@@ -20,7 +20,7 @@ export const Sidebar = () => {
   const location = useLocation();
 
   const lifecycleStages = [
-    { stage: "1. DISCOVER", label: "Where to Trade", to: "/market-intelligence", icon: Sparkles },
+    { stage: "1. DISCOVER", label: "Where to Trade", to: "/market-intelligence", icon: Compass },
     { stage: "2. MATCH", label: "AI Marketplace", to: "/marketplace", icon: Search },
     { stage: "3. ASSESS", label: "Trade Analysis", to: "/trade-analysis", icon: ShieldCheck },
     { stage: "4. WORKSPACE", label: "Active Trade Hub", to: "/trades/TRD-IND-UAE-550K", icon: Ship },

@@ -33,7 +33,6 @@ import {
   ShieldCheck,
   Building2,
   MapPin,
-  Sparkles,
   Bot,
   X,
   ArrowRight,
@@ -350,7 +349,7 @@ export const TradeWorkspacePage = () => {
             onClick={() => setChatOpen(true)}
             className="px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-emerald-500/10 border border-white/[0.12] hover:border-emerald-500/40 text-xs font-semibold text-white hover:text-emerald-300 transition-all flex items-center gap-2 shadow-sm cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <Bot className="w-4 h-4 text-emerald-400" />
             <span>AI Copilot</span>
           </button>
         </div>

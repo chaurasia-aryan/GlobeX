@@ -7,7 +7,7 @@ import {
   ShoppingBag,
   Building,
   ArrowRight,
-  Sparkles,
+  Compass,
   Search,
   CheckCircle2,
   FileCheck2,
@@ -279,7 +279,7 @@ export const TradeIntentWizardPage = () => {
             <div className="p-4 rounded-2xl bg-[#0C121D]/80 border border-white/[0.08] space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-mono text-emerald-400 font-semibold flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Compass className="w-3.5 h-3.5" />
                   Popular Trade Corridors
                 </span>
                 <span className="text-[11px] text-emerald-400/80 font-mono">1-click to auto-fill & find partners</span>
@@ -535,7 +535,7 @@ export const TradeIntentWizardPage = () => {
                   lineColor="#34C795"
                   baseColor="#101F30"
                 >
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <Zap className="w-4 h-4 text-emerald-400" />
                   <span>Find Best Trade Partners</span>
                   <ArrowRight className="w-4 h-4 text-emerald-400" />
                 </SpecularButton>

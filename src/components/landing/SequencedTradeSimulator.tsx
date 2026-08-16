@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Sparkles,
+  Compass,
   Search,
   FileCheck2,
   ShieldCheck,
@@ -332,7 +332,7 @@ export const SequencedTradeSimulator = () => {
 
           <Link to="/get-started">
             <InteractiveButton variant="primary" className="h-10 px-5 text-xs">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--ink)]" />
+              <Compass className="w-3.5 h-3.5 text-[var(--ink)]" />
               <span>Launch Live Trade Intent Engine</span>
               <ArrowRight className="w-3.5 h-3.5 text-[var(--ink)]" />
             </InteractiveButton>

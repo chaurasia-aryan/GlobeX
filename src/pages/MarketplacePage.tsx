@@ -9,7 +9,7 @@ import ListingCard from "@/components/marketplace/ListingCard";
 import TrustedPartnerShelf from "@/components/marketplace/TrustedPartnerShelf";
 import AIMatchResultsPanel from "@/components/marketplace/AIMatchResultsPanel";
 import ListingDetailDrawer from "@/components/marketplace/ListingDetailDrawer";
-import { LayoutGrid, Sparkles, Award, Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
+import { LayoutGrid, Compass, Award, Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -110,8 +110,8 @@ export const MarketplacePage = () => {
                 : "bg-[var(--panel)] hover:bg-[var(--panel-raised)] text-[var(--accent)] border-[var(--hairline)]"
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{showAiSearch ? "Close AI Matcher" : "AI Semantic Match"}</span>
+            <Compass className="w-3.5 h-3.5" />
+            <span>{showAiSearch ? "Close Partner Matcher" : "Smart Partner Matcher"}</span>
             <ChevronDown className={`w-3 h-3 transition-transform ${showAiSearch ? "rotate-180" : ""}`} />
           </button>
 
@@ -154,9 +154,9 @@ export const MarketplacePage = () => {
             <div className="rounded-2xl border border-[var(--hairline-strong)] bg-[var(--panel)] p-1 shadow-2xl">
               <div className="flex items-center justify-between px-5 pt-4 pb-2">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[var(--accent)]" />
+                  <Compass className="w-4 h-4 text-[var(--accent)]" />
                   <span className="text-xs font-mono font-bold text-[var(--accent)] uppercase tracking-wider">
-                    AI Semantic Trade Discovery & Counterparty Fit
+                    Smart Trade Discovery & Counterparty Fit
                   </span>
                 </div>
                 <button

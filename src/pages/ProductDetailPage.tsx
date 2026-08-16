@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import {
   ArrowLeft,
-  Sparkles,
   MapPin,
   ShieldCheck,
   Package,

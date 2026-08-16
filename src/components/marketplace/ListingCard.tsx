@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import NumberFlow from "@number-flow/react";
 import { Listing } from "@/types/trade";
-import { ArrowRight, MapPin, Sparkles, ShieldCheck, Box, Anchor } from "lucide-react";
+import { ArrowRight, MapPin, Award, ShieldCheck, Box, Anchor } from "lucide-react";
 
 interface ListingCardProps {
   listing: Listing;
@@ -38,7 +38,7 @@ export const ListingCard = ({ listing, onSelect }: ListingCardProps) => {
           {/* AI Match Badge */}
           {listing.aiMatchScore != null && (
             <div className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--accent-dim)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-sm">
-              <Sparkles className="w-3 h-3" />
+              <Award className="w-3 h-3" />
               <span className="text-xs font-mono font-bold">
                 <NumberFlow value={listing.aiMatchScore} />%
               </span>

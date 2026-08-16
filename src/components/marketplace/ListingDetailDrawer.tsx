@@ -1,6 +1,6 @@
 import { Listing } from "@/types/trade";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShieldCheck, Box, Anchor, ArrowRight, Sparkles, Building2, MapPin } from "lucide-react";
+import { X, ShieldCheck, Box, Anchor, ArrowRight, Building2, MapPin } from "lucide-react";
 import NumberFlow from "@number-flow/react";
 import { Link } from "react-router-dom";
 import MatchExplanation from "@/components/ai/MatchExplanation";

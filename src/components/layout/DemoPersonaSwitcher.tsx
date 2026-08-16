@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { appwriteService, UserSession } from "@/services/appwrite/client";
-import { UserCheck, ChevronUp, Shield, Wrench, Sparkles, Building, ShoppingBag } from "lucide-react";
+import { UserCheck, ChevronUp, Shield, Wrench, Building, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const DemoPersonaSwitcher = () => {

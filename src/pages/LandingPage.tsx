@@ -18,7 +18,6 @@ import {
   MapPin,
   ExternalLink,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -35,17 +34,19 @@ export default function LandingPage() {
 
   // Buttery-smooth spring damping on scroll progress
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 85,
-    damping: 26,
-    mass: 0.6,
-    restDelta: 0.0005,
+    stiffness: 90,
+    damping: 28,
+    mass: 0.5,
+    restDelta: 0.0001,
   });
 
-  const [currentProgress, setCurrentProgress] = useState(0);
+  const [showPersona, setShowPersona] = useState(false);
 
   // Dynamic Multi-Stage Camera: Starts from exact live screen point -> Centers India -> Zooms into Mumbai
   useMotionValueEvent(smoothProgress, "change", (progress) => {
-    setCurrentProgress(progress);
+    const isPastThreshold = progress >= 0.65;
+    setShowPersona((prev) => (prev !== isPastThreshold ? isPastThreshold : prev));
+
     if (!globeRef.current) return;
 
     // Capture exact initial point on screen when scroll begins
@@ -100,8 +101,6 @@ export default function LandingPage() {
 
   const hudOpacity = useTransform(smoothProgress, [0.15, 0.32, 0.70, 0.85], [0, 1, 1, 0]);
   const hudY = useTransform(smoothProgress, [0.15, 0.32], [-20, 0]);
-
-  const showPersona = currentProgress >= 0.65;
 
   const handleSelectRole = (role: "buyer" | "exporter") => {
     appwriteService.setRole(role);
