@@ -154,41 +154,172 @@ export const TradeIntentWizardPage: React.FC = () => {
     setIntakeForm({ ...intakeForm, requiredCertifications: updated });
   };
 
-  return (
-    <AppShell maxWidth="lg">
-      <div className="space-y-6">
-        
-        {/* ── STAGE 1: 4-STEP WIZARD (Only current step expanded) ─────────── */}
-        {!synthesisResult ? (
-          <div className="space-y-6">
-            
-            {/* Header */}
-            <PageHeader
-              breadcrumbs={[
-                { label: "Dashboard", href: "/dashboard" },
-                { label: isBuyer ? "New Import" : "Trade Request" },
-              ]}
-              title={isBuyer ? "Configure New Import" : "Configure Trade Request"}
-              subtitle={`Step ${currentStep} of 4 · Specify trade parameters to calculate duties & match verified partners.`}
-              badge={
-                <StatusBadge
-                  status="active"
-                  label={`Step ${currentStep} of 4`}
-                  size="md"
-                />
-              }
-              action={
-                <PrimaryAction
-                  onClick={handleNextStep}
-                  isLoading={isSynthesizing}
-                >
-                  {currentStep === 4 ? "Find Best Suppliers →" : "Continue →"}
-                </PrimaryAction>
-              }
-            />
+  const [modeTab, setModeTab] = useState<"submit" | "inbox">("submit");
 
-            {/* Stepper Progress Bar */}
-            <div className="grid grid-cols-4 gap-2">
+  // Mock Inbound Trade Requests
+  const inboundRequests = [
+    {
+      id: "RFQ-UAE-8841",
+      buyer: "Al-Futtaim Global Trade LLC",
+      country: "UAE (Dubai)",
+      product: "1121 Steam Extra Long Grain Basmati Rice (500 MT)",
+      targetPrice: "$1,100 / MT CIF Jebel Ali",
+      totalValue: "$550,000 USD",
+      status: "pending_review",
+      time: "2 hours ago",
+      incoterm: "CIF",
+      complianceReqs: "APEDA, FSSAI, Halal, Phytosanitary",
+    },
+    {
+      id: "RFQ-GER-3392",
+      buyer: "Hamburg Maritime Commodities GmbH",
+      country: "Germany (Hamburg)",
+      product: "Organic Durum Wheat Grain Milling Grade-A (1,000 MT)",
+      targetPrice: "$360 / MT CIF Hamburg",
+      totalValue: "$360,000 USD",
+      status: "pending_review",
+      time: "5 hours ago",
+      incoterm: "CIF",
+      complianceReqs: "EU Organic, IFS Broker, SGS Inspection",
+    },
+    {
+      id: "RFQ-SGP-1104",
+      buyer: "Singapore Oceanic Supply Pte Ltd",
+      country: "Singapore",
+      product: "Tellicherry Extra Bold Black Pepper GI-Tagged (50 MT)",
+      targetPrice: "$9,200 / MT FOB Cochin",
+      totalValue: "$460,000 USD",
+      status: "quote_sent",
+      time: "1 day ago",
+      incoterm: "FOB",
+      complianceReqs: "Spices Board of India, SFA Singapore",
+    },
+  ];
+
+  return (
+    <AppShell maxWidth="xl">
+      <div className="space-y-6 select-none">
+        
+        {/* ── Page Header ─────────────────────────────────────────────────── */}
+        <PageHeader
+          breadcrumbs={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Trade Requests" },
+          ]}
+          section="Trade Inquiries & Orders"
+          title="Trade Requests"
+          subtitle="Configure new import/export trade requests or review incoming buyer RFQs and verified seller quotations."
+          badge={
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>3 Inbound Buyer RFQs Pending</span>
+            </div>
+          }
+          action={
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0E1522] border border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setModeTab("submit")}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer",
+                  modeTab === "submit"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                + New Trade Request
+              </button>
+              <button
+                type="button"
+                onClick={() => setModeTab("inbox")}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-1.5",
+                  modeTab === "inbox"
+                    ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <span>Inbound RFQs</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-sky-500/20 text-sky-300 text-[10px]">3</span>
+              </button>
+            </div>
+          }
+        />
+
+        {/* ── VIEW 1: INBOUND BUYER REQUESTS / RFQS ───────────────────────── */}
+        {modeTab === "inbox" && (
+          <div className="space-y-4">
+            <div className="p-4 rounded-2xl bg-[#090E17] border border-white/[0.08] flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-white text-sm">
+                  Active Inbound Trade Requests from International Buyers
+                </h3>
+                <p className="text-xs text-slate-400 font-sans">
+                  Buyers requesting quotations and contract staging for your listed export commodities.
+                </p>
+              </div>
+              <span className="text-xs font-mono text-emerald-400">
+                100% Escrow Backed
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {inboundRequests.map((rfq) => (
+                <div
+                  key={rfq.id}
+                  className="p-5 rounded-2xl bg-[#0B1019] border border-white/[0.08] hover:border-emerald-500/40 transition-all space-y-3"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold uppercase text-sky-400 bg-sky-950/70 border border-sky-500/30 px-2 py-0.5 rounded">
+                          {rfq.id}
+                        </span>
+                        <span className="text-xs font-mono text-slate-400">{rfq.country}</span>
+                        <span className="text-xs font-mono text-slate-500">•</span>
+                        <span className="text-xs font-mono text-slate-400">{rfq.time}</span>
+                      </div>
+                      <h4 className="text-sm font-display font-bold text-white">
+                        {rfq.buyer} — {rfq.product}
+                      </h4>
+                    </div>
+
+                    <div className="text-left sm:text-right shrink-0">
+                      <div className="text-base font-mono font-bold text-emerald-300">{rfq.totalValue}</div>
+                      <div className="text-xs font-mono text-slate-400">{rfq.targetPrice}</div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/[0.04] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="text-slate-400 text-[11px] font-mono">
+                      Required Certs: <strong className="text-slate-300">{rfq.complianceReqs}</strong>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Link to="/trades/TRD-IND-UAE-550K">
+                        <button className="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-semibold transition-all">
+                          Accept & Stage Trade
+                        </button>
+                      </Link>
+                      <button className="px-3 py-1.5 rounded-xl bg-[#131B2A] hover:bg-[#182338] border border-white/[0.08] text-slate-300 font-semibold transition-all">
+                        Send Counter-Offer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── VIEW 2: SUBMIT TRADE REQUEST WIZARD ─────────────────────────── */}
+        {modeTab === "submit" && (
+          !synthesisResult ? (
+            <div className="space-y-6">
+              
+              {/* Stepper Progress Bar */}
+              <div className="grid grid-cols-4 gap-2">
+
               {[
                 { step: 1, label: "01 Product" },
                 { step: 2, label: "02 Route" },
@@ -219,6 +350,7 @@ export const TradeIntentWizardPage: React.FC = () => {
                 );
               })}
             </div>
+
 
             {/* Quick Presets (Single Row) */}
             <div className="p-3 rounded-xl bg-[#0B1019] border border-white/[0.06] flex items-center justify-between gap-3 text-xs overflow-x-auto">
@@ -585,11 +717,12 @@ export const TradeIntentWizardPage: React.FC = () => {
                 ))}
               </div>
             </Section>
-
           </div>
-        )}
+        )
+      )}
 
       </div>
+
 
       {/* Trust Breakdown Slide-Over Drawer */}
       <TrustBreakdownDrawer

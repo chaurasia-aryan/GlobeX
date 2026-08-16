@@ -3,24 +3,62 @@
  * Supports seamless fallback to local mock store when Appwrite is unconfigured
  */
 
+export type OrganizationRole = "admin" | "compliance" | "salesman" | "buyer" | "exporter" | "dual" | "arbitrator";
+
+export interface UploadedDoc {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  uploadTime: string;
+}
+
 export interface UserSession {
   userId: string;
   name: string;
   email: string;
-  role: "exporter" | "buyer" | "arbitrator" | "admin";
+  role: OrganizationRole;
+  roleTitle: string;
   companyName: string;
   country: string;
   isLoggedIn: boolean;
+  documents?: UploadedDoc[];
 }
 
 const DEFAULT_USER: UserSession = {
   userId: "usr_abc_01",
   name: "Rajesh Sharma",
   email: "rajesh.sharma@abcglobaltrade.com",
-  role: "exporter",
-  companyName: "ABC Global Exports Ltd",
+  role: "admin",
+  roleTitle: "Admin",
+  companyName: "ABC Global Exports & Imports Ltd",
   country: "India",
   isLoggedIn: true,
+  documents: [
+    { id: "doc_1", name: "IEC_Certificate_GovIndia.pdf", size: "2.4 MB", type: "IEC License", uploadTime: "Just now" },
+    { id: "doc_2", name: "GSTIN_Incorporation_27AABCA.pdf", size: "1.1 MB", type: "GSTIN Registration", uploadTime: "Just now" },
+  ],
+};
+
+const getRoleTitle = (role: OrganizationRole): string => {
+  switch (role) {
+    case "admin":
+      return "Admin";
+    case "compliance":
+      return "Compliance Officer";
+    case "salesman":
+      return "Salesman";
+    case "buyer":
+      return "Buyer (Importer)";
+    case "exporter":
+      return "Seller (Exporter)";
+    case "dual":
+      return "Dual Trade Operator";
+    case "arbitrator":
+      return "Arbitrator";
+    default:
+      return "Admin";
+  }
 };
 
 class AppwriteService {
@@ -49,55 +87,56 @@ class AppwriteService {
     return this.currentUser;
   }
 
-  public setRole(role: "exporter" | "buyer" | "arbitrator" | "admin") {
-    if (role === "exporter") {
-      this.currentUser = {
-        userId: "usr_abc_01",
-        name: "Rajesh Sharma",
-        email: "rajesh.sharma@abcglobaltrade.com",
-        role: "exporter",
-        companyName: "ABC Global Exports Ltd",
-        country: "India",
-        isLoggedIn: true,
-      };
-    } else if (role === "buyer") {
-      this.currentUser = {
-        userId: "usr_alf_01",
-        name: "Tariq Al-Mansoor",
-        email: "tariq.mansoor@alfuttaim-global.ae",
-        role: "buyer",
-        companyName: "Al-Futtaim Global Trade LLC",
-        country: "UAE",
-        isLoggedIn: true,
-      };
-    } else if (role === "arbitrator") {
-      this.currentUser = {
-        userId: "usr_arb_01",
-        name: "Dr. Elena Vance (FCIArb)",
-        email: "elena.vance@arbitration-icc.org",
-        role: "arbitrator",
-        companyName: "ICC International Court of Arbitration",
-        country: "Switzerland",
-        isLoggedIn: true,
-      };
-    } else {
-      this.currentUser = {
-        userId: "usr_adm_01",
-        name: "System Administrator",
-        email: "admin@globex.ai",
-        role: "admin",
-        companyName: "GLOBEX Core Infrastructure",
-        country: "Global",
-        isLoggedIn: true,
-      };
-    }
+  public setRole(role: OrganizationRole) {
+    this.currentUser = {
+      ...this.currentUser,
+      role,
+      roleTitle: getRoleTitle(role),
+    };
     localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
   }
 
-  public async login(email: string, role: "exporter" | "buyer" | "arbitrator" | "admin" = "exporter"): Promise<UserSession> {
-    this.setRole(role);
-    this.currentUser.email = email;
+  public async register(payload: {
+    adminName: string;
+    organizationName: string;
+    email: string;
+    role?: OrganizationRole;
+    country?: string;
+    documents?: UploadedDoc[];
+  }): Promise<UserSession> {
+    const assignedRole = payload.role || "admin";
+    this.currentUser = {
+      userId: `usr_${Date.now().toString(36)}`,
+      name: payload.adminName || "Organization Admin",
+      email: payload.email || "admin@tradecorp.com",
+      role: assignedRole,
+      roleTitle: getRoleTitle(assignedRole),
+      companyName: payload.organizationName || "Global Trade Enterprise",
+      country: payload.country || "India",
+      isLoggedIn: true,
+      documents: payload.documents && payload.documents.length > 0 ? payload.documents : DEFAULT_USER.documents,
+    };
     localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
+    return this.currentUser;
+  }
+
+  public async login(
+    email: string,
+    role: OrganizationRole = "admin",
+    organizationName?: string
+  ): Promise<UserSession> {
+    this.currentUser = {
+      ...this.currentUser,
+      email: email || this.currentUser.email,
+      role,
+      roleTitle: getRoleTitle(role),
+      companyName: organizationName || this.currentUser.companyName || "ABC Global Exports & Imports Ltd",
+      isLoggedIn: true,
+    };
+    localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
     return this.currentUser;
   }
 
@@ -107,11 +146,24 @@ class AppwriteService {
       isLoggedIn: false,
     };
     localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
   }
 
   public async uploadKycDocument(file: File, docType: string): Promise<{ fileId: string; url: string }> {
+    const newDoc: UploadedDoc = {
+      id: `doc_${Date.now()}`,
+      name: file.name,
+      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+      type: docType || "Trade Document",
+      uploadTime: "Just now",
+    };
+    const currentDocs = this.currentUser.documents || [];
+    this.currentUser.documents = [newDoc, ...currentDocs];
+    localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
+
     return {
-      fileId: `file_${Date.now()}`,
+      fileId: newDoc.id,
       url: URL.createObjectURL(file),
     };
   }
@@ -129,3 +181,4 @@ class AppwriteService {
 }
 
 export const appwriteService = new AppwriteService();
+

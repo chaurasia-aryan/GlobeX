@@ -23,6 +23,7 @@ import {
   ExternalLink,
   Layers,
   Zap,
+  Package,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -40,8 +41,9 @@ export const Navbar = () => {
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Marketplace", href: "/marketplace", icon: Store },
-    { label: "New Trade", href: "/get-started", icon: PlusCircle },
+    { label: "Global Marketplace", href: "/marketplace", icon: Store },
+    { label: "My Export Listings", href: "/my-listings", icon: Package },
+    { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle },
     { label: "Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, isLive: true },
   ];
 
@@ -50,13 +52,14 @@ export const Navbar = () => {
       group: "Trade Actions",
       items: [
         { label: "Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Manage your active trade, papers & safe payment" },
-        { label: "Start a New Trade", href: "/get-started", icon: PlusCircle, desc: "Find best verified partners and calculate tax savings" },
+        { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Inbound RFQs & Outbound trade intents" },
       ],
     },
     {
-      group: "Browse & Portfolio",
+      group: "Browse & Catalog",
       items: [
-        { label: "Product Marketplace", href: "/marketplace", icon: Store, desc: "Browse verified products & trusted sellers" },
+        { label: "Global Exporters Marketplace", href: "/marketplace", icon: Store, desc: "Source products from verified international exporters" },
+        { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Manage your organization's export products and catalog" },
         { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Trade overview, active shipments & alerts" },
       ],
     },
@@ -67,6 +70,7 @@ export const Navbar = () => {
       ],
     },
   ];
+
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

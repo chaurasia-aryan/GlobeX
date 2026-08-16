@@ -16,6 +16,7 @@ import LandingPage from "@/pages/LandingPage";
 const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
 const TradeIntentWizardPage = lazy(() => import("@/pages/TradeIntentWizardPage"));
 const MarketplacePage = lazy(() => import("@/pages/MarketplacePage"));
+const MyListingsPage = lazy(() => import("@/pages/MyListingsPage"));
 const ProductDetailPage = lazy(() => import("@/pages/ProductDetailPage"));
 const MarketIntelligencePage = lazy(() => import("@/pages/MarketIntelligencePage"));
 const TradeAnalysisPage = lazy(() => import("@/pages/TradeAnalysisPage"));
@@ -71,11 +72,14 @@ const AnimatedRoutes = () => {
           <Route path="/signup" element={<PageTransition><OnboardingPage /></PageTransition>} />
           <Route path="/get-started" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
           <Route path="/trade-intent" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
+          <Route path="/trade-requests" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
 
           {/* Core Commercial Pages */}
           <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
           <Route path="/marketplace" element={<PageTransition><MarketplacePage /></PageTransition>} />
           <Route path="/marketplace/:id" element={<PageTransition><ProductDetailPage /></PageTransition>} />
+          <Route path="/my-listings" element={<PageTransition><MyListingsPage /></PageTransition>} />
+          <Route path="/export-catalog" element={<PageTransition><MyListingsPage /></PageTransition>} />
           <Route path="/market-intelligence" element={<PageTransition><MarketIntelligencePage /></PageTransition>} />
           <Route path="/trade-analysis" element={<PageTransition><TradeAnalysisPage /></PageTransition>} />
           <Route path="/trades/:id" element={<PageTransition><TradeWorkspacePage /></PageTransition>} />

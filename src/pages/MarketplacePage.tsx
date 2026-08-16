@@ -46,39 +46,45 @@ export const MarketplacePage: React.FC = () => {
   }, [selectedCategory, searchQuery]);
 
   return (
-    <AppShell maxWidth="lg">
+    <AppShell maxWidth="xl">
       <div className="space-y-6">
         
         {/* ── Page Header ─────────────────────────────────────────────────── */}
         <PageHeader
           breadcrumbs={[
             { label: "Dashboard", href: "/dashboard" },
-            { label: isExporter ? "My Listings & Catalog" : "Marketplace" },
+            { label: "Global Exporters Marketplace" },
           ]}
-          title={isExporter ? "Export Catalog & Listings" : "Commodity Marketplace"}
-          subtitle={
-            isExporter
-              ? "Manage your active verified export listings, inventory, and FOB prices."
-              : "Find verified suppliers and origin-inspected commodities for your import requirement."
-          }
+          section="Importer Perspective"
+          title="Global Exporters Marketplace"
+          subtitle="Explore export commodities listed by verified suppliers worldwide. Source goods, compare FOB prices, and initiate escrow-backed import RFQs."
           badge={
-            <StatusBadge
-              status="verified"
-              label={`${filteredListings.length} Active Listings`}
-              size="md"
-            />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+              <span>{filteredListings.length} Verified Exporter Products</span>
+            </div>
           }
           action={
-            <Link to="/get-started">
-              <PrimaryAction
-                icon={<PlusCircle className="w-4 h-4" />}
-                iconPosition="left"
-              >
-                {isExporter ? "Create New Listing" : "Start New Import"}
-              </PrimaryAction>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/my-listings">
+                <button className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                  <span>Switch to My Export Catalog →</span>
+                </button>
+              </Link>
+              <Link to="/trade-requests?duty=import">
+                <PrimaryAction
+                  icon={<PlusCircle className="w-4 h-4" />}
+                  iconPosition="left"
+                  size="sm"
+                >
+                  <span>Post Import RFQ</span>
+                </PrimaryAction>
+              </Link>
+            </div>
           }
         />
+
+
 
         {/* ── Filter Bar & Search ─────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl bg-[#0B1019] border border-white/[0.08]">
