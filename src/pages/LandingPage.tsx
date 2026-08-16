@@ -41,11 +41,15 @@ export default function LandingPage() {
   });
 
   const [showPersona, setShowPersona] = useState(false);
+  const [isOverviewStage, setIsOverviewStage] = useState(true);
 
   // Dynamic Multi-Stage Camera: Starts from exact live screen point -> Centers India -> Zooms into Mumbai
   useMotionValueEvent(smoothProgress, "change", (progress) => {
     const isPastThreshold = progress >= 0.65;
     setShowPersona((prev) => (prev !== isPastThreshold ? isPastThreshold : prev));
+
+    const isOverview = progress < 0.45;
+    setIsOverviewStage((prev) => (prev !== isOverview ? isOverview : prev));
 
     if (!globeRef.current) return;
 
@@ -134,7 +138,7 @@ export default function LandingPage() {
             aggregatedData={aggregatedData}
             selectedCountry="India"
             showArcs={true}
-            autoRotate={currentProgress < 0.05}
+            autoRotate={isOverviewStage}
           />
         </motion.div>
 
@@ -185,7 +189,7 @@ export default function LandingPage() {
           <div className="p-3.5 rounded-2xl border border-cyan-500/30 bg-[#0C121D]/90 backdrop-blur-xl shadow-2xl flex items-center gap-3 text-xs font-mono">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             <span className="text-[var(--text-secondary)]">
-              {currentProgress < 0.45 ? (
+              {isOverviewStage ? (
                 <>
                   Global View: <strong className="text-cyan-400">India Trade Hubs</strong>
                 </>
