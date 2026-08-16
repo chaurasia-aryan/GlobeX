@@ -131,7 +131,7 @@ export default function LandingPage() {
             scale: globeScale,
             x: globeX,
           }}
-          className="absolute w-[800px] h-[800px] sm:w-[950px] sm:h-[950px] lg:w-[1100px] lg:h-[1100px] flex items-center justify-center pointer-events-auto z-10"
+          className="absolute w-[950px] h-[950px] sm:w-[1150px] sm:h-[1150px] lg:w-[1350px] lg:h-[1350px] xl:w-[1550px] xl:h-[1550px] flex items-center justify-center pointer-events-auto z-10"
         >
           <TradeGlobe
             ref={globeRef}
@@ -139,6 +139,7 @@ export default function LandingPage() {
             selectedCountry="India"
             showArcs={true}
             autoRotate={isOverviewStage}
+            disableCountryAutoFocus={true}
           />
         </motion.div>
 
@@ -149,30 +150,30 @@ export default function LandingPage() {
             y: heroY,
             pointerEvents: heroPointerEvents,
           }}
-          className="absolute left-6 sm:left-12 lg:left-20 max-w-[540px] space-y-6 z-20 pointer-events-none"
+          className="absolute left-6 sm:left-12 lg:left-20 max-w-[620px] xl:max-w-[680px] space-y-7 z-20 pointer-events-none"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#121822]/85 border border-white/[0.12] text-xs text-[var(--text-secondary)] backdrop-blur-md shadow-md pointer-events-auto">
-            <span className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#121822]/85 border border-white/[0.12] text-xs sm:text-sm text-[var(--text-secondary)] backdrop-blur-md shadow-md pointer-events-auto">
+            <span className="w-2.5 h-2.5 rounded-full bg-[var(--emerald)] animate-pulse" />
             <span>Global Trade Made Simple & Safe</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-[3.75rem] font-display font-extrabold tracking-tight leading-[1.05] text-[var(--text-primary)] pointer-events-auto">
+          <h1 className="text-5xl sm:text-6xl lg:text-[4.3rem] xl:text-[4.75rem] font-display font-extrabold tracking-tight leading-[1.02] text-[var(--text-primary)] pointer-events-auto">
             <Balancer>
               <SplitText text="Trade globally." delay={0.1} className="justify-start font-display font-extrabold" />
-              <span className="font-serif italic text-[var(--emerald)] text-5xl sm:text-6xl inline-block mt-1 font-normal tracking-wide">
+              <span className="font-serif italic text-[var(--emerald)] text-6xl sm:text-7xl lg:text-[5.2rem] xl:text-[5.75rem] inline-block mt-1 font-normal tracking-wide">
                 <SplitText text="With confidence." delay={0.4} className="justify-start font-serif italic" />
               </span>
             </Balancer>
           </h1>
 
-          <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed font-sans pointer-events-auto">
+          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed font-sans pointer-events-auto max-w-[540px]">
             Connect with verified international buyers and sellers, verify trade papers automatically, and protect every payment safely.
           </p>
 
           {/* Smooth Pulsing Scroll Cue */}
-          <div className="pt-8 flex items-center gap-3 text-xs font-mono text-[var(--text-secondary)] pointer-events-auto">
-            <div className="w-8 h-8 rounded-full border border-white/[0.15] bg-[#111824]/80 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
-              <ChevronDown className="w-4 h-4" />
+          <div className="pt-6 flex items-center gap-3.5 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto">
+            <div className="w-9 h-9 rounded-full border border-white/[0.15] bg-[#111824]/80 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
+              <ChevronDown className="w-5 h-5" />
             </div>
             <span>Scroll down to explore world trade routes</span>
           </div>

@@ -360,6 +360,7 @@ export interface TradeGlobeProps {
   autoRotate?: boolean;
   className?: string;
   cameraPosition?: { lat: number; lng: number; altitude: number; duration?: number };
+  disableCountryAutoFocus?: boolean;
 }
 
 export interface TradeGlobeRef {
@@ -419,6 +420,7 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
   autoRotate = true,
   className = "",
   cameraPosition,
+  disableCountryAutoFocus = false,
 }, ref) => {
   const globeRef = useRef<any>(null);
   const [countries, setCountries] = useState<any>({ features: [] });
@@ -542,12 +544,12 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
 
   // Camera focus on selected country
   useEffect(() => {
-    if (!selectedCountry || !globeRef.current || cameraPosition) return;
+    if (!selectedCountry || !globeRef.current || cameraPosition || disableCountryAutoFocus) return;
     const coords = COUNTRY_COORDINATES[selectedCountry] || COUNTRY_COORDINATES[selectedIso || ""];
     if (coords) {
       globeRef.current.pointOfView({ lat: coords.lat, lng: coords.lng, altitude: 1.8 }, 1000);
     }
-  }, [selectedCountry, selectedIso, cameraPosition]);
+  }, [selectedCountry, selectedIso, cameraPosition, disableCountryAutoFocus]);
 
   // Resize observer
   useEffect(() => {

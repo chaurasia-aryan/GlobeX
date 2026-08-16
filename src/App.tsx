@@ -5,14 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { useSmoothScroll } from "@/hooks/useSmoothScroll";
-
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import DemoPersonaSwitcher from "@/components/layout/DemoPersonaSwitcher";
+import { WorkspaceProvider } from "@/context/WorkspaceContext";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import PageTransition from "@/components/layout/PageTransition";
 
 import LandingPage from "@/pages/LandingPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import TradeIntentWizardPage from "@/pages/TradeIntentWizardPage";
 import MarketplacePage from "@/pages/MarketplacePage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
@@ -30,8 +28,6 @@ import AuthPage from "@/pages/AuthPage";
 import AdminSystemPage from "@/pages/AdminSystemPage";
 import NotFound from "@/pages/NotFound";
 
-import ShaderBackground from "@/components/layout/ShaderBackground";
-
 const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
@@ -42,12 +38,12 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         {/* Primary User Intent & Flow */}
         <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+        <Route path="/onboarding" element={<PageTransition><OnboardingPage /></PageTransition>} />
+        <Route path="/role-select" element={<PageTransition><OnboardingPage /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><AuthPage /></PageTransition>} />
+        <Route path="/signup" element={<PageTransition><OnboardingPage /></PageTransition>} />
         <Route path="/get-started" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
         <Route path="/trade-intent" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
-        <Route path="/onboarding" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
-        <Route path="/role-select" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
-        <Route path="/login" element={<PageTransition><AuthPage /></PageTransition>} />
-        <Route path="/signup" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
 
         {/* Core Commercial Pages */}
         <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
@@ -70,31 +66,22 @@ const AnimatedRoutes = () => {
   );
 };
 
-const SmoothScrollProvider = ({ children }: { children: React.ReactNode }) => {
-  useSmoothScroll();
-  return <>{children}</>;
-};
-
-import ErrorBoundary from "@/components/layout/ErrorBoundary";
-
-const App = () => (
+const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <SmoothScrollProvider>
-          <div className="flex flex-col min-h-screen text-on-background selection:bg-primary-fixed-dim selection:text-on-primary">
-            <ShaderBackground />
-            <Navbar />
-            <main className="flex-1 relative z-0">
+      <WorkspaceProvider>
+        <BrowserRouter>
+          <div className="flex flex-col min-h-screen bg-[#070A0E] text-slate-100 selection:bg-emerald-500/20 selection:text-emerald-300">
+            <main className="flex-1">
               <ErrorBoundary>
                 <AnimatedRoutes />
               </ErrorBoundary>
             </main>
           </div>
-        </SmoothScrollProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </WorkspaceProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -1,104 +1,119 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useWorkspace, RoleType } from "@/context/WorkspaceContext";
 import { appwriteService } from "@/services/appwrite/client";
-import { Globe2, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ShoppingBag, Building2 } from "lucide-react";
+import PrimaryAction from "@/components/common/PrimaryAction";
 
-export const AuthPage = () => {
+export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState<"exporter" | "buyer">("exporter");
-  const [email, setEmail] = useState("rajesh.sharma@abcglobaltrade.com");
+  const { setRole } = useWorkspace();
+  const [role, setSelectedRole] = useState<RoleType>("buyer");
+  const [email, setEmail] = useState("tariq.mansoor@alfuttaim-global.ae");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setRole(role);
     await appwriteService.login(email, role);
     setTimeout(() => {
       navigate("/dashboard");
-    }, 400);
+    }, 300);
+  };
+
+  const handleRoleChange = (newRole: RoleType) => {
+    setSelectedRole(newRole);
+    if (newRole === "buyer") {
+      setEmail("tariq.mansoor@alfuttaim-global.ae");
+    } else {
+      setEmail("rajesh.sharma@abcglobaltrade.com");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--ink)] text-[var(--text-primary)] flex items-center justify-center p-6 font-sans select-none">
-      <div className="w-full max-w-md p-8 rounded-2xl border border-[var(--hairline)] bg-[var(--panel)] shadow-2xl space-y-6">
+    <div className="min-h-screen bg-[#070A0E] text-slate-100 flex items-center justify-center p-4 sm:p-6 font-sans select-none relative">
+      <div className="w-full max-w-md p-8 rounded-3xl border border-white/[0.08] bg-[#0C121D] shadow-2xl space-y-6">
+        
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--panel-raised)] border border-[var(--hairline)] text-xs text-[var(--text-secondary)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--emerald)]" />
+        <div className="text-center space-y-1.5">
+          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-[11px] text-slate-400 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <span>INSTITUTIONAL LOGIN</span>
           </div>
-          <h1 className="text-2xl font-display font-medium tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-2xl font-display font-bold tracking-tight text-white">
             Sign in to GLOBEX
           </h1>
-          <p className="text-xs text-[var(--text-secondary)]">
-            Access your active trade workspaces, escrow contracts, and telemetry.
+          <p className="text-xs text-slate-400">
+            Access your active trade workspace & escrow contracts.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Trading Capacity (Exporter vs Importer) */}
+          {/* Role Picker */}
           <div className="space-y-1.5">
-            <label className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">Trading Role</label>
+            <label className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+              Workspace Role
+            </label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  setRole("exporter");
-                  setEmail("rajesh.sharma@abcglobaltrade.com");
-                }}
-                className={`py-2 px-3 rounded-lg text-xs font-sans transition-all border ${
-                  role === "exporter"
-                    ? "bg-[var(--panel-raised)] border-[var(--hairline-strong)] text-[var(--text-primary)] font-semibold"
-                    : "bg-[var(--ink)] border-[var(--hairline)] text-[var(--text-secondary)]"
+                onClick={() => handleRoleChange("buyer")}
+                className={`py-2 px-3 rounded-xl text-xs font-sans transition-all border flex items-center justify-center gap-2 cursor-pointer ${
+                  role === "buyer"
+                    ? "bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold"
+                    : "bg-white/[0.02] border-white/[0.08] text-slate-400 hover:text-white"
                 }`}
               >
-                Exporter (Seller)
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Buyer (Importer)</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => {
-                  setRole("buyer");
-                  setEmail("tariq.mansoor@alfuttaim-import.ae");
-                }}
-                className={`py-2 px-3 rounded-lg text-xs font-sans transition-all border ${
-                  role === "buyer"
-                    ? "bg-[var(--panel-raised)] border-[var(--hairline-strong)] text-[var(--text-primary)] font-semibold"
-                    : "bg-[var(--ink)] border-[var(--hairline)] text-[var(--text-secondary)]"
+                onClick={() => handleRoleChange("exporter")}
+                className={`py-2 px-3 rounded-xl text-xs font-sans transition-all border flex items-center justify-center gap-2 cursor-pointer ${
+                  role === "exporter"
+                    ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold"
+                    : "bg-white/[0.02] border-white/[0.08] text-slate-400 hover:text-white"
                 }`}
               >
-                Importer (Buyer)
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Exporter (Seller)</span>
               </button>
             </div>
           </div>
 
-          {/* Email */}
-          <div className="space-y-1">
-            <label className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">Corporate Email</label>
+          {/* Email input */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+              Corporate Email
+            </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2.5 rounded-lg bg-[var(--panel-raised)] border border-[var(--hairline)] text-xs text-[var(--text-primary)] focus:border-[var(--hairline-strong)] outline-none"
+              className="w-full p-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
             />
           </div>
 
-          <button
+          <PrimaryAction
             type="submit"
-            disabled={isSubmitting}
-            className="w-full py-2.5 rounded-lg bg-[var(--accent)] hover:opacity-90 text-[var(--ink)] font-semibold text-xs flex items-center justify-center gap-2 transition-opacity shadow-md"
+            isLoading={isSubmitting}
+            className="w-full"
           >
-            <span>{isSubmitting ? "Authenticating..." : "Sign In to Dashboard"}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            <span>Sign In to Workspace</span>
+          </PrimaryAction>
         </form>
 
-        <div className="text-center pt-2 border-t border-[var(--hairline)]">
-          <span className="text-xs text-[var(--text-secondary)]">New to GLOBEX? </span>
-          <Link to="/onboarding" className="text-xs text-[var(--accent)] hover:underline font-medium">
-            Start role onboarding →
+        <div className="text-center pt-2 border-t border-white/[0.06]">
+          <span className="text-xs text-slate-400">First time trading on GLOBEX? </span>
+          <Link to="/onboarding" className="text-xs text-emerald-400 hover:underline font-medium">
+            Choose workspace →
           </Link>
         </div>
+
       </div>
     </div>
   );

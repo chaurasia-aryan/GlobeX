@@ -1,51 +1,27 @@
+import React from "react";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/common/PageHeader";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import DocumentVerificationStudio from "@/components/documents/DocumentVerificationStudio";
-import { FileCheck2, ShieldCheck, Database, Lock, Home } from "lucide-react";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { FileCheck2 } from "lucide-react";
 
-export const DocumentVerificationPage = () => {
+export const DocumentVerificationPage: React.FC = () => {
   return (
-    <div className="min-h-screen text-[var(--text-primary)] p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full select-none font-sans relative z-10">
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">
-              <Home className="w-3.5 h-3.5" />
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-xs text-[var(--text-primary)] font-medium">
-              Document Verification Studio
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest">
-            TAMPER-EVIDENT EVIDENCE ANCHORING
-          </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-        </div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-          AI Document Verification & OCR Studio
-        </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground max-w-3xl leading-relaxed">
-          Automated multi-document entity extraction and cross-reconciliation across Commercial Invoices, Packing Lists, Bills of Lading, and Phytosanitary Certificates.
-        </p>
-      </div>
+    <AppShell maxWidth="lg">
+      <div className="space-y-6">
+        <PageHeader
+          breadcrumbs={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Documents" },
+          ]}
+          title="Document Verification"
+          subtitle="Multi-document OCR cross-reconciliation across Commercial Invoices, Bills of Lading, and Phytosanitary Certificates."
+          badge={<StatusBadge status="verified" label="On-Chain Anchoring Active" size="md" />}
+        />
 
-      <DocumentVerificationStudio />
-    </div>
+        <DocumentVerificationStudio />
+      </div>
+    </AppShell>
   );
 };
 

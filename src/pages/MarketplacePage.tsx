@@ -1,309 +1,171 @@
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Balancer from "react-wrap-balancer";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { DEMO_LISTINGS, TOP_10_TRUSTED_PARTNERS } from "@/data/mockTradeData";
 import { Listing } from "@/types/trade";
-import { FocusCards } from "@/components/ui/focus-cards";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/common/PageHeader";
+import { PrimaryAction } from "@/components/common/PrimaryAction";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { Section } from "@/components/common/Section";
 import ListingCard from "@/components/marketplace/ListingCard";
-import TrustedPartnerShelf from "@/components/marketplace/TrustedPartnerShelf";
-import AIMatchResultsPanel from "@/components/marketplace/AIMatchResultsPanel";
 import ListingDetailDrawer from "@/components/marketplace/ListingDetailDrawer";
-import { LayoutGrid, Compass, Award, Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
+import TrustedPartnerShelf from "@/components/marketplace/TrustedPartnerShelf";
+import { Search, PlusCircle, X, Award, Store } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const CATEGORIES = [
-  "All Assets",
+  "All Commodities",
   "Agriculture",
   "Spices",
   "Textiles",
   "Pharmaceuticals",
   "Metals",
-  "Industrial",
   "Chemicals",
 ] as const;
 
-type Category = (typeof CATEGORIES)[number];
-
-export const MarketplacePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category>("All Assets");
+export const MarketplacePage: React.FC = () => {
+  const { isBuyer, isExporter } = useWorkspace();
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Commodities");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showAiSearch, setShowAiSearch] = useState<boolean>(false);
-  const [activeView, setActiveView] = useState<"catalog" | "partners">("catalog");
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [activeTab, setActiveTab] = useState<"catalog" | "partners">("catalog");
 
-  // ── Filter logic ────────────────────────────────────────────────────────────
   const filteredListings = useMemo<Listing[]>(() => {
     return DEMO_LISTINGS.filter((item) => {
       const matchesCategory =
-        selectedCategory === "All Assets" || item.category === selectedCategory;
-
+        selectedCategory === "All Commodities" || item.category === selectedCategory;
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         q === "" ||
         item.title.toLowerCase().includes(q) ||
         item.exporterName.toLowerCase().includes(q) ||
         item.hsCode.includes(q);
-
       return matchesCategory && matchesSearch;
     });
   }, [selectedCategory, searchQuery]);
 
   return (
-    <div className="min-h-screen text-[var(--text-primary)] p-4 sm:p-6 lg:p-10 space-y-8 max-w-7xl mx-auto w-full font-sans relative z-10">
-      
-      {/* ── Section 1: Header + Breadcrumb ─────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[var(--hairline)] pb-6">
-        <div className="space-y-3">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link
-                    to="/"
-                    className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] text-xs font-sans transition-colors"
-                  >
-                    Home
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-xs font-sans text-[var(--text-primary)]">
-                  Marketplace
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--accent-dim)] border border-[var(--hairline)] text-[var(--accent)] shadow-sm">
-              <LayoutGrid className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-display font-semibold text-[var(--text-primary)] tracking-tight leading-tight">
-                <Balancer>Global Trade Marketplace</Balancer>
-              </h1>
-              <p className="text-xs sm:text-sm font-sans text-[var(--text-secondary)] mt-0.5">
-                <Balancer>Verified commodities, AI-matched counterparties, and conditional escrow settlement.</Balancer>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Toolbar */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            onClick={() => setShowAiSearch(!showAiSearch)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-2 transition-all border ${
-              showAiSearch
-                ? "bg-[var(--accent)] text-[var(--ink)] border-[var(--accent)] shadow-md"
-                : "bg-[var(--panel)] hover:bg-[var(--panel-raised)] text-[var(--accent)] border-[var(--hairline)]"
-            }`}
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>{showAiSearch ? "Close Partner Matcher" : "Smart Partner Matcher"}</span>
-            <ChevronDown className={`w-3 h-3 transition-transform ${showAiSearch ? "rotate-180" : ""}`} />
-          </button>
-
-          <div className="flex rounded-xl bg-[var(--panel)] border border-[var(--hairline)] p-1">
-            <button
-              onClick={() => setActiveView("catalog")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeView === "catalog"
-                  ? "bg-[var(--panel-raised)] text-[var(--text-primary)] shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              Listings ({DEMO_LISTINGS.length})
-            </button>
-            <button
-              onClick={() => setActiveView("partners")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activeView === "partners"
-                  ? "bg-[var(--panel-raised)] text-[var(--text-primary)] shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              <Award className="w-3 h-3 text-[var(--emerald)]" />
-              <span>Top Partners (10)</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Section 2: Expandable AI Semantic Search ───────────────────────── */}
-      <AnimatePresence>
-        {showAiSearch && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, scale: 0.98 }}
-            animate={{ opacity: 1, height: "auto", scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.98 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="rounded-2xl border border-[var(--hairline-strong)] bg-[var(--panel)] p-1 shadow-2xl">
-              <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <div className="flex items-center gap-2">
-                  <Compass className="w-4 h-4 text-[var(--accent)]" />
-                  <span className="text-xs font-mono font-bold text-[var(--accent)] uppercase tracking-wider">
-                    Smart Trade Discovery & Counterparty Fit
-                  </span>
-                </div>
-                <button
-                  onClick={() => setShowAiSearch(false)}
-                  className="p-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <AIMatchResultsPanel />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Section 3: View Toggle Content (Catalog vs Top Partners) ────────── */}
-      {activeView === "partners" ? (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-4"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-[var(--text-primary)]">
-                Tier-1 Verified Trade Partners
-              </h2>
-              <p className="text-xs text-[var(--text-secondary)]">
-                Ranked by AI Trust Score (0–100), corporate KYC verification, and historical settlement completion.
-              </p>
-            </div>
-            <span className="text-xs font-mono text-emerald-400 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/60">
-              10 Tier-1 Verified Exporters
-            </span>
-          </div>
-
-          <TrustedPartnerShelf partners={TOP_10_TRUSTED_PARTNERS} showHeader={false} />
-        </motion.div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-6"
-        >
-          {/* Filter Bar & Search */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[var(--panel)] p-3.5 rounded-2xl border border-[var(--hairline)] shadow-sm">
-            {/* Category pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-150 border ${
-                    selectedCategory === cat
-                      ? "bg-[var(--accent-dim)] text-[var(--accent)] border-[var(--accent)]/40 shadow-sm"
-                      : "bg-transparent text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--panel-raised)]"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Inline search */}
-            <div className="flex items-center gap-2 bg-[var(--panel-raised)] px-3.5 py-2 rounded-xl border border-[var(--hairline)] w-full md:w-80 flex-shrink-0">
-              <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] flex-shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search commodities, exporters, HS codes…"
-                className="bg-transparent border-none outline-none text-xs font-sans text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-full"
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Result Count and Active Filters */}
-          <div className="flex items-center justify-between px-1 text-xs text-[var(--text-secondary)]">
-            <span>
-              Showing <strong className="text-[var(--text-primary)] font-medium">{filteredListings.length}</strong> active trade listings
-              {selectedCategory !== "All Assets" && ` in ${selectedCategory}`}
-            </span>
-            {(selectedCategory !== "All Assets" || searchQuery) && (
-              <button
-                onClick={() => {
-                  setSelectedCategory("All Assets");
-                  setSearchQuery("");
-                }}
-                className="text-[var(--accent)] hover:underline font-mono text-[11px]"
+    <AppShell maxWidth="lg">
+      <div className="space-y-6">
+        
+        {/* ── Page Header ─────────────────────────────────────────────────── */}
+        <PageHeader
+          breadcrumbs={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: isExporter ? "My Listings & Catalog" : "Marketplace" },
+          ]}
+          title={isExporter ? "Export Catalog & Listings" : "Commodity Marketplace"}
+          subtitle={
+            isExporter
+              ? "Manage your active verified export listings, inventory, and FOB prices."
+              : "Find verified suppliers and origin-inspected commodities for your import requirement."
+          }
+          badge={
+            <StatusBadge
+              status="verified"
+              label={`${filteredListings.length} Active Listings`}
+              size="md"
+            />
+          }
+          action={
+            <Link to="/get-started">
+              <PrimaryAction
+                icon={<PlusCircle className="w-4 h-4" />}
+                iconPosition="left"
               >
-                Reset filters
+                {isExporter ? "Create New Listing" : "Start New Import"}
+              </PrimaryAction>
+            </Link>
+          }
+        />
+
+        {/* ── Filter Bar & Search ─────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl bg-[#0B1019] border border-white/[0.08]">
+          
+          {/* Category Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-sans whitespace-nowrap transition-colors cursor-pointer",
+                  selectedCategory === cat
+                    ? "bg-white/[0.1] text-white font-semibold"
+                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#101726] border border-white/[0.08] focus-within:border-white/[0.2] w-full sm:w-64 shrink-0">
+            <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search product, HS code..."
+              className="w-full bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-500 font-sans"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-slate-500 hover:text-white"
+              >
+                <X className="w-3 h-3" />
               </button>
             )}
           </div>
 
-          {/* Listings Grid (FocusCards renders uncluttered cards) */}
+        </div>
+
+        {/* ── Product Listings Grid ───────────────────────────────────────── */}
+        <Section
+          title="Verified Listings"
+          subtitle={`Showing ${filteredListings.length} commodities with verified compliance`}
+        >
           {filteredListings.length > 0 ? (
-            <FocusCards
-              cards={filteredListings}
-              renderCard={(listing: Listing, _idx, isHovered) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredListings.map((listing) => (
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  isHovered={isHovered}
                   onSelect={(item) => setSelectedListing(item)}
                 />
-              )}
-            />
+              ))}
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center space-y-3 rounded-2xl border border-dashed border-[var(--hairline)] bg-[var(--panel)]/50">
-              <div className="w-12 h-12 rounded-full bg-[var(--panel-raised)] border border-[var(--hairline)] flex items-center justify-center">
-                <Search className="w-5 h-5 text-[var(--text-tertiary)]" />
-              </div>
-              <p className="text-sm font-medium text-[var(--text-secondary)]">
-                No matching trade assets found
-              </p>
-              <p className="text-xs text-[var(--text-tertiary)] max-w-xs leading-relaxed">
-                Try clearing your search query or selecting "All Assets" to view all available listings.
-              </p>
+            <div className="p-12 text-center rounded-2xl border border-dashed border-white/[0.08] space-y-3">
+              <p className="text-xs text-slate-400">No matching commodities found</p>
               <button
+                type="button"
                 onClick={() => {
-                  setSelectedCategory("All Assets");
+                  setSelectedCategory("All Commodities");
                   setSearchQuery("");
                 }}
-                className="px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--ink)] text-xs font-semibold hover:opacity-90 transition-opacity"
+                className="text-xs text-emerald-400 hover:underline font-mono"
               >
-                Clear all filters
+                Reset filters
               </button>
             </div>
           )}
-        </motion.div>
-      )}
+        </Section>
 
-      {/* Listing Detail Slide-over Drawer (Rule 13) */}
+      </div>
+
+      {/* Slide-Over Listing Detail Drawer (Level 3 progressive disclosure) */}
       <ListingDetailDrawer
         listing={selectedListing}
         isOpen={!!selectedListing}
         onClose={() => setSelectedListing(null)}
       />
-    </div>
+    </AppShell>
   );
 };
 

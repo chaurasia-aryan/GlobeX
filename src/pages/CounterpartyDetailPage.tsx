@@ -1,138 +1,105 @@
+import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { TOP_10_TRUSTED_PARTNERS } from "@/data/mockTradeData";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/common/PageHeader";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { PrimaryAction } from "@/components/common/PrimaryAction";
+import { Section } from "@/components/common/Section";
 import TrustScoreGauge from "@/components/trust/TrustScoreGauge";
 import TradeRiskCompositeCard from "@/components/risk/TradeRiskCompositeCard";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  ArrowLeft,
-  Building2,
-  MapPin,
-  ShieldCheck,
-  Award,
-  History,
-  FileCheck2,
-  Mail,
-  Coins,
-  ArrowRight,
-  Home,
-} from "lucide-react";
+import { MapPin, Mail, ShieldCheck, PlusCircle } from "lucide-react";
 
-export const CounterpartyDetailPage = () => {
+export const CounterpartyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const partner = TOP_10_TRUSTED_PARTNERS.find((p) => p.id === id) || TOP_10_TRUSTED_PARTNERS[0];
 
   return (
-    <div className="min-h-screen text-[var(--text-primary)] p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full select-none font-sans relative z-10">
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">
-              <Home className="w-3.5 h-3.5" />
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/marketplace" className="text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">
-              Marketplace
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-xs text-[var(--text-primary)] font-medium max-w-[200px] truncate">
-              {partner.name}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Profile Overview Card */}
-      <div className="glass-panel p-6 bg-card/90 border-border/80 rounded-2xl shadow-2xl space-y-5">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-border/60 pb-5">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-800/60 font-bold">
-                KYC VERIFIED TIER-1
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">REG: {partner.registrationNumber}</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">{partner.name}</h1>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+    <AppShell maxWidth="lg">
+      <div className="space-y-6">
+        
+        {/* Page Header */}
+        <PageHeader
+          breadcrumbs={[
+            { label: "Marketplace", href: "/marketplace" },
+            { label: "Counterparties" },
+            { label: partner.name },
+          ]}
+          title={partner.name}
+          subtitle={
+            <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-slate-400">
               <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-primary" /> {partner.city}, {partner.country}
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                {partner.city}, {partner.country}
               </span>
               <span>•</span>
-              <span className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-slate-400" /> {partner.contactEmail}
-              </span>
+              <span>REG: {partner.registrationNumber}</span>
+              <span>•</span>
+              <span>{partner.contactEmail}</span>
             </div>
-          </div>
+          }
+          badge={<StatusBadge status="verified" label="KYC Verified Tier-1" size="md" />}
+          action={
+            <Link to="/get-started">
+              <PrimaryAction icon={<PlusCircle className="w-4 h-4" />} iconPosition="left">
+                Start Trade with Partner
+              </PrimaryAction>
+            </Link>
+          }
+        />
 
-          <div className="text-right">
-            <div className="text-[10px] font-mono text-muted-foreground uppercase">Historical Trade Volume</div>
-            <div className="text-2xl font-mono font-extrabold text-emerald-400">
+        {/* Flat Overview Spec Row */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#0B1019] border border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+          <div>
+            <span className="text-[10px] text-slate-400 uppercase block">Historical Trade Volume</span>
+            <strong className="text-emerald-400 text-base">
               ${(partner.totalTradeVolumeUSD / 1000000).toFixed(1)}M USD
-            </div>
+            </strong>
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 uppercase block">Completed Trades</span>
+            <strong className="text-white text-base">{partner.tradeHistoryCount} Shipments</strong>
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 uppercase block">Arbitrated Disputes</span>
+            <strong className="text-emerald-400 text-base">{partner.disputeCount} Disputes</strong>
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 uppercase block">Years in Operation</span>
+            <strong className="text-white text-base">{partner.yearsActive} Years</strong>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          {partner.description}
-        </p>
-
-        {/* Credentials & Metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 rounded-xl bg-secondary/40 border border-border/60">
-            <div className="text-[10px] font-mono uppercase text-muted-foreground">Years in Operation</div>
-            <div className="text-lg font-mono font-bold text-foreground">{partner.yearsActive} Years</div>
+        {/* Entity Narrative Description */}
+        <Section title="Institutional Profile">
+          <div className="p-4 rounded-2xl bg-[#0B1019] border border-white/[0.08] text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+            {partner.description}
           </div>
-          <div className="p-3 rounded-xl bg-secondary/40 border border-border/60">
-            <div className="text-[10px] font-mono uppercase text-muted-foreground">Completed Shipments</div>
-            <div className="text-lg font-mono font-bold text-foreground">{partner.tradeHistoryCount} Trades</div>
-          </div>
-          <div className="p-3 rounded-xl bg-secondary/40 border border-border/60">
-            <div className="text-[10px] font-mono uppercase text-muted-foreground">Arbitrated Disputes</div>
-            <div className="text-lg font-mono font-bold text-emerald-400">{partner.disputeCount} Disputes</div>
-          </div>
-          <div className="p-3 rounded-xl bg-secondary/40 border border-border/60">
-            <div className="text-[10px] font-mono uppercase text-muted-foreground">GSTIN / Tax ID</div>
-            <div className="text-xs font-mono font-bold text-foreground truncate">{partner.gstin || "VERIFIED"}</div>
-          </div>
-        </div>
+        </Section>
 
         {/* Certifications */}
-        <div className="space-y-1.5 pt-2">
-          <div className="text-xs font-mono font-semibold uppercase text-muted-foreground">
-            Verified Accreditations & Quality Certifications
-          </div>
+        <Section title="Verified Accreditations & Quality Licenses">
           <div className="flex flex-wrap gap-2">
             {partner.certifications.map((c) => (
               <span
                 key={c}
-                className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-xs font-mono text-foreground flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-slate-300 flex items-center gap-1.5"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{c}</span>
               </span>
             ))}
           </div>
-        </div>
-      </div>
+        </Section>
 
-      {/* Trust & Risk Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TrustScoreGauge score={partner.trustScore} title="Institutional Trust Score" />
-        <TradeRiskCompositeCard score={partner.riskScore} />
+        {/* Trust & Risk Panels */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TrustScoreGauge score={partner.trustScore} title="Institutional Trust Score" />
+          <TradeRiskCompositeCard score={partner.riskScore} />
+        </div>
+
       </div>
-    </div>
+    </AppShell>
   );
 };
 
