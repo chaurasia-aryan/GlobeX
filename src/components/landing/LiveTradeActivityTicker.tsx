@@ -34,7 +34,7 @@ const LIVE_EVENTS: LiveEvent[] = [
     badge: "SMART ESCROW",
     badgeColor: "text-[var(--accent)] bg-[rgba(56,189,248,0.1)] border-[rgba(56,189,248,0.2)]",
     title: "$550,000 USDC Collateral Locked on EVM Testnet",
-    subtitle: "Consignee: Al-Futtaim Global Trade LLC (UAE)",
+    subtitle: "Consignee: Example Global Trading Ltd. (UAE)",
     time: "2 mins ago",
     link: "/escrow",
   },

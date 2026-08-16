@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import SpecularButton from "@/components/ui/SpecularButton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Building2,
   MapPin,
@@ -12,11 +12,11 @@ import {
   CheckCircle2,
   XCircle,
   FileText,
-  MessageSquare,
   ShieldCheck,
   ArrowRight,
-  Filter,
-  DollarSign,
+  Info,
+  X,
+  PlusCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,7 @@ interface InboundTradeRequest {
 const INBOUND_REQUESTS_DATA: InboundTradeRequest[] = [
   {
     id: "RFQ-2026-8801",
-    buyerName: "Al-Futtaim Global Trade LLC",
+    buyerName: "Example Global Trading Ltd.",
     buyerCountry: "UAE",
     buyerCity: "Dubai",
     productName: "1121 Steam Extra Long Grain Basmati Rice",
@@ -60,7 +60,7 @@ const INBOUND_REQUESTS_DATA: InboundTradeRequest[] = [
   },
   {
     id: "RFQ-2026-8802",
-    buyerName: "Jeddah Food Merchants Co.",
+    buyerName: "Red Sea Food Merchants Co.",
     buyerCountry: "Saudi Arabia",
     buyerCity: "Jeddah",
     productName: "Sugandha White Sella Basmati Rice",
@@ -116,7 +116,7 @@ export const TradeIntentWizardPage: React.FC = () => {
   const { user } = useWorkspace();
   const [requests, setRequests] = useState<InboundTradeRequest[]>(INBOUND_REQUESTS_DATA);
   const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [selectedRequest, setSelectedRequest] = useState<InboundTradeRequest | null>(null);
+  const [selectedReviewRfq, setSelectedReviewRfq] = useState<InboundTradeRequest | null>(null);
 
   const filteredRequests = requests.filter((r) => {
     if (statusFilter === "All") return true;
@@ -127,6 +127,9 @@ export const TradeIntentWizardPage: React.FC = () => {
     setRequests((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
+    if (selectedReviewRfq?.id === id) {
+      setSelectedReviewRfq((prev) => prev ? { ...prev, status: newStatus } : null);
+    }
   };
 
   const getStatusBadge = (status: RequestStatus) => {
@@ -198,110 +201,199 @@ export const TradeIntentWizardPage: React.FC = () => {
         </span>
       </div>
 
-      {/* ── Received Request List ─────────────────────────────────────── */}
+      {/* ── Minimal Level A Received Request List ───────────────────────── */}
       <div className="space-y-3">
         {filteredRequests.map((rfq) => (
           <div
             key={rfq.id}
-            className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.12] transition-colors space-y-4 font-sans select-none"
+            className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.12] transition-colors space-y-3 font-sans select-none"
           >
-            {/* Top Row: Buyer, Product, Value, Status */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-              <div className="space-y-1">
+            {/* Top Row: Buyer, Product, Value */}
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+              <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-slate-400">{rfq.id}</span>
-                  <span>·</span>
-                  <div className="flex items-center gap-1 text-xs text-slate-300">
-                    <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                    <strong className="text-white font-medium">{rfq.buyerName}</strong>
-                    <span className="text-slate-400">({rfq.buyerCountry})</span>
-                  </div>
-                  <span>·</span>
-                  {getStatusBadge(rfq.status)}
+                  <h4 className="font-semibold text-xs text-white">
+                    {rfq.buyerName}
+                  </h4>
+                  <span className="text-slate-500 text-xs">·</span>
+                  <span className="text-slate-400 text-xs">{rfq.buyerCity}, {rfq.buyerCountry}</span>
                 </div>
 
-                <h3 className="font-display font-bold text-base text-white">
+                <h3 className="font-display font-bold text-sm text-white">
                   {rfq.quantityMT.toLocaleString()} MT · {rfq.productName}
                 </h3>
 
-                <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" />
-                    <span>{rfq.route} ({rfq.incoterm})</span>
-                  </span>
-                  <span>·</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-slate-400" />
-                    <span>{rfq.receivedAge}</span>
-                  </span>
+                <div className="text-xs text-slate-400 font-mono">
+                  {rfq.route}
                 </div>
               </div>
 
-              {/* Right: Value & Currency */}
-              <div className="text-left sm:text-right shrink-0 space-y-0.5">
-                <div className="text-lg font-mono font-bold text-emerald-400">
+              {/* Right: Value */}
+              <div className="text-left sm:text-right shrink-0">
+                <div className="text-base font-mono font-bold text-emerald-400">
                   ${rfq.totalValueUSD.toLocaleString()} USD
                 </div>
-                <div className="text-[11px] font-mono text-slate-400">
-                  ${rfq.targetPriceUSD.toLocaleString()} / MT · {rfq.escrowToken}
+                <div className="text-[11px] font-mono text-slate-500">
+                  ${rfq.targetPriceUSD.toLocaleString()} / MT
                 </div>
               </div>
             </div>
 
-            {/* Compliance badges */}
-            <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-white/[0.04]">
-              <span className="text-[10px] font-mono text-slate-400 uppercase">Compliance:</span>
-              {rfq.complianceCertifications.map((c) => (
-                <span
-                  key={c}
-                  className="px-2 py-0.5 rounded-md bg-[#070A0E] border border-white/[0.05] text-[10px] font-mono text-slate-300"
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
-
-            {/* Bottom Actions Row: Actual Business Responses */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+            {/* Bottom Row: Status, Info Popover (Level B), Review Action (Level A) */}
+            <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleStatusChange(rfq.id, "Accepted")}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-semibold transition-colors cursor-pointer"
-                >
-                  Accept & Lock Escrow
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleStatusChange(rfq.id, "Quoted")}
-                  className="px-3 py-1.5 rounded-xl bg-sky-950/50 hover:bg-sky-950/80 border border-sky-500/30 text-sky-300 text-xs font-mono transition-colors cursor-pointer"
-                >
-                  Submit Quotation
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleStatusChange(rfq.id, "Rejected")}
-                  className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-slate-400 hover:text-rose-300 text-xs font-mono transition-colors cursor-pointer"
-                >
-                  Decline
-                </button>
+                {getStatusBadge(rfq.status)}
+
+                {/* Level B Info Popover */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
+                      aria-label="Request details summary"
+                    >
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="top"
+                    align="start"
+                    className="w-64 p-3 bg-[#0C121D] border border-white/[0.1] text-xs space-y-1.5 text-slate-300 shadow-xl rounded-xl"
+                  >
+                    <div className="font-display font-semibold text-white text-xs border-b border-white/[0.06] pb-1">
+                      {rfq.id} · {rfq.incoterm}
+                    </div>
+                    <div className="text-[11px] font-mono space-y-1 text-slate-300">
+                      <div>Received: <span className="text-white">{rfq.receivedAge}</span></div>
+                      <div>Escrow Token: <span className="text-emerald-400">{rfq.escrowToken}</span></div>
+                      <div>HS Code: <span className="text-sky-300">{rfq.hsCode}</span></div>
+                      <div>Certifications: <span className="text-slate-300">{rfq.complianceCertifications.join(", ")}</span></div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
 
-              <Link to="/trades/TRD-IND-UAE-550K">
-                <SpecularButton
-                  size="xs"
-                  radius={10}
-                  variant="outline"
-                  icon={<ArrowRight className="w-3.5 h-3.5" />}
-                  iconPosition="right"
-                >
-                  Review Staged Contract
-                </SpecularButton>
-              </Link>
+              <button
+                type="button"
+                onClick={() => setSelectedReviewRfq(rfq)}
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              >
+                <span>Review Request</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* ── Slide-Over Review Request Drawer (Level C Information Escape Valve) ── */}
+      {selectedReviewRfq && (
+        <div className="fixed inset-0 z-50 overflow-hidden select-none font-sans">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedReviewRfq(null)}
+          />
+
+          <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div className="w-screen max-w-md bg-[#0C121D] border-l border-white/[0.08] shadow-2xl p-6 overflow-y-auto flex flex-col justify-between space-y-6">
+              
+              {/* Header */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-slate-400">{selectedReviewRfq.id}</span>
+                      {getStatusBadge(selectedReviewRfq.status)}
+                    </div>
+                    <h3 className="font-display font-bold text-base text-white mt-1">
+                      {selectedReviewRfq.buyerName}
+                    </h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReviewRfq(null)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                    aria-label="Close drawer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Sourced Product Summary */}
+                <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
+                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+                    Requested Commodity
+                  </div>
+                  <div className="text-sm font-semibold text-white">
+                    {selectedReviewRfq.productName}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-400 pt-1">
+                    <div>Quantity: <strong className="text-white font-mono">{selectedReviewRfq.quantityMT.toLocaleString()} MT</strong></div>
+                    <div>Target Price: <strong className="text-emerald-400 font-mono">${selectedReviewRfq.targetPriceUSD.toLocaleString()} / MT</strong></div>
+                    <div>Total Value: <strong className="text-white font-mono">${selectedReviewRfq.totalValueUSD.toLocaleString()}</strong></div>
+                    <div>Incoterm: <strong className="text-sky-300 font-mono">{selectedReviewRfq.incoterm}</strong></div>
+                  </div>
+                </div>
+
+                {/* Logistics Route */}
+                <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1.5 text-xs">
+                  <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">Corridor</div>
+                  <div className="text-white font-mono">{selectedReviewRfq.route}</div>
+                  <div className="text-slate-500 text-[11px]">Received {selectedReviewRfq.receivedAge}</div>
+                </div>
+
+                {/* Compliance & Escrow */}
+                <div className="space-y-2">
+                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+                    Required Certifications
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedReviewRfq.complianceCertifications.map((cert) => (
+                      <span
+                        key={cert}
+                        className="px-2 py-0.5 rounded-md bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 text-xs font-mono flex items-center gap-1"
+                      >
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <span>{cert}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-white/[0.06] space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(selectedReviewRfq.id, "Accepted")}
+                    className="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Accept & Lock Escrow
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(selectedReviewRfq.id, "Quoted")}
+                    className="py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Submit Quotation
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleStatusChange(selectedReviewRfq.id, "Rejected")}
+                  className="w-full py-2 text-center text-xs text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                >
+                  Decline Inquiry
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 };

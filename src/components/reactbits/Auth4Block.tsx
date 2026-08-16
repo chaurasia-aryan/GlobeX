@@ -167,7 +167,7 @@ export const Auth4Block: React.FC<Auth4BlockProps> = ({
                     required
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    placeholder="e.g. Al-Futtaim Global Trade LLC"
+                    placeholder="e.g. Example Global Trading Ltd."
                     className="w-full px-3 py-2 rounded-xl bg-[#0C121D] border border-white/[0.08] focus:border-white/[0.2] text-xs text-white outline-none transition-colors placeholder:text-slate-500"
                   />
                 </div>

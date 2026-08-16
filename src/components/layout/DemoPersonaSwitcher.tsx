@@ -92,7 +92,7 @@ export const DemoPersonaSwitcher = () => {
                 <ShoppingBag className="w-3.5 h-3.5 text-[var(--accent)]" />
                 <div>
                   <div className="font-medium">Importer / Buyer</div>
-                  <div className="text-[10px] text-[var(--text-tertiary)]">Al-Futtaim Global LLC</div>
+                  <div className="text-[10px] text-[var(--text-tertiary)]">Example Global Trading Ltd.</div>
                 </div>
               </div>
               {currentUser.role === "buyer" && (

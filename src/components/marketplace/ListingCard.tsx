@@ -1,7 +1,8 @@
 import React from "react";
 import { Listing } from "@/types/trade";
-import { MapPin, ShieldCheck } from "lucide-react";
+import { MapPin, ShieldCheck, Info } from "lucide-react";
 import SpecularButton from "@/components/ui/SpecularButton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface ListingCardProps {
@@ -39,32 +40,49 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           : "bg-[#0C121D] border-white/[0.07] hover:border-white/[0.12] opacity-100 filter-none"
       )}
     >
-      {/* 1. Product Title + HS Code */}
+      {/* 1. Level A: Product Title & Supplier Info */}
       <div className="space-y-1.5">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display font-bold text-base text-white transition-colors leading-snug line-clamp-2">
-            {listing.title}
-          </h3>
-        </div>
+        <h3 className="font-display font-bold text-base text-white transition-colors leading-snug line-clamp-2">
+          {listing.title}
+        </h3>
 
-        {/* 2. Supplier / Location / HS */}
-        <div className="text-xs text-slate-400 font-sans flex items-center gap-1.5 flex-wrap">
-          <span className="font-medium text-slate-300 truncate max-w-[150px]">
-            {listing.exporterName}
-          </span>
-          <span>·</span>
-          <span className="flex items-center gap-1 text-slate-400">
-            <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-            {listing.exporterCity}, {listing.exporterCountry}
-          </span>
-          <span>·</span>
-          <span className="text-[11px] font-mono text-slate-500">
-            HS {listing.hsCode}
-          </span>
+        {/* 2. Level A: Supplier Name & Location · Level B: Tooltip for HS / Certs */}
+        <div className="text-xs text-slate-400 font-sans flex items-center justify-between gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 truncate">
+            <span className="font-medium text-slate-300 truncate max-w-[140px]">
+              {listing.exporterName}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1 text-slate-400 truncate">
+              <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+              {listing.exporterCity}, {listing.exporterCountry}
+            </span>
+          </div>
+
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
+                  aria-label="View specifications summary"
+                >
+                  <Info className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-[#0A0F18] border border-white/[0.1] text-[11px] font-mono text-slate-300 p-2 space-y-1">
+                <div>HS Code: {listing.hsCode}</div>
+                <div>Port: {listing.originPort || "Origin Port"}</div>
+                {listing.certifications && (
+                  <div>Certs: {listing.certifications.slice(0, 3).join(", ")}</div>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
-      {/* 3. Price, MOQ, and Trust */}
+      {/* 3. Level A: Price, MOQ, and Verification */}
       <div className="pt-3 border-t border-white/[0.06] flex items-end justify-between">
         <div>
           <div className="font-mono text-lg font-bold text-white leading-tight">
@@ -78,14 +96,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </div>
 
-        {/* 4. Single Trust Indicator */}
+        {/* Verification Status */}
         <div className="text-right flex items-center gap-1.5 text-xs font-mono text-emerald-400">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>{listing.aiMatchScore ? `${listing.aiMatchScore}% Match` : "94% Match"}</span>
+          <span>Verified</span>
         </div>
       </div>
 
-      {/* 5. Dual Action Hierarchy: [Inspect Trade (secondary)] [Create Trade Request (primary)] */}
+      {/* 4. Level A Actions (At most 2) */}
       <div className="pt-1 grid grid-cols-2 gap-2">
         <SpecularButton
           type="button"

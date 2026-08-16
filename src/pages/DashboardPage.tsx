@@ -27,6 +27,7 @@ import {
   Layers,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type DualViewMode = "dual" | "import" | "export";
 
@@ -91,7 +92,7 @@ export const DashboardPage: React.FC = () => {
       id: FLAGSHIP_DEMO_TRADE.id,
       title: "1121 Steam Basmati Rice (500 MT)",
       route: "India (JNPT) → UAE (Jebel Ali)",
-      counterparty: "Al-Futtaim Global Trade LLC",
+      counterparty: "Example Global Trading Ltd.",
       valueUSD: 550000,
       valueText: "$550K",
       status: "in_transit" as const,
@@ -357,33 +358,56 @@ export const DashboardPage: React.FC = () => {
                             : "bg-[#070A0E] border-white/[0.06] hover:border-white/[0.14] text-slate-300 hover:bg-[#111A29]"
                         )}
                       >
-                        {/* Line 1: Product / Trade Name & Value */}
+                        {/* Line 1: Product / Trade Name, Route & Value */}
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5 min-w-0 flex-1">
                             <h3 className="font-display font-bold text-xs sm:text-sm text-white truncate">
                               {trade.title}
                             </h3>
                             <div className="text-[11px] font-mono text-slate-400 truncate">
-                              {trade.id} · {trade.route}
+                              {trade.route}
                             </div>
                           </div>
                           <div className="text-right shrink-0">
                             <div className="text-xs sm:text-sm font-mono font-bold text-white">
                               {trade.valueText}
                             </div>
-                            <span className="text-[10px] font-mono text-slate-500">
-                              {trade.paymentState}
-                            </span>
                           </div>
                         </div>
 
-                        {/* Line 2: Step N · Status · Next Action */}
+                        {/* Line 2: Step N · Status (with Level B Popover) · Next Action */}
                         <div className="pt-1.5 border-t border-white/[0.04] flex items-center justify-between gap-2 text-xs">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <StatusBadge status={trade.status} label={trade.stepText} size="sm" />
-                            <span className="hidden sm:inline text-[10px] font-mono text-emerald-400">
-                              {trade.savings}
-                            </span>
+                            
+                            {/* Level B Info Popover */}
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
+                                  aria-label="Trade details summary"
+                                >
+                                  <Info className="w-3.5 h-3.5" />
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                side="top"
+                                align="start"
+                                className="w-64 p-3 bg-[#0C121D] border border-white/[0.1] text-xs space-y-1.5 text-slate-300 shadow-xl rounded-xl"
+                              >
+                                <div className="font-display font-semibold text-white text-xs border-b border-white/[0.06] pb-1">
+                                  {trade.title}
+                                </div>
+                                <div className="text-[11px] font-mono space-y-1 text-slate-300">
+                                  <div>Trade ID: <span className="text-white">{trade.id}</span></div>
+                                  <div>Counterparty: <span className="text-sky-300">{trade.counterparty}</span></div>
+                                  <div>Escrow: <span className="text-emerald-400">{trade.paymentState}</span></div>
+                                  <div>Benefit: <span className="text-emerald-300">{trade.savings}</span></div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           </div>
 
                           <Link
@@ -517,7 +541,7 @@ export const DashboardPage: React.FC = () => {
                             : "bg-[#070A0E] border-white/[0.06] hover:border-white/[0.14] text-slate-300 hover:bg-[#111A29]"
                         )}
                       >
-                        {/* Line 1: Product / Trade Name & Value */}
+                        {/* Line 1: Product / Trade Name, Route & Value */}
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5 min-w-0 flex-1">
                             <div className="flex items-center gap-2">
@@ -529,26 +553,49 @@ export const DashboardPage: React.FC = () => {
                               )}
                             </div>
                             <div className="text-[11px] font-mono text-slate-400 truncate">
-                              {trade.id} · {trade.route}
+                              {trade.route}
                             </div>
                           </div>
                           <div className="text-right shrink-0">
                             <div className="text-xs sm:text-sm font-mono font-bold text-white">
                               {trade.valueText}
                             </div>
-                            <span className="text-[10px] font-mono text-slate-500">
-                              {trade.paymentState}
-                            </span>
                           </div>
                         </div>
 
-                        {/* Line 2: Step N · Status · Next Action */}
+                        {/* Line 2: Step N · Status (with Level B Popover) · Next Action */}
                         <div className="pt-1.5 border-t border-white/[0.04] flex items-center justify-between gap-2 text-xs">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <StatusBadge status={trade.status} label={trade.stepText} size="sm" />
-                            <span className="hidden sm:inline text-[10px] font-mono text-slate-400">
-                              {trade.savings}
-                            </span>
+
+                            {/* Level B Info Popover */}
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
+                                  aria-label="Trade details summary"
+                                >
+                                  <Info className="w-3.5 h-3.5" />
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                side="top"
+                                align="start"
+                                className="w-64 p-3 bg-[#0C121D] border border-white/[0.1] text-xs space-y-1.5 text-slate-300 shadow-xl rounded-xl"
+                              >
+                                <div className="font-display font-semibold text-white text-xs border-b border-white/[0.06] pb-1">
+                                  {trade.title}
+                                </div>
+                                <div className="text-[11px] font-mono space-y-1 text-slate-300">
+                                  <div>Trade ID: <span className="text-white">{trade.id}</span></div>
+                                  <div>Buyer: <span className="text-emerald-300">{trade.counterparty}</span></div>
+                                  <div>Escrow: <span className="text-emerald-400">{trade.paymentState}</span></div>
+                                  <div>Compliance: <span className="text-emerald-300">{trade.savings}</span></div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           </div>
 
                           <Link

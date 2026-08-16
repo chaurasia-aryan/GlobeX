@@ -16,7 +16,9 @@ import {
   Trash2,
   ArrowUpRight,
   X,
+  Info,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface OrganizationExportProduct {
   id: string;
@@ -48,7 +50,7 @@ const INITIAL_ORG_PRODUCTS: OrganizationExportProduct[] = [
     certifications: ["ISO 22000", "APEDA", "FSSAI", "Halal"],
     status: "active",
     inquiriesCount: 5,
-    topInquiry: "Al-Futtaim LLC (Dubai) requested 500 MT quote",
+    topInquiry: "Example Global Trading Ltd. (Dubai) requested 500 MT quote",
   },
   {
     id: "org_prod_02",
@@ -256,43 +258,57 @@ export const MyListingsPage: React.FC = () => {
             {filteredProducts.map((prod) => (
               <div
                 key={prod.id}
-                className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                className="p-3.5 sm:p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group"
               >
                 {/* Product Info */}
                 <div className="space-y-1 min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-1.5 py-0.5 rounded">
-                      HS {prod.hsCode}
-                    </span>
-                    <span className="text-xs font-sans text-slate-400">{prod.category}</span>
-                    <span className="text-slate-600">·</span>
-                    <span className="text-xs font-sans text-slate-400 truncate">{prod.originPort}</span>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-display font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                      {prod.title}
+                    </h3>
+                    
+                    {/* Level B Info Popover */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
+                          aria-label="Product specification details"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="top"
+                        align="start"
+                        className="w-64 p-3 bg-[#0C121D] border border-white/[0.1] text-xs space-y-1.5 text-slate-300 shadow-xl rounded-xl"
+                      >
+                        <div className="font-display font-semibold text-white text-xs border-b border-white/[0.06] pb-1">
+                          HS {prod.hsCode} · {prod.category}
+                        </div>
+                        <div className="text-[11px] font-mono space-y-1 text-slate-300">
+                          <div>Origin Port: <span className="text-white">{prod.originPort}</span></div>
+                          <div>Certifications: <span className="text-emerald-400">{prod.certifications.join(", ")}</span></div>
+                          <div>Top Inquiry: <span className="text-sky-300">{prod.topInquiry}</span></div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
-                  <h3 className="text-sm font-display font-bold text-white group-hover:text-emerald-400 transition-colors">
-                    {prod.title}
-                  </h3>
-
-                  {/* Certifications row */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    {prod.certifications.map((cert) => (
-                      <span
-                        key={cert}
-                        className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.05] text-[10px] font-mono text-slate-400"
-                      >
-                        {cert}
-                      </span>
-                    ))}
+                  <div className="text-xs text-slate-400 font-sans flex items-center gap-1.5">
+                    <span>{prod.category}</span>
+                    <span>·</span>
+                    <span className="text-slate-500 font-mono">HS {prod.hsCode}</span>
                   </div>
                 </div>
 
                 {/* Price, Stock & Actions */}
-                <div className="flex items-center justify-between md:justify-end gap-5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.04]">
+                <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.04]">
                   <div className="text-left md:text-right">
-                    <div className="text-base font-mono font-bold text-white">
+                    <div className="text-sm sm:text-base font-mono font-bold text-white">
                       ${prod.unitPriceUSD.toLocaleString()}{" "}
                       <span className="text-xs font-sans text-slate-400 font-normal">
-                        / {prod.unit} FOB
+                        / {prod.unit}
                       </span>
                     </div>
                     <div className="text-[11px] font-mono text-slate-500">
@@ -304,7 +320,7 @@ export const MyListingsPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <Link
                       to="/trade-requests?duty=export"
-                      className="flex items-center gap-1 text-xs font-sans text-sky-400 hover:text-sky-300 bg-sky-950/40 border border-sky-500/30 px-2.5 py-1.5 rounded-xl transition-colors"
+                      className="flex items-center gap-1 text-xs font-sans text-sky-400 hover:text-sky-300 bg-sky-950/40 border border-sky-500/30 px-2.5 py-1.5 rounded-xl transition-colors font-medium"
                     >
                       <span>{prod.inquiriesCount} Inquiries</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
