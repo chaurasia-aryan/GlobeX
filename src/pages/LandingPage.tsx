@@ -150,7 +150,7 @@ export default function LandingPage() {
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#121822]/85 border border-white/[0.12] text-xs text-[var(--text-secondary)] backdrop-blur-md shadow-md pointer-events-auto">
             <span className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
-            <span>Cross-Border Trade Trust Infrastructure</span>
+            <span>Global Trade Made Simple & Safe</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-[3.75rem] font-display font-extrabold tracking-tight leading-[1.05] text-[var(--text-primary)] pointer-events-auto">
@@ -163,7 +163,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed font-sans pointer-events-auto">
-            AI-powered intelligence for discovering trusted counterparties, automated OCR document reconciliation, and programmable USDC escrow.
+            Connect with verified international buyers and sellers, verify trade papers automatically, and protect every payment safely.
           </p>
 
           {/* Smooth Pulsing Scroll Cue */}
@@ -171,7 +171,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-full border border-white/[0.15] bg-[#111824]/80 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
               <ChevronDown className="w-4 h-4" />
             </div>
-            <span>Scroll down to enter India Trade Corridor</span>
+            <span>Scroll down to explore world trade routes</span>
           </div>
         </motion.div>
 
@@ -188,18 +188,13 @@ export default function LandingPage() {
             <span className="text-[var(--text-secondary)]">
               {currentProgress < 0.45 ? (
                 <>
-                  Orbital Telemetry:{" "}
-                  <strong className="text-cyan-400">Targeting India (Macro Overview · 20.59° N, 78.96° E)</strong>
+                  Global View: <strong className="text-cyan-400">India Trade Hubs</strong>
                 </>
               ) : (
                 <>
-                  Orbital Descent:{" "}
-                  <strong className="text-emerald-400">Locking JNPT Nhava Sheva (INNSA), Mumbai</strong>
+                  Zooming into: <strong className="text-emerald-400">Mumbai Port Hub</strong>
                 </>
               )}
-            </span>
-            <span className="text-[var(--emerald)] hidden sm:inline">
-              Alt: {Math.round((2.2 - currentProgress * 1.8) * 100) / 100}
             </span>
           </div>
         </motion.div>
