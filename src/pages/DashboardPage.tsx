@@ -5,6 +5,7 @@ import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
 import NumberFlow from "@number-flow/react";
 import InteractiveButton from "@/components/ui/interactive-button";
 import SpecularButton from "@/components/ui/SpecularButton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   TrendingUp,
@@ -132,50 +133,48 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* ── Grouped Graph & Analytics Studio (Eliminates Cognitive Overload) ── */}
+      {/* ── Grouped Graph & Analytics Studio (Using shadcn Tabs) ── */}
       <div className="p-5 rounded-3xl bg-[#0C121D]/90 border border-white/[0.08] backdrop-blur-2xl space-y-5">
-        
-        {/* Studio Header & Tab Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
-          <div>
-            <h2 className="text-base sm:text-lg font-display font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-emerald-400" />
-              <span>Intelligence & Analytics Studio</span>
-            </h2>
-            <p className="text-xs text-[var(--text-secondary)]">Select a lens to inspect real-time metrics without layout clutter</p>
+        <Tabs
+          value={selectedChartTab}
+          onValueChange={(v) => setSelectedChartTab(v as any)}
+          className="w-full space-y-5"
+        >
+          {/* Studio Header & Tab Switcher */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+            <div>
+              <h2 className="text-base sm:text-lg font-display font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-emerald-400" />
+                <span>Trade Analytics & Route Insights</span>
+              </h2>
+              <p className="text-xs text-[var(--text-secondary)]">Select a tab to view real-time data</p>
+            </div>
+
+            {/* Segmented Chart Group Selector using shadcn TabsList */}
+            <TabsList className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#111824] border border-white/[0.06] h-auto">
+              {chartTabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-white/[0.08] data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/[0.12] data-[state=active]:shadow-sm text-[var(--text-secondary)] hover:text-white transition-all cursor-pointer"
+                  >
+                    <Icon className="w-3.5 h-3.5 opacity-80" />
+                    <span>{tab.label}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
           </div>
 
-          {/* Segmented Chart Group Selector */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#111824] border border-white/[0.06]">
-            {chartTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = selectedChartTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedChartTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    isActive
-                      ? "bg-white/[0.08] text-white border border-white/[0.12] shadow-sm font-semibold"
-                      : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.02]"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5 opacity-80" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Tab Content Display */}
-        <div className="min-h-[220px]">
-          {selectedChartTab === "liquidity" && (
+          {/* Tab Content 1: Exposure & Volume */}
+          <TabsContent value="liquidity" className="focus-visible:outline-none">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2 p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-4">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-[var(--text-secondary)] font-mono">Monthly Executed Corridor Volume</span>
-                  <span className="text-emerald-400 font-mono font-bold">$14,240,000 USDC</span>
+                  <span className="text-[var(--text-secondary)] font-mono">Monthly Trade Volume</span>
+                  <span className="text-emerald-400 font-mono font-bold">$14,240,000 USD</span>
                 </div>
                 {/* Bar Graph Representation */}
                 <div className="h-32 flex items-end justify-between gap-3 pt-4 border-b border-white/[0.06] pb-2">
@@ -200,7 +199,7 @@ export const DashboardPage = () => {
                   ))}
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-[var(--text-tertiary)] font-mono">
-                  <span>Primary Corridor: India ➔ UAE (74% Volume)</span>
+                  <span>Main Route: India ➔ UAE (74% Volume)</span>
                   <span>Average Settlement Time: 4.2 Hours</span>
                 </div>
               </div>
@@ -208,8 +207,8 @@ export const DashboardPage = () => {
               {/* Volume Distribution Breakdown */}
               <div className="p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-3 flex flex-col justify-between">
                 <div>
-                  <h4 className="text-xs font-display font-bold text-[var(--text-primary)]">Asset Distribution</h4>
-                  <p className="text-[11px] text-[var(--text-tertiary)]">Verified commodity breakdown</p>
+                  <h4 className="text-xs font-display font-bold text-[var(--text-primary)]">Product Breakdown</h4>
+                  <p className="text-[11px] text-[var(--text-tertiary)]">Delivered commodity share</p>
                 </div>
                 <div className="space-y-2 text-xs font-mono">
                   <div className="flex justify-between items-center">
@@ -238,77 +237,79 @@ export const DashboardPage = () => {
                 </div>
               </div>
             </div>
-          )}
+          </TabsContent>
 
-          {selectedChartTab === "risk" && (
+          {/* Tab Content 2: Route Risk Monitor */}
+          <TabsContent value="risk" className="focus-visible:outline-none">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-2">
                 <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold">
                   <AlertTriangle className="w-4 h-4" />
-                  <span>RED SEA TRANSIT ALERT</span>
+                  <span>RED SEA ROUTE NOTICE</span>
                 </div>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Geopolitical congestion near Bab-el-Mandeb. AI recommends Cape of Good Hope routing for Europe-bound corridors or UAE CEPA direct transshipment.
+                  Heavy vessel traffic near Bab-el-Mandeb. AI recommends direct transshipment via UAE corridor for faster customs clearance.
                 </p>
                 <div className="text-[11px] font-mono text-amber-300 pt-1">
-                  Estimated buffer required: +3 days · Insurance delta: +0.4%
+                  Estimated delay buffer: +2 days
                 </div>
               </div>
 
               <div className="p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-2">
                 <div className="text-xs font-mono text-emerald-400 font-bold">
-                  INDIAN OCEAN / ARABIAN SEA CORRIDOR
+                  ARABIAN SEA CORRIDOR (ACTIVE & FAST)
                 </div>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Nhava Sheva (INNSA) to Jebel Ali (AEJEA) operating at 100% capacity with 0 delays. Average customs transit time under CEPA: 12 minutes.
+                  Mumbai (India) to Dubai (UAE) corridor is operating smoothly with 0 delays. Average customs transit time: 12 minutes.
                 </p>
                 <div className="text-[11px] font-mono text-emerald-300 pt-1">
-                  Status: CLEAR · 0% Preferential Duty
+                  Status: CLEAR · 0% Tax Free
                 </div>
               </div>
             </div>
-          )}
+          </TabsContent>
 
-          {selectedChartTab === "sentiment" && (
+          {/* Tab Content 3: Market Sentiment */}
+          <TabsContent value="sentiment" className="focus-visible:outline-none">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { name: "1121 Basmati Rice", trend: "+3.2%", status: "Bullish Demand (Gulf)", score: 94 },
-                { name: "Organic Cotton Yarn", trend: "+1.8%", status: "Stable Inflow (EU)", score: 86 },
-                { name: "Active Pharma Ingredients", trend: "-0.5%", status: "Consolidating (ASEAN)", score: 81 },
+                { name: "1121 Basmati Rice", trend: "+3.2%", status: "High Buyer Demand", score: 94 },
+                { name: "Organic Cotton Yarn", trend: "+1.8%", status: "Steady Demand", score: 86 },
+                { name: "Active Pharma APIs", trend: "-0.5%", status: "Stable Prices", score: 81 },
               ].map((item) => (
                 <div key={item.name} className="p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-2">
                   <div className="text-xs font-display font-bold text-[var(--text-primary)]">{item.name}</div>
-                  <div className="text-[11px] text-emerald-400 font-mono font-semibold">{item.trend} 30D Trend</div>
+                  <div className="text-[11px] text-emerald-400 font-mono font-semibold">{item.trend} 30-Day Trend</div>
                   <p className="text-[11px] text-[var(--text-secondary)]">{item.status}</p>
                 </div>
               ))}
             </div>
-          )}
+          </TabsContent>
 
-          {selectedChartTab === "escrow" && (
-            <div className="p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-3">
+          {/* Tab Content 4: Payment Escrow Velocity */}
+          <TabsContent value="escrow" className="focus-visible:outline-none">
+            <div className="p-4 rounded-2xl bg-[#101726]/80 border border-white/[0.06] space-y-4">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[var(--text-secondary)]">Multi-Sig USDC Conditional Release Engine</span>
-                <span className="text-emerald-400 font-mono font-bold">100% Guaranteed Collateral</span>
+                <span className="text-[var(--text-secondary)]">Payment Release Engine</span>
+                <span className="text-emerald-400 font-mono font-bold">100% Protected Escrow</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                 <div className="p-3 rounded-xl bg-[#0B1019] border border-white/[0.04]">
                   <div className="text-lg font-bold font-display text-[var(--text-primary)]">$550,000</div>
-                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Locked in Active Vaults</div>
+                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Protected in Active Trade</div>
                 </div>
                 <div className="p-3 rounded-xl bg-[#0B1019] border border-white/[0.04]">
-                  <div className="text-lg font-bold font-display text-emerald-400">14 Sec</div>
-                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Avg IoT Unlock Speed</div>
+                  <div className="text-lg font-bold font-display text-emerald-400">14 Mins</div>
+                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Avg Settlement Release</div>
                 </div>
                 <div className="p-3 rounded-xl bg-[#0B1019] border border-white/[0.04]">
                   <div className="text-lg font-bold font-display text-[var(--text-primary)]">0.00%</div>
-                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Historical Default Rate</div>
+                  <div className="text-[10px] font-mono text-[var(--text-tertiary)]">Dispute Rate</div>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* ── Active Transactions with Discrete Hamburger Action Menus ─────────── */}
