@@ -73,9 +73,16 @@ class AppwriteService {
     const savedUser = localStorage.getItem("globex_user_session");
     if (savedUser) {
       try {
-        this.currentUser = JSON.parse(savedUser);
+        const parsed = JSON.parse(savedUser);
+        if (!parsed.role || parsed.role === "delivery") {
+          this.currentUser = DEFAULT_USER;
+          localStorage.setItem("globex_user_session", JSON.stringify(DEFAULT_USER));
+        } else {
+          this.currentUser = parsed;
+        }
       } catch {
         this.currentUser = DEFAULT_USER;
+        localStorage.setItem("globex_user_session", JSON.stringify(DEFAULT_USER));
       }
     } else {
       this.currentUser = DEFAULT_USER;
@@ -141,11 +148,8 @@ class AppwriteService {
   }
 
   public async logout(): Promise<void> {
-    this.currentUser = {
-      ...this.currentUser,
-      isLoggedIn: false,
-    };
-    localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    this.currentUser = DEFAULT_USER;
+    localStorage.setItem("globex_user_session", JSON.stringify(DEFAULT_USER));
     window.dispatchEvent(new Event("storage"));
   }
 

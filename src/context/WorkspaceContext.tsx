@@ -94,38 +94,38 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     role === "admin"
       ? "Enterprise Admin"
       : role === "compliance"
-      ? "Compliance Officer"
-      : role === "salesman"
-      ? "Salesman"
-      : role === "buyer"
-      ? "Buyer Workspace"
-      : role === "exporter"
-      ? "Exporter Workspace"
-      : role === "arbitrator"
-      ? "Arbitrator Portal"
-      : "Dual Trade Operator";
+        ? "Compliance Officer"
+        : role === "salesman"
+          ? "Salesman"
+          : role === "buyer"
+            ? "Buyer Workspace"
+            : role === "exporter"
+              ? "Exporter Workspace"
+              : role === "arbitrator"
+                ? "Arbitrator Portal"
+                : "Dual Trade Operator";
 
   const roleAccentColor =
     role === "compliance"
       ? "#818CF8" // Indigo/Violet
       : role === "salesman"
-      ? "#F59E0B" // Amber
-      : role === "buyer"
-      ? "#38BDF8" // Sky
-      : role === "exporter"
-      ? "#34C795" // Emerald
-      : "#34C795"; // Admin / Dual
+        ? "#F59E0B" // Amber
+        : role === "buyer"
+          ? "#38BDF8" // Sky
+          : role === "exporter"
+            ? "#34C795" // Emerald
+            : "#34C795"; // Admin / Dual
 
   const roleBadgeClass =
     role === "compliance"
       ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"
       : role === "salesman"
-      ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-      : role === "buyer"
-      ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
-      : role === "exporter"
-      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-      : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+        ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+        : role === "buyer"
+          ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
+          : role === "exporter"
+            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
 
   return (
     <WorkspaceContext.Provider
