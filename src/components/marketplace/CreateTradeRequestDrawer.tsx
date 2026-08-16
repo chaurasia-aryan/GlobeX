@@ -18,8 +18,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { TopBuyer } from "@/data/mockTradeData";
+
 interface CreateTradeRequestDrawerProps {
-  listing: Listing | null;
+  listing?: Listing | null;
+  buyer?: TopBuyer | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -37,6 +40,7 @@ const AVAILABLE_CERTIFICATIONS = [
 
 export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> = ({
   listing,
+  buyer,
   isOpen,
   onClose,
 }) => {
@@ -77,8 +81,17 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
         requiredCertifications: listing.certifications || ["ISO 22000", "FSSAI"],
       }));
       setStep(1);
+    } else if (buyer) {
+      setForm((prev) => ({
+        ...prev,
+        productName: buyer.acceptedCommodities?.[0] || "1121 Steam Extra Long Grain Basmati Rice",
+        destinationCountry: buyer.country,
+        destinationPort: `${buyer.city} Commercial Port`,
+        requiredCertifications: buyer.certifications || ["ISO 22000", "Halal"],
+      }));
+      setStep(1);
     }
-  }, [listing]);
+  }, [listing, buyer]);
 
   if (!isOpen) return null;
 

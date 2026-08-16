@@ -26,9 +26,25 @@ describe("GLOBEX Iteration 4 - Information Architecture & Marketplace Demand Lay
 
   it("should expose Top 10 Verified Buyers data with authentic ranking signals", () => {
     expect(TOP_BUYERS_DATA).toHaveLength(10);
-    expect(TOP_BUYERS_DATA[0].name).toBe("Al-Futtaim Global Trade LLC");
+    expect(TOP_BUYERS_DATA[0].name).toBe("Example Global Trading Ltd.");
     expect(TOP_BUYERS_DATA[0].activeRFQs).toBe(18);
     expect(TOP_BUYERS_DATA[0].demandValueUSD).toBeGreaterThan(0);
     expect(TOP_BUYERS_DATA[0].rank).toBe("01");
+  });
+
+  it("should process user requirement query and return ML candidate count and ranked recommendations", async () => {
+    const { aiService } = await import("@/services/api/aiService");
+    const result = await aiService.matchBuyers({
+      commodity: "1121 Steam Basmati Rice",
+      quantity: 1000,
+      unit: "MT",
+      destinationCountry: "UAE",
+    });
+
+    expect(result.candidateCount).toBe(7420);
+    expect(result.strongMatchCount).toBeGreaterThan(0);
+    expect(result.recommendations.length).toBeGreaterThanOrEqual(5);
+    expect(result.recommendations[0].matchScore).toBeGreaterThanOrEqual(90);
+    expect(result.recommendations[0].matchSignals?.length).toBeGreaterThan(0);
   });
 });
