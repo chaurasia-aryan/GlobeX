@@ -5,7 +5,6 @@ import Balancer from "react-wrap-balancer";
 import TradeGlobe, { TradeGlobeRef } from "@/components/TradeGlobe";
 import { SAMPLE_DATA, aggregateByCountry } from "@/lib/tradeData";
 import SplitText from "@/components/ui/split-text";
-import RoleNavigation from "@/components/layout/RoleNavigation";
 import AuthShell from "@/components/auth/AuthShell";
 import {
   ChevronDown,
@@ -133,11 +132,6 @@ export default function LandingPage() {
               "radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.14) 0%, transparent 65%), radial-gradient(circle at 80% 80%, rgba(52, 199, 149, 0.1) 0%, transparent 50%)",
           }}
         />
-
-        {/* ── TOP NAVIGATION BAR ──────────────────────────────────────────── */}
-        <div className="w-full z-50 sticky top-0 transform-gpu">
-          <RoleNavigation />
-        </div>
 
         {/* ── 3D EARTH GLOBE LAYER (Optimized Lifecycle & Auto-Paused on Auth) ─ */}
         {!prefersReducedMotion && (
