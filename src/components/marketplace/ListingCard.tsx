@@ -98,14 +98,14 @@ export const ListingCard = ({ listing, onSelect }: ListingCardProps) => {
           </div>
         </div>
 
-        <Link
-          to={`/marketplace/${listing.id}`}
-          onClick={onSelect ? () => onSelect(listing) : undefined}
-          className="px-4 py-2 rounded-xl bg-[var(--panel-raised)] hover:bg-[var(--accent)] text-[var(--accent)] hover:text-[var(--ink)] font-semibold text-xs transition-all flex items-center gap-1.5 border border-[var(--hairline)] group-hover:border-[var(--accent)]/40 shadow-sm"
+        <button
+          type="button"
+          onClick={() => onSelect && onSelect(listing)}
+          className="px-4 py-2 rounded-xl bg-[var(--panel-raised)] hover:bg-[var(--accent)] text-[var(--accent)] hover:text-[var(--ink)] font-semibold text-xs transition-all flex items-center gap-1.5 border border-[var(--hairline)] group-hover:border-[var(--accent)]/40 shadow-sm cursor-pointer"
         >
           <span>Inspect Trade</span>
           <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+        </button>
       </div>
     </motion.div>
   );

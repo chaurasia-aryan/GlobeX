@@ -47,23 +47,23 @@ export const Navbar = () => {
 
   const drawerGroups = [
     {
-      group: "Trade Execution",
+      group: "Trade Actions",
       items: [
-        { label: "Active Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Live 6-stage execution studio & smart escrow" },
-        { label: "New Trade Intake & RAG", href: "/get-started", icon: Sparkles, desc: "Structured 4-step questionnaire & counterparty matching" },
+        { label: "Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Manage your active trade, papers & safe payment" },
+        { label: "Start a New Trade", href: "/get-started", icon: Sparkles, desc: "Find best verified partners and calculate tax savings" },
       ],
     },
     {
-      group: "Marketplace & Portfolio",
+      group: "Browse & Portfolio",
       items: [
-        { label: "Global Trade Marketplace", href: "/marketplace", icon: Store, desc: "Verified commodities & top 10 trusted partners" },
-        { label: "Command Center Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Total exposure, route risk & analytics studio" },
+        { label: "Product Marketplace", href: "/marketplace", icon: Store, desc: "Browse verified products & trusted sellers" },
+        { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Trade overview, active shipments & alerts" },
       ],
     },
     {
-      group: "System & Governance",
+      group: "System & Proofs",
       items: [
-        { label: "Platform Telemetry", href: "/admin", icon: Layers, desc: "Polygon contract state, OCR health & node latency" },
+        { label: "System Health & Logs", href: "/admin", icon: Layers, desc: "Payment contract status & document verification logs" },
       ],
     },
   ];

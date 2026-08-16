@@ -8,6 +8,7 @@ import { FocusCards } from "@/components/ui/focus-cards";
 import ListingCard from "@/components/marketplace/ListingCard";
 import TrustedPartnerShelf from "@/components/marketplace/TrustedPartnerShelf";
 import AIMatchResultsPanel from "@/components/marketplace/AIMatchResultsPanel";
+import ListingDetailDrawer from "@/components/marketplace/ListingDetailDrawer";
 import { LayoutGrid, Sparkles, Award, Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import {
   Breadcrumb,
@@ -38,6 +39,7 @@ export const MarketplacePage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showAiSearch, setShowAiSearch] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<"catalog" | "partners">("catalog");
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
 
   // ── Filter logic ────────────────────────────────────────────────────────────
   const filteredListings = useMemo<Listing[]>(() => {
@@ -257,12 +259,17 @@ export const MarketplacePage = () => {
             )}
           </div>
 
-          {/* Listings Grid (FIXED: FocusCards renders its own 3-col grid without extra wrapper) */}
+          {/* Listings Grid (FocusCards renders uncluttered cards) */}
           {filteredListings.length > 0 ? (
             <FocusCards
               cards={filteredListings}
               renderCard={(listing: Listing, _idx, isHovered) => (
-                <ListingCard key={listing.id} listing={listing} isHovered={isHovered} />
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  isHovered={isHovered}
+                  onSelect={(item) => setSelectedListing(item)}
+                />
               )}
             />
           ) : (
@@ -289,6 +296,13 @@ export const MarketplacePage = () => {
           )}
         </motion.div>
       )}
+
+      {/* Listing Detail Slide-over Drawer (Rule 13) */}
+      <ListingDetailDrawer
+        listing={selectedListing}
+        isOpen={!!selectedListing}
+        onClose={() => setSelectedListing(null)}
+      />
     </div>
   );
 };

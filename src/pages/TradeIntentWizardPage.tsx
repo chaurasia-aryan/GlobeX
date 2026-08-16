@@ -36,6 +36,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InteractiveButton from "@/components/ui/interactive-button";
 import SpecularButton from "@/components/ui/SpecularButton";
 import { TrustBreakdownDrawer } from "@/components/trust/TrustBreakdownDrawer";
@@ -224,8 +225,8 @@ export const TradeIntentWizardPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-xs text-[var(--text-primary)] font-medium">
-                {role === "importer" ? "Buyer Trade Intake & RAG" : "Exporter Sourcing Intake"}
+              <BreadcrumbPage className="text-xs font-mono text-[var(--text-primary)]">
+                Start Trade
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -245,14 +246,14 @@ export const TradeIntentWizardPage = () => {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span className="text-xs font-mono text-emerald-400 uppercase tracking-wider">
-                    {role === "importer" ? "Importer" : "Exporter"} Intelligence Questionnaire
+                    {role === "importer" ? "Buyer" : "Seller"} Trade Setup
                   </span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-display font-bold text-[var(--text-primary)]">
-                  Trade Intake Parameters
+                  Start a New Trade
                 </h1>
                 <p className="text-xs text-[var(--text-secondary)]">
-                  Provide exact transaction specifications prior to executing the AI RAG synthesis pipeline.
+                  Enter your trade details, and our system will find the best verified partners and calculate your tax savings.
                 </p>
               </div>
 
@@ -279,9 +280,9 @@ export const TradeIntentWizardPage = () => {
               <div className="flex items-center justify-between text-xs">
                 <span className="font-mono text-emerald-400 font-semibold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Instant 1-Click Trade Corridors
+                  Popular Trade Corridors
                 </span>
-                <span className="text-[11px] text-emerald-400/80 font-mono">Click any corridor to instantly match & launch</span>
+                <span className="text-[11px] text-emerald-400/80 font-mono">1-click to auto-fill & find partners</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                 {TRADE_PRESETS.map((preset) => (
@@ -308,224 +309,223 @@ export const TradeIntentWizardPage = () => {
               </div>
             </div>
 
-            {/* Grouped Stepped Studio (4 Progressive Tabs) */}
+            {/* Grouped Stepped Studio (4 Progressive Tabs with shadcn) */}
             <div className="p-6 rounded-3xl bg-[#0C121D]/90 border border-white/[0.08] backdrop-blur-2xl space-y-6">
-              
-              {/* Tab Navigation Strip */}
-              <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.08] pb-4">
-                {[
-                  { id: "commodity", label: "1. Commodity & Volume", icon: Package },
-                  { id: "logistics", label: "2. Corridor & Incoterm", icon: Ship },
-                  { id: "compliance", label: "3. Certifications & Standards", icon: ShieldCheck },
-                  { id: "escrow", label: "4. Smart Escrow & Rules", icon: Coins },
-                ].map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                        isActive
-                          ? "bg-white/[0.08] text-white border border-white/[0.15] shadow-sm font-bold"
-                          : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.02]"
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5 opacity-80" />
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <Tabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as any)}
+                className="w-full space-y-6"
+              >
+                {/* Tab Navigation Strip using shadcn TabsList */}
+                <TabsList className="grid grid-cols-2 lg:grid-cols-4 w-full h-auto p-1.5 rounded-2xl bg-[#090E17]/90 border border-white/[0.08] gap-1">
+                  {[
+                    { id: "commodity", label: "1. What are you trading?", icon: Package },
+                    { id: "logistics", label: "2. Shipping Route", icon: Ship },
+                    { id: "compliance", label: "3. Quality Certificates", icon: ShieldCheck },
+                    { id: "escrow", label: "4. Safe Payment", icon: Coins },
+                  ].map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <TabsTrigger
+                        key={tab.id}
+                        value={tab.id}
+                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold data-[state=active]:bg-white/[0.1] data-[state=active]:text-white data-[state=active]:shadow-sm text-[var(--text-secondary)] hover:text-white transition-all cursor-pointer"
+                      >
+                        <Icon className="w-3.5 h-3.5 opacity-80" />
+                        <span>{tab.label}</span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
 
-              {/* Group Tab 1: Commodity & Volume */}
-              {activeTab === "commodity" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Commodity / Product Name</label>
-                    <input
-                      type="text"
-                      value={intakeForm.productName}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, productName: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
-                    />
-                  </div>
+                {/* Group Tab 1: Item & Quantity */}
+                <TabsContent value="commodity" className="space-y-4 focus-visible:outline-none">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Product Name</label>
+                      <input
+                        type="text"
+                        value={intakeForm.productName}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, productName: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Auto-Classified HS Code</label>
-                    <input
-                      type="text"
-                      value={intakeForm.hsCode || "1006.30.20"}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, hsCode: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-emerald-400 outline-none"
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Product Code (HS Code)</label>
+                      <input
+                        type="text"
+                        value={intakeForm.hsCode || "1006.30.20"}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, hsCode: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-emerald-400 outline-none"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Quantity & Unit</label>
-                    <div className="flex gap-2">
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Quantity</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={intakeForm.quantity}
+                          onChange={(e) => setIntakeForm({ ...intakeForm, quantity: Number(e.target.value) })}
+                          className="flex-1 px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-white outline-none"
+                        />
+                        <select
+                          value={intakeForm.unit}
+                          onChange={(e) => setIntakeForm({ ...intakeForm, unit: e.target.value as any })}
+                          className="px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm font-mono text-white outline-none"
+                        >
+                          <option value="MT">Tonnes (MT)</option>
+                          <option value="KG">Kilograms (KG)</option>
+                          <option value="Meters">Meters</option>
+                          <option value="Units">Units</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Price per Unit ($ USD)</label>
                       <input
                         type="number"
-                        value={intakeForm.quantity}
-                        onChange={(e) => setIntakeForm({ ...intakeForm, quantity: Number(e.target.value) })}
-                        className="flex-1 px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-white outline-none"
+                        value={intakeForm.targetPriceUSD}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, targetPriceUSD: Number(e.target.value) })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-white outline-none"
                       />
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Group Tab 2: Shipping Route */}
+                <TabsContent value="logistics" className="space-y-4 focus-visible:outline-none">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Where is it coming from? (Origin City)</label>
+                      <input
+                        type="text"
+                        value={intakeForm.originPort}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, originPort: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Where is it going? (Destination City)</label>
+                      <input
+                        type="text"
+                        value={intakeForm.destinationPort}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, destinationPort: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Delivery Terms</label>
                       <select
-                        value={intakeForm.unit}
-                        onChange={(e) => setIntakeForm({ ...intakeForm, unit: e.target.value as any })}
-                        className="px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm font-mono text-white outline-none"
+                        value={intakeForm.incoterm}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, incoterm: e.target.value as any })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
                       >
-                        <option value="MT">MT (Metric Tonnes)</option>
-                        <option value="KG">KG (Kilograms)</option>
-                        <option value="Meters">Meters (Fabrics)</option>
-                        <option value="Units">Units (Machinery)</option>
+                        <option value="CIF">CIF — Seller includes shipping & insurance (Recommended)</option>
+                        <option value="FOB">FOB — Buyer arranges shipping from origin port</option>
+                        <option value="DDP">DDP — Complete door-to-door delivery</option>
+                        <option value="CFR">CFR — Seller includes shipping only</option>
                       </select>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Target Price (USD per Unit)</label>
-                    <input
-                      type="number"
-                      value={intakeForm.targetPriceUSD}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, targetPriceUSD: Number(e.target.value) })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm font-mono text-white outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Group Tab 2: Corridor & Logistics */}
-              {activeTab === "logistics" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Origin Country & Port</label>
-                    <input
-                      type="text"
-                      value={intakeForm.originPort}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, originPort: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Destination Country & Port</label>
-                    <input
-                      type="text"
-                      value={intakeForm.destinationPort}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, destinationPort: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-sm text-white outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Preferred INCOTERM</label>
-                    <select
-                      value={intakeForm.incoterm}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, incoterm: e.target.value as any })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
-                    >
-                      <option value="CIF">CIF (Cost, Insurance & Freight — Recommended)</option>
-                      <option value="FOB">FOB (Free on Board — Origin Port Handover)</option>
-                      <option value="DDP">DDP (Delivered Duty Paid — Door-to-Door)</option>
-                      <option value="CFR">CFR (Cost & Freight)</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Estimated Transit Window</label>
-                    <div className="px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm font-mono text-emerald-400">
-                      4 to 6 Maritime Days (Direct Arabian Sea Corridor)
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Estimated Travel Time</label>
+                      <div className="px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm font-mono text-emerald-400">
+                        4 to 6 days by sea
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                </TabsContent>
 
-              {/* Group Tab 3: Certifications & Standards */}
-              {activeTab === "compliance" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">
-                      Required Quality, Health & Phytosanitary Standards (Select applicable)
-                    </label>
-                    <p className="text-[11px] text-[var(--text-tertiary)]">
-                      Exporters failing these certifications will be penalized in AI match scoring
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {AVAILABLE_CERTIFICATIONS.map((cert) => {
-                      const isSelected = intakeForm.requiredCertifications.includes(cert);
-                      return (
-                        <button
-                          key={cert}
-                          type="button"
-                          onClick={() => toggleCertification(cert)}
-                          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all ${
-                            isSelected
-                              ? "bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-bold shadow-sm"
-                              : "bg-[#101726] border border-white/[0.06] text-[var(--text-secondary)] hover:text-white"
-                          }`}
-                        >
-                          <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${
-                            isSelected ? "bg-emerald-400 text-black font-bold" : "border border-white/[0.2]"
-                          }`}>
-                            {isSelected ? "✓" : ""}
-                          </span>
-                          <span>{cert}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Group Tab 4: Escrow & Rules */}
-              {activeTab === "escrow" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Escrow Collateral Asset</label>
-                    <select
-                      value={intakeForm.escrowToken}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, escrowToken: e.target.value as any })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
-                    >
-                      <option value="USDC">USDC (Circle Programmable Multi-Sig on Polygon — 0% fee)</option>
-                      <option value="USDT">USDT (Tether USD Collateral)</option>
-                      <option value="FIAT">FIAT Bank Letter of Credit (Tier-1 Partner)</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-[var(--text-secondary)]">Independent Inspection Agency</label>
-                    <select
-                      value={intakeForm.inspectionAgent}
-                      onChange={(e) => setIntakeForm({ ...intakeForm, inspectionAgent: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
-                    >
-                      <option value="SGS International">SGS International (Pre-shipment Weight & Grade)</option>
-                      <option value="Bureau Veritas">Bureau Veritas (Phytosanitary & Lab Test)</option>
-                      <option value="Intertek">Intertek (Food Safety & Quality)</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2 p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-xs space-y-1">
-                    <span className="text-emerald-400 font-mono font-bold">CALCULATED ESCROW COLLATERAL:</span>
-                    <div className="text-lg font-mono font-bold text-white">
-                      ${(intakeForm.quantity * intakeForm.targetPriceUSD).toLocaleString()} {intakeForm.escrowToken}
+                {/* Group Tab 3: Quality Certificates */}
+                <TabsContent value="compliance" className="space-y-4 focus-visible:outline-none">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">
+                        Required Quality Certificates (Select what you need)
+                      </label>
+                      <p className="text-[11px] text-[var(--text-tertiary)]">
+                        We only show sellers who hold these verified certificates
+                      </p>
                     </div>
-                    <p className="text-[11px] text-[var(--text-secondary)]">
-                      Funds remain locked conditionally in the Smart Escrow Vault until OCR documents and IoT delivery geofence triggers are satisfied.
-                    </p>
+
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {AVAILABLE_CERTIFICATIONS.map((cert) => {
+                        const isSelected = intakeForm.requiredCertifications.includes(cert);
+                        return (
+                          <button
+                            key={cert}
+                            type="button"
+                            onClick={() => toggleCertification(cert)}
+                            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all ${
+                              isSelected
+                                ? "bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-bold shadow-sm"
+                                : "bg-[#101726] border border-white/[0.06] text-[var(--text-secondary)] hover:text-white"
+                            }`}
+                          >
+                            <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${
+                              isSelected ? "bg-emerald-400 text-black font-bold" : "border border-white/[0.2]"
+                            }`}>
+                              {isSelected ? "✓" : ""}
+                            </span>
+                            <span>{cert}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                </TabsContent>
+
+                {/* Group Tab 4: Safe Payment */}
+                <TabsContent value="escrow" className="space-y-4 focus-visible:outline-none">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Payment Currency</label>
+                      <select
+                        value={intakeForm.escrowToken}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, escrowToken: e.target.value as any })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
+                      >
+                        <option value="USDC">USDC (Digital USD — Instant & Safe, 0% fee)</option>
+                        <option value="USDT">USDT (Tether USD)</option>
+                        <option value="FIAT">Bank Letter of Credit</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono text-[var(--text-secondary)]">Independent Quality Inspector</label>
+                      <select
+                        value={intakeForm.inspectionAgent}
+                        onChange={(e) => setIntakeForm({ ...intakeForm, inspectionAgent: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] text-sm text-white outline-none font-mono"
+                      >
+                        <option value="SGS International">SGS (Checks weight & quality before loading)</option>
+                        <option value="Bureau Veritas">Bureau Veritas (Lab tests & safety certification)</option>
+                        <option value="Intertek">Intertek (Food quality & purity)</option>
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-2 p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-xs space-y-1">
+                      <span className="text-emerald-400 font-mono font-bold">TOTAL PAYMENT HELD SAFELY:</span>
+                      <div className="text-lg font-mono font-bold text-white">
+                        ${(intakeForm.quantity * intakeForm.targetPriceUSD).toLocaleString()} {intakeForm.escrowToken}
+                      </div>
+                      <p className="text-[11px] text-[var(--text-secondary)]">
+                        Your money is held safely in escrow. The seller only receives payment after the shipment arrives and documents are checked.
+                      </p>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
 
               {/* Action Buttons */}
               <div className="pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-xs text-[var(--text-secondary)] font-mono">
-                  Contract Estimate: <strong className="text-emerald-400">${(intakeForm.quantity * intakeForm.targetPriceUSD).toLocaleString()} USDC</strong>
+                  Estimated Total: <strong className="text-emerald-400">${(intakeForm.quantity * intakeForm.targetPriceUSD).toLocaleString()} USD</strong>
                 </div>
 
                 <SpecularButton
@@ -536,7 +536,7 @@ export const TradeIntentWizardPage = () => {
                   baseColor="#101F30"
                 >
                   <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Execute AI Semantic Matching & RAG Pipeline</span>
+                  <span>Find Best Trade Partners</span>
                   <ArrowRight className="w-4 h-4 text-emerald-400" />
                 </SpecularButton>
               </div>
@@ -546,7 +546,7 @@ export const TradeIntentWizardPage = () => {
           </motion.div>
         )}
 
-        {/* ── STAGE 3: RAG SYNTHESIS RESULTS & MATCHING DOSSIER ──────────────── */}
+        {/* ── STAGE 3: SYNTHESIS RESULTS & MATCHING DOSSIER ──────────────── */}
         {synthesisResult && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -560,14 +560,14 @@ export const TradeIntentWizardPage = () => {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-xs font-mono text-emerald-400 uppercase tracking-wider">
-                    AI RAG Synthesis Complete · {synthesisResult.tradeId}
+                    Best Matches Ready · Trade #{synthesisResult.tradeId}
                   </span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-[var(--text-primary)]">
-                  Trade Opportunity Dossier
+                  Top Verified Trade Partners
                 </h1>
                 <p className="text-xs text-[var(--text-secondary)]">
-                  Counterparties ranked by Semantic Fit + Historical Trust - Transaction Risk
+                  Ranked by reliability score, lowest tax rates, and 100% on-time delivery record.
                 </p>
               </div>
 
@@ -578,12 +578,12 @@ export const TradeIntentWizardPage = () => {
                   className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs text-[var(--text-secondary)] hover:text-white flex items-center gap-1.5 transition-colors"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span>Adjust Parameters</span>
+                  <span>Change Details</span>
                 </button>
 
                 <Link to="/trades/TRD-IND-UAE-550K">
                   <SpecularButton size="sm" radius={12} lineColor="#34C795" baseColor="#132235">
-                    <span>Lock Escrow & Open Workspace</span>
+                    <span>Open Trade Workspace</span>
                     <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
                   </SpecularButton>
                 </Link>
@@ -593,31 +593,31 @@ export const TradeIntentWizardPage = () => {
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 rounded-2xl bg-[#0C121D]/80 border border-white/[0.08] space-y-1">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Target HS Classification</div>
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Product Category</div>
                 <div className="text-lg font-mono font-bold text-emerald-400">{synthesisResult.hsClassification.hsCode}</div>
                 <div className="text-[11px] text-[var(--text-tertiary)] truncate">{synthesisResult.hsClassification.category}</div>
               </div>
 
               <div className="p-4 rounded-2xl bg-[#0C121D]/80 border border-white/[0.08] space-y-1">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Preferential CEPA Tariff</div>
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Import Tax Rate</div>
                 <div className="text-lg font-mono font-bold text-cyan-400">{synthesisResult.complianceRAG.tariffRate} Duty</div>
-                <div className="text-[11px] text-emerald-400 font-mono">Saved ${synthesisResult.dutySavingsUSD.toLocaleString()} vs MFN</div>
+                <div className="text-[11px] text-emerald-400 font-mono">You Save ${synthesisResult.dutySavingsUSD.toLocaleString()} in Taxes</div>
               </div>
 
               <div className="p-4 rounded-2xl bg-[#0C121D]/80 border border-white/[0.08] space-y-1">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Transaction Risk Index</div>
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Safety Score</div>
                 <div className="text-lg font-mono font-bold text-emerald-400">
-                  {synthesisResult.tradeRisk.compositeScore} / 100 ({synthesisResult.tradeRisk.riskLevel})
+                  Very Safe ({synthesisResult.tradeRisk.compositeScore}/100 Risk)
                 </div>
-                <div className="text-[11px] text-[var(--text-tertiary)]">All 5 risk drivers cleared</div>
+                <div className="text-[11px] text-[var(--text-tertiary)]">All verification checks passed</div>
               </div>
 
               <div className="p-4 rounded-2xl bg-[#0C121D]/80 border border-white/[0.08] space-y-1">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Contract Collateral</div>
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Protected Payment</div>
                 <div className="text-lg font-mono font-bold text-white">
-                  ${synthesisResult.totalContractValueUSD.toLocaleString()} USDC
+                  ${synthesisResult.totalContractValueUSD.toLocaleString()} USD
                 </div>
-                <div className="text-[11px] text-[var(--text-tertiary)] font-mono">Conditional Multi-Sig Vault</div>
+                <div className="text-[11px] text-[var(--text-tertiary)] font-mono">Safe Escrow Protected</div>
               </div>
             </div>
 
@@ -626,9 +626,9 @@ export const TradeIntentWizardPage = () => {
               <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
                 <h3 className="text-sm sm:text-base font-display font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Award className="w-4 h-4 text-emerald-400" />
-                  <span>Top Ranked Verified Counterparties (AI Match Ranking)</span>
+                  <span>Verified Sellers Ready to Trade</span>
                 </h3>
-                <span className="text-xs font-mono text-[var(--text-secondary)]">3 Matches Identified</span>
+                <span className="text-xs font-mono text-[var(--text-secondary)]">3 Best Matches Found</span>
               </div>
 
               <div className="space-y-3">
@@ -649,12 +649,12 @@ export const TradeIntentWizardPage = () => {
                           </span>
                           {idx === 0 && (
                             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/40">
-                              TOP AI MATCH
+                              #1 BEST MATCH
                             </span>
                           )}
                         </div>
                         <div className="text-xs font-mono text-[var(--text-secondary)]">
-                          {exporter.originCountry} · {exporter.port} · {exporter.historicalVolumeMT.toLocaleString()} MT Delivered · Dispute Rate: {exporter.disputeRate}
+                          {exporter.originCountry} · {exporter.port} · {exporter.historicalVolumeMT.toLocaleString()} Tonnes Delivered · 0% Disputes
                         </div>
                         <p className="text-xs text-[var(--text-secondary)] leading-relaxed pt-1">
                           {exporter.explanation}
@@ -689,16 +689,16 @@ export const TradeIntentWizardPage = () => {
                                   activeStatus: "Tier-1 Verified Exporter",
                                 })
                               }
-                              className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 underline block mt-0.5"
+                              className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 underline block mt-0.5 cursor-pointer"
                             >
-                              View Breakdown →
+                              View Score Details →
                             </button>
                           </div>
                         </div>
 
                         <Link to="/trades/TRD-IND-UAE-550K">
                           <InteractiveButton variant="primary" size="sm">
-                            <span>Select & Initiate Trade</span>
+                            <span>Start Trade with this Seller</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                           </InteractiveButton>
                         </Link>
@@ -718,14 +718,14 @@ export const TradeIntentWizardPage = () => {
               </div>
             </div>
 
-            {/* Regulatory RAG Documents Checklist */}
+            {/* Required Trade Documents */}
             <div className="p-6 rounded-3xl bg-[#0C121D]/90 border border-white/[0.08] backdrop-blur-2xl space-y-4">
               <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
                 <h3 className="text-sm sm:text-base font-display font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <FileCheck2 className="w-4 h-4 text-cyan-400" />
-                  <span>Mandatory Regulatory Documents (India-UAE CEPA Schedule)</span>
+                  <span>Required Trade Documents</span>
                 </h3>
-                <span className="text-xs font-mono text-cyan-400">OCR Cross-Check Required</span>
+                <span className="text-xs font-mono text-cyan-400">Checked automatically on upload</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -735,12 +735,12 @@ export const TradeIntentWizardPage = () => {
                       <span>{doc.name}</span>
                       {doc.mandatory && (
                         <span className="text-[9px] font-mono text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/40">
-                          MANDATORY
+                          REQUIRED
                         </span>
                       )}
                     </div>
                     <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
-                      Issuer: {doc.issuingAuthority}
+                      Issued by: {doc.issuingAuthority}
                     </div>
                   </div>
                 ))}
