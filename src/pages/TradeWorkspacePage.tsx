@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
@@ -15,9 +15,12 @@ import CryptoEscrowCard from "@/components/escrow/CryptoEscrowCard";
 import ShipmentTracker from "@/components/shipments/ShipmentTracker";
 import DisputeResolutionSuite from "@/components/disputes/DisputeResolutionSuite";
 import PublicTradeLedgerTable from "@/components/blockchain/PublicTradeLedgerTable";
-import { AgentChat } from "@/components/agent-elements/agent-chat";
 import type { Message } from "@/components/agent-elements/types";
 import { TrustBreakdownDrawer } from "@/components/trust/TrustBreakdownDrawer";
+
+const AgentChat = lazy(() =>
+  import("@/components/agent-elements/agent-chat").then((m) => ({ default: m.AgentChat }))
+);
 import {
   Ship,
   FileCheck2,
@@ -343,18 +346,26 @@ export const TradeWorkspacePage: React.FC = () => {
         maxWidth="md"
       >
         <div className="h-[520px]">
-          <AgentChat
-            messages={messages}
-            onSend={handleSendMessage}
-            status={status}
-            onStop={() => setStatus("idle")}
-            suggestions={[
-              { id: "1", label: "Check vessel ETA in Dubai", value: "Check vessel ETA in Dubai" },
-              { id: "2", label: "Inspect escrow release conditions", value: "Inspect escrow release conditions" },
-              { id: "3", label: "View Certificate of Origin hash", value: "View Certificate of Origin hash" },
-            ]}
-            emptyStatePosition="center"
-          />
+          <Suspense
+            fallback={
+              <div className="h-full flex items-center justify-center text-xs font-mono text-slate-500 animate-pulse">
+                Initializing AI Copilot...
+              </div>
+            }
+          >
+            <AgentChat
+              messages={messages}
+              onSend={handleSendMessage}
+              status={status}
+              onStop={() => setStatus("idle")}
+              suggestions={[
+                { id: "1", label: "Check vessel ETA in Dubai", value: "Check vessel ETA in Dubai" },
+                { id: "2", label: "Inspect escrow release conditions", value: "Inspect escrow release conditions" },
+                { id: "3", label: "View Certificate of Origin hash", value: "View Certificate of Origin hash" },
+              ]}
+              emptyStatePosition="center"
+            />
+          </Suspense>
         </div>
       </DetailDrawer>
 

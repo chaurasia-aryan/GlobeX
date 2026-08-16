@@ -24,6 +24,7 @@ import {
   Building2,
   ShoppingBag,
 } from "lucide-react";
+import PillNav from "@/components/ui/PillNav";
 
 export const RoleNavigation: React.FC = () => {
   const { user, role, setRole, isBuyer, isExporter, roleLabel, roleAccentColor } = useWorkspace();
@@ -94,13 +95,13 @@ export const RoleNavigation: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#070A0E]/90 backdrop-blur-xl select-none">
+    <header className="sticky top-0 z-40 w-full bg-[#070A0E]/80 backdrop-blur-2xl select-none">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         
         {/* ── Brand Logo + Role Workspace Tag ─────────────────────────────── */}
         <div className="flex items-center gap-3 shrink-0">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-7 h-7 rounded-lg bg-[#101726] border border-white/[0.12] group-hover:border-emerald-500/50 flex items-center justify-center transition-all">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 flex items-center justify-center transition-all">
               <svg
                 className="w-3.5 h-3.5 text-emerald-400"
                 viewBox="0 0 24 24"
@@ -123,12 +124,12 @@ export const RoleNavigation: React.FC = () => {
           {/* Role Indicator Pill in Header */}
           <div
             className={cn(
-              "hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium border select-none",
+              "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium select-none",
               isBuyer
-                ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
+                ? "bg-sky-500/10 text-sky-400"
                 : isExporter
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                : "bg-slate-800 text-slate-300 border-slate-700"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "bg-white/[0.06] text-slate-300"
             )}
           >
             <span
@@ -139,44 +140,23 @@ export const RoleNavigation: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Primary Navigation Links (Role Dependent) ───────────────────── */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => {
-            const isActive =
-              location.pathname === item.href ||
-              (item.href !== "/" &&
-                item.href !== "/dashboard" &&
-                location.pathname.startsWith(item.href));
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={cn(
-                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-sans font-medium transition-colors",
-                  isActive
-                    ? "text-white font-semibold"
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
-                )}
-              >
-                <Icon className="w-3.5 h-3.5 opacity-80 shrink-0" />
-                <span>{item.label}</span>
-                {item.isLive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                )}
-
-                {isActive && (
-                  <motion.div
-                    layoutId="role-nav-pill"
-                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                    className="absolute inset-0 rounded-xl bg-white/[0.08] border border-white/[0.12] -z-10"
-                  />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* ── Primary Navigation Links (React Bits PillNav) ───────────────── */}
+        <div className="hidden md:flex items-center">
+          <PillNav
+            embedded={true}
+            hideLogo={true}
+            items={navItems.map((item) => ({
+              label: item.label,
+              href: item.href,
+            }))}
+            activeHref={location.pathname}
+            baseColor="#070A0E"
+            pillColor="transparent"
+            hoveredPillTextColor={roleAccentColor}
+            pillTextColor="#94A3B8"
+            initialLoadAnimation={false}
+          />
+        </div>
 
         {/* ── Search, Role Switcher & Account Menu ───────────────────────── */}
         <div className="flex items-center gap-2">
@@ -184,7 +164,7 @@ export const RoleNavigation: React.FC = () => {
           {/* Quick Search */}
           <form
             onSubmit={handleSearchSubmit}
-            className="relative hidden lg:flex items-center w-48 h-8 px-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] focus-within:border-white/[0.2] transition-colors"
+            className="relative hidden lg:flex items-center w-48 h-8 px-3 rounded-full bg-white/[0.04] hover:bg-white/[0.07] focus-within:bg-white/[0.08] transition-all"
           >
             <Search className="w-3 h-3 text-slate-500 mr-2 shrink-0" />
             <input
@@ -202,10 +182,10 @@ export const RoleNavigation: React.FC = () => {
               type="button"
               onClick={() => setAccountMenuOpen(!accountMenuOpen)}
               className={cn(
-                "flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-sans transition-all cursor-pointer",
+                "flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-sans transition-all cursor-pointer",
                 accountMenuOpen
-                  ? "bg-[#141F30] border-white/[0.2] text-white"
-                  : "bg-[#0F1724] border-white/[0.08] hover:border-white/[0.15] text-slate-300"
+                  ? "bg-white/[0.12] text-white"
+                  : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300"
               )}
             >
               <div
@@ -228,10 +208,10 @@ export const RoleNavigation: React.FC = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-11 w-64 p-2 rounded-2xl bg-[#0C121D] border border-white/[0.12] shadow-2xl z-50 space-y-2 text-xs font-sans"
+                  className="absolute right-0 top-11 w-64 p-2 rounded-2xl bg-[#0C121D] border border-white/[0.08] shadow-2xl z-50 space-y-2 text-xs font-sans"
                 >
                   {/* User entity details */}
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] space-y-1">
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] space-y-1">
                     <div className="font-semibold text-white truncate">{user.name}</div>
                     <div className="text-[11px] text-slate-400 truncate">{user.companyName}</div>
                     <div className="text-[10px] font-mono text-slate-500">{user.email}</div>
@@ -303,7 +283,7 @@ export const RoleNavigation: React.FC = () => {
           <button
             type="button"
             onClick={() => setDrawerOpen(!drawerOpen)}
-            className="p-2 rounded-xl bg-[#0F1724] border border-white/[0.08] hover:border-white/[0.2] text-slate-400 hover:text-white transition-all cursor-pointer"
+            className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white transition-all cursor-pointer"
             title="All Tools & Secondary Modules"
             aria-label="Toggle navigation drawer"
           >

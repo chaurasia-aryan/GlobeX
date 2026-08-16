@@ -4,9 +4,9 @@ import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
 const PAD = 20;
 
 const SIZES = {
-  sm: 'text-[0.85rem] px-[20px] py-[8px]',
-  md: 'text-[0.95rem] px-[28px] py-[12px]',
-  lg: 'text-[1.1rem] px-8 py-[16px]'
+  sm: 'text-[0.85rem] px-[22px] py-[10px]',
+  md: 'text-[1rem] px-[30px] py-[14px]',
+  lg: 'text-[1.15rem] px-10 py-[18px]'
 };
 
 const VERT = `#version 300 es
@@ -97,18 +97,18 @@ export interface SpecularButtonProps {
 
 export const SpecularButton: React.FC<SpecularButtonProps> = ({
   children = 'Get Started',
-  size = 'md',
-  radius = 16,
+  size = 'lg',
+  radius = 18,
   tint = '#ffffff',
-  tintOpacity = 0.04,
-  blur = 8,
-  textColor = '#F1F5F9',
-  lineColor = '#34C795',
-  baseColor = '#1e293b',
-  intensity = 1.2,
-  shineSize = 12,
+  tintOpacity = 0,
+  blur = 0,
+  textColor = '#f5f5f5',
+  lineColor = '#ffffff',
+  baseColor = '#525252',
+  intensity = 1,
+  shineSize = 10,
   shineFade = 40,
-  thickness = 1.2,
+  thickness = 1,
   speed = 0.35,
   followMouse = true,
   proximity = 250,
@@ -172,12 +172,12 @@ export const SpecularButton: React.FC<SpecularButtonProps> = ({
         uRadius: { value: 0 },
         uAngle: { value: 2.4 },
         uPx: { value: dpr },
-        uLineColor: { value: [0.2, 0.78, 0.58] },
-        uBaseColor: { value: [0.12, 0.16, 0.23] },
-        uIntensity: { value: 1.2 },
+        uLineColor: { value: [1, 1, 1] },
+        uBaseColor: { value: [0.32, 0.32, 0.32] },
+        uIntensity: { value: 1 },
         uShineSize: { value: 0.17 },
         uShineFade: { value: 0.7 },
-        uThickness: { value: 1.2 },
+        uThickness: { value: 1 },
         uBaseWidth: { value: dpr }
       }
     });
@@ -275,7 +275,7 @@ export const SpecularButton: React.FC<SpecularButtonProps> = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`relative m-0 inline-flex cursor-pointer items-center justify-center border-none font-display font-semibold leading-none tracking-[0.01em] outline-none transition-transform duration-150 active:scale-[0.97] disabled:cursor-default disabled:opacity-55 disabled:active:scale-100 [color:var(--sb-text-color)] [border-radius:var(--sb-radius)] [background:color-mix(in_srgb,var(--sb-tint)_calc(var(--sb-tint-opacity)*100%),transparent)] [backdrop-filter:blur(var(--sb-blur))] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_8px_24px_rgba(0,0,0,0.35)] focus-visible:outline-2 focus-visible:outline-offset-[3px] ${SIZES[size] || SIZES.md}${className ? ` ${className}` : ''}`}
+      className={`relative m-0 inline-flex cursor-pointer items-center justify-center border-none font-medium leading-none tracking-[0.01em] outline-none transition-transform duration-150 active:scale-[0.97] disabled:cursor-default disabled:opacity-55 disabled:active:scale-100 [color:var(--sb-text-color)] [border-radius:var(--sb-radius)] [background:color-mix(in_srgb,var(--sb-tint)_calc(var(--sb-tint-opacity)*100%),transparent)] [backdrop-filter:blur(var(--sb-blur))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_8px_24px_rgba(0,0,0,0.25)] focus-visible:outline-2 focus-visible:outline-offset-[3px] ${SIZES[size] || SIZES.lg}${className ? ` ${className}` : ''}`}
       style={{
         // @ts-ignore
         '--sb-radius': `${radius}px`,

@@ -7,7 +7,6 @@ import { SAMPLE_DATA, aggregateByCountry } from "@/lib/tradeData";
 import { appwriteService } from "@/services/appwrite/client";
 import SplitText from "@/components/ui/split-text";
 import BorderBeam from "@/components/ui/border-beam";
-import SpecularButton from "@/components/ui/SpecularButton";
 import {
   ArrowRight,
   ShieldCheck,
@@ -68,13 +67,11 @@ export default function LandingPage() {
     const indiaAlt = 1.55;
 
     // Milestone 2: Mumbai Trade Hub (Nhava Sheva Port)
-    const mumbaiLat = 19.0760;
-    const mumbaiLng = 72.8777;
-    const mumbaiAlt = 0.36;
+    const mumbaiLat = 18.9438;
+    const mumbaiLng = 72.9463;
+    const mumbaiAlt = 0.55;
 
-    let lat = startLat;
-    let lng = startLng;
-    let altitude = startAlt;
+    let lat, lng, altitude;
 
     if (progress <= 0.45) {
       // Stage 1: Fast orbital sweep from live screen angle to frame whole of India
@@ -166,7 +163,7 @@ export default function LandingPage() {
           </p>
 
           {/* Smooth Pulsing Scroll Cue */}
-          <div className="pt-6 flex items-center gap-3.5 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto">
+          <div className="pt-4 flex items-center gap-3.5 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto">
             <div className="w-9 h-9 rounded-full border border-white/[0.15] bg-[#111824]/80 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
               <ChevronDown className="w-5 h-5" />
             </div>
@@ -198,134 +195,97 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* ── STAGE 3: DESTINATION VIEW — BUTTER-SMOOTH PERSONA POPUP ─────────── */}
+        {/* ── STAGE 3: SELECT WORKSPACE MODAL (Clean, Focused, Premium) ───── */}
         <AnimatePresence>
           {showPersona && (
             <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.96 }}
-              transition={{
-                type: "spring",
-                stiffness: 240,
-                damping: 24,
-                mass: 0.7,
-              }}
-              className="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 lg:p-8 pointer-events-auto"
+              initial={{ opacity: 0, scale: 0.94, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 30 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute z-40 w-full max-w-[840px] px-6"
             >
-              <div className="w-full max-w-4xl space-y-6">
+              <div className="relative rounded-3xl border border-white/[0.12] bg-[#0A0E17]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl overflow-hidden">
+                <BorderBeam size={250} duration={12} delay={9} colorFrom="#34C795" colorTo="#38BDF8" />
                 
-                {/* Header with Mumbai Port Badge */}
-                <div className="text-center space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/70 border border-emerald-500/40 text-xs font-mono text-[var(--emerald)] backdrop-blur-md shadow-lg">
-                    <Anchor className="w-3.5 h-3.5" />
-                    <span>MUMBAI TRADE GATEWAY (JNPT NHAVA SHEVA · INNSA)</span>
+                <div className="text-center space-y-3 mb-8">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Cross-Border B2B Intelligence Engine</span>
                   </div>
-                  <h2 className="text-2xl sm:text-4xl font-display font-extrabold tracking-tight text-[var(--text-primary)]">
-                    Select Your Trade Role
+                  <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-[var(--text-primary)]">
+                    Select Your Trade Perspective
                   </h2>
-                  <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-sans max-w-lg mx-auto">
-                    Connect your enterprise to the trusted cross-border execution network with automated compliance & smart escrow.
+                  <p className="text-sm text-[var(--text-secondary)] max-w-lg mx-auto">
+                    Customized escrow protocols, real-time customs intelligence, and automated document verification.
                   </p>
                 </div>
 
-                {/* Two Big High-Tech Persona Cards with Spring Hover */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
-                  {/* Option 1: Importer (Buyer) */}
-                  <motion.div
-                    whileHover={{ scale: 1.025, y: -4 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Option 1: Importer Persona */}
+                  <button
                     onClick={() => handleSelectRole("buyer")}
-                    className="group relative p-6 sm:p-8 rounded-3xl border border-cyan-500/25 bg-[#101726]/95 backdrop-blur-2xl hover:border-cyan-400/60 hover:bg-[#141E30] transition-all cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.65)] space-y-5 overflow-hidden"
+                    className="p-6 rounded-2xl border border-white/[0.08] bg-[#121824]/60 hover:bg-[#162030] hover:border-cyan-500/50 text-left transition-all group flex flex-col justify-between space-y-5 cursor-pointer shadow-lg hover:shadow-cyan-500/10"
                   >
-                    <BorderBeam size={220} duration={9} colorFrom="#0ea5e9" colorTo="#38bdf8" />
-
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-cyan-950/70 border border-cyan-500/40 flex items-center justify-center text-[var(--accent)] group-hover:scale-110 transition-transform">
+                    <div className="space-y-4">
+                      <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-transform">
                         <ShoppingBag className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/40">
-                        BUYER SOURCING
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 relative z-10">
-                      <h3 className="text-xl sm:text-2xl font-display font-bold text-[var(--text-primary)] group-hover:text-cyan-400 transition-colors">
-                        I am an Importer
-                      </h3>
-                      <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-                        Source verified agri-commodities, textiles, and materials from India. Enjoy automated OCR verification, cargo inspection tracking, and conditional escrow release.
-                      </p>
-                    </div>
-
-                    <div className="pt-3 flex items-center justify-between relative z-10 border-t border-white/[0.08]">
-                      <span className="text-xs text-[var(--text-tertiary)] font-mono">0% CEPA Preferential Duty</span>
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--accent)] group-hover:translate-x-1.5 transition-transform">
-                        <span>Enter as Importer</span>
-                        <ArrowRight className="w-4 h-4" />
+                      <div className="space-y-1">
+                        <h3 className="font-display font-bold text-lg text-[var(--text-primary)] group-hover:text-cyan-400 transition-colors">
+                          I am an Importer
+                        </h3>
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                          Source agricultural commodities, lock escrow safely, and verify supplier credentials before release.
+                        </p>
                       </div>
                     </div>
-                  </motion.div>
 
-                  {/* Option 2: Exporter (Seller) */}
-                  <motion.div
-                    whileHover={{ scale: 1.025, y: -4 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:translate-x-0.5 transition-transform">
+                      <span>Source Commodities</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </button>
+
+                  {/* Option 2: Exporter Persona */}
+                  <button
                     onClick={() => handleSelectRole("exporter")}
-                    className="group relative p-6 sm:p-8 rounded-3xl border border-emerald-500/25 bg-[#0F1A24]/95 backdrop-blur-2xl hover:border-emerald-400/60 hover:bg-[#13222E] transition-all cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.65)] space-y-5 overflow-hidden"
+                    className="p-6 rounded-2xl border border-white/[0.08] bg-[#121824]/60 hover:bg-[#162030] hover:border-emerald-500/50 text-left transition-all group flex flex-col justify-between space-y-5 cursor-pointer shadow-lg hover:shadow-emerald-500/10"
                   >
-                    <BorderBeam size={220} duration={9} colorFrom="#10b981" colorTo="#34d399" />
-
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-950/70 border border-emerald-500/40 flex items-center justify-center text-[var(--emerald)] group-hover:scale-110 transition-transform">
+                    <div className="space-y-4">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
                         <Building2 className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/40">
-                        EXPORTER SELLER
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 relative z-10">
-                      <h3 className="text-xl sm:text-2xl font-display font-bold text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
-                        I am an Exporter
-                      </h3>
-                      <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-                        List verified catalog inventory, access global Tier-1 international buyers, and guarantee 100% upfront multi-sig escrow collateral before dispatch.
-                      </p>
-                    </div>
-
-                    <div className="pt-3 flex items-center justify-between relative z-10 border-t border-white/[0.08]">
-                      <span className="text-xs text-[var(--text-tertiary)] font-mono">100% Guaranteed Escrow</span>
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--emerald)] group-hover:translate-x-1.5 transition-transform">
-                        <span>Enter as Exporter</span>
-                        <ArrowRight className="w-4 h-4" />
+                      <div className="space-y-1">
+                        <h3 className="font-display font-bold text-lg text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
+                          I am an Exporter
+                        </h3>
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                          List verified product batches, match with global buyer demand, and receive guaranteed escrow payouts.
+                        </p>
                       </div>
                     </div>
-                  </motion.div>
+
+                    <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:translate-x-0.5 transition-transform">
+                      <span>List Export Catalog</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </button>
                 </div>
 
-                {/* Quick Flagship Demo Callout */}
-                <div className="p-4 rounded-2xl border border-white/[0.08] bg-[#0A1018]/80 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
-                    <span className="text-[var(--text-secondary)]">
-                      Live Corridor:{" "}
-                      <strong className="text-[var(--text-primary)]">
-                        500t Basmati Rice · India (Nhava Sheva) ➔ UAE (Jebel Ali) · $550,000 USDC
-                      </strong>
-                    </span>
+                <div className="mt-6 pt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-[var(--text-secondary)] font-mono">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Multi-Sig Smart Vault Protected</span>
                   </div>
-                  <Link to="/trades/TRD-IND-UAE-550K">
-                    <SpecularButton size="sm" radius={10} lineColor="#5EC9DB" baseColor="#132235">
-                      <span>Open Flagship Workspace</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
-                    </SpecularButton>
+                  <Link
+                    to="/dashboard"
+                    className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 hover:underline"
+                  >
+                    <span>Direct Demo Command Center</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </Link>
                 </div>
-
               </div>
             </motion.div>
           )}

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,9 +33,18 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
 
-// Ultra-light fallback loader
+// Smooth instant scroll reset on route changes
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
+// Ultra-light, non-jarring fallback loader
 const RouteFallback: React.FC = () => (
-  <div className="min-h-screen w-full flex items-center justify-center bg-[#070A0E] text-slate-400">
+  <div className="min-h-[calc(100vh-3.5rem)] w-full flex items-center justify-center bg-[#070A0E] text-slate-400">
     <div className="flex flex-col items-center gap-3">
       <div className="w-8 h-8 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center animate-pulse text-emerald-400">
         <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
@@ -51,8 +60,8 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <Suspense fallback={<RouteFallback />}>
+    <Suspense fallback={<RouteFallback />}>
+      <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           {/* Primary User Intent & Flow */}
           <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
@@ -80,8 +89,8 @@ const AnimatedRoutes = () => {
           <Route path="/admin" element={<PageTransition><AdminSystemPage /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
-      </Suspense>
-    </AnimatePresence>
+      </AnimatePresence>
+    </Suspense>
   );
 };
 
@@ -92,6 +101,7 @@ const App: React.FC = () => (
       <Sonner />
       <WorkspaceProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <div className="flex flex-col min-h-screen bg-[#070A0E] text-slate-100 selection:bg-emerald-500/20 selection:text-emerald-300">
             <main className="flex-1">
               <ErrorBoundary>

@@ -4,22 +4,19 @@ import { ReactNode } from "react";
 const pageVariants = {
   initial: {
     opacity: 0,
-    y: 8,
   },
   animate: {
     opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.28,
-      ease: [0.16, 1, 0.3, 1], // Ultra-fast, frictionless spring-like ease
+      duration: 0.22,
+      ease: [0.22, 1, 0.36, 1], // Smooth cubic-bezier without abrupt steps
     },
   },
   exit: {
     opacity: 0,
-    y: -6,
     transition: {
-      duration: 0.18,
-      ease: [0.16, 1, 0.3, 1],
+      duration: 0.14,
+      ease: "easeOut",
     },
   },
 };
@@ -31,7 +28,7 @@ export const PageTransition = ({ children, className = "" }: { children: ReactNo
       initial="initial"
       animate="animate"
       exit="exit"
-      className={`w-full h-full ${className}`}
+      className={`w-full min-h-[calc(100vh-3.5rem)] ${className}`}
     >
       {children}
     </motion.div>

@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => ({
             "@tanstack/react-query",
           ],
           "vendor-motion": ["framer-motion"],
+          "vendor-gsap": ["gsap"],
           "vendor-icons": ["lucide-react"],
           "vendor-globe": ["three", "three-globe", "react-globe.gl"],
         },
