@@ -152,11 +152,6 @@ export default function LandingPage() {
           }}
           className="absolute left-6 sm:left-12 lg:left-20 max-w-[620px] xl:max-w-[680px] space-y-7 z-20 pointer-events-none"
         >
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#121822]/85 border border-white/[0.12] text-xs sm:text-sm text-[var(--text-secondary)] backdrop-blur-md shadow-md pointer-events-auto">
-            <span className="w-2.5 h-2.5 rounded-full bg-[var(--emerald)] animate-pulse" />
-            <span>Global Trade Made Simple & Safe</span>
-          </div>
-
           <h1 className="text-5xl sm:text-6xl lg:text-[4.3rem] xl:text-[4.75rem] font-display font-extrabold tracking-tight leading-[1.02] text-[var(--text-primary)] pointer-events-auto">
             <Balancer>
               <SplitText text="Trade globally." delay={0.1} className="justify-start font-display font-extrabold" />
