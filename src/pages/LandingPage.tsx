@@ -12,12 +12,13 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-type LandingPhase = "idle" | "rotating" | "zooming" | "mumbai" | "auth-reveal" | "auth-ready";
+type LandingPhase = "idle" | "rotating" | "zooming" | "mumbai" | "auth-ready";
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<TradeGlobeRef>(null);
   const initialPovRef = useRef<{ lat: number; lng: number; altitude: number } | null>(null);
+  const phaseRef = useRef<LandingPhase>("idle");
   const navigate = useNavigate();
   const prefersReducedMotion = useReducedMotion();
   const aggregatedData = useMemo(() => aggregateByCountry(SAMPLE_DATA, null), []);
@@ -27,12 +28,12 @@ export default function LandingPage() {
     offset: ["start start", "end end"],
   });
 
-  // Spring damping for buttery-smooth scroll response
+  // Snappy, frictionless spring for silky smooth 60fps tracking
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 85,
-    damping: 26,
-    mass: 0.5,
-    restDelta: 0.0001,
+    stiffness: 160,
+    damping: 32,
+    mass: 0.15,
+    restDelta: 0.001,
   });
 
   const [landingPhase, setLandingPhase] = useState<LandingPhase>("idle");
@@ -41,14 +42,12 @@ export default function LandingPage() {
   useMotionValueEvent(smoothProgress, "change", (progress) => {
     if (prefersReducedMotion) return;
 
-    if (progress < 0.25) {
-      setLandingPhase("rotating");
-    } else if (progress < 0.55) {
-      setLandingPhase("zooming");
-    } else if (progress < 0.78) {
-      setLandingPhase("mumbai");
-    } else {
-      setLandingPhase("auth-ready");
+    const nextPhase: LandingPhase =
+      progress < 0.20 ? "rotating" : progress < 0.45 ? "zooming" : progress < 0.68 ? "mumbai" : "auth-ready";
+
+    if (phaseRef.current !== nextPhase) {
+      phaseRef.current = nextPhase;
+      setLandingPhase(nextPhase);
     }
 
     if (!globeRef.current) return;
@@ -71,14 +70,14 @@ export default function LandingPage() {
 
     let lat, lng, altitude;
 
-    if (progress <= 0.45) {
-      const t1 = progress / 0.45;
+    if (progress <= 0.40) {
+      const t1 = progress / 0.40;
       const ease1 = 1 - Math.pow(1 - t1, 2.5);
       lat = startLat + (indiaLat - startLat) * ease1;
       lng = startLng + (indiaLng - startLng) * ease1;
       altitude = startAlt + (indiaAlt - startAlt) * ease1;
     } else {
-      const t2 = (progress - 0.45) / 0.55;
+      const t2 = (progress - 0.40) / 0.60;
       const ease2 = 1 - Math.pow(1 - t2, 2.8);
       lat = indiaLat + (mumbaiLat - indiaLat) * ease2;
       lng = indiaLng + (mumbaiLng - indiaLng) * ease2;
@@ -88,31 +87,31 @@ export default function LandingPage() {
     globeRef.current.pointOfView({ lat, lng, altitude }, 0);
   });
 
-  // Stage 1 Hero Transitions
-  const heroOpacity = useTransform(smoothProgress, [0, 0.25], [1, 0]);
-  const heroY = useTransform(smoothProgress, [0, 0.25], [0, -40]);
+  // Stage 1 Hero Transitions (Smooth fade out without gaps)
+  const heroOpacity = useTransform(smoothProgress, [0, 0.28], [1, 0]);
+  const heroY = useTransform(smoothProgress, [0, 0.28], [0, -30]);
   const heroPointerEvents = useTransform(smoothProgress, (v) => (v < 0.25 ? "auto" : "none"));
 
-  // Stage 2 Globe Zoom & Spatial Dimming
-  const globeScale = useTransform(smoothProgress, [0, 0.45, 0.85], [1, 1.35, 1.8]);
-  const globeX = useTransform(smoothProgress, [0, 0.45, 0.85], ["18%", "4%", "-4%"]);
-  const globeOpacity = useTransform(smoothProgress, [0.65, 0.95], [1, 0.25]);
+  // Stage 2 Globe Zoom & Spatial Dimming (GPU only)
+  const globeScale = useTransform(smoothProgress, [0, 0.40, 0.80], [1, 1.35, 1.8]);
+  const globeX = useTransform(smoothProgress, [0, 0.40, 0.80], ["18%", "4%", "-4%"]);
+  const globeOpacity = useTransform(smoothProgress, [0.60, 0.90], [1, 0.25]);
 
-  // Stage 2 HUD Telemetry Pill
-  const hudOpacity = useTransform(smoothProgress, [0.15, 0.32, 0.55, 0.72], [0, 1, 1, 0]);
-  const hudY = useTransform(smoothProgress, [0.15, 0.32], [-20, 0]);
+  // ── "Bloom from Mumbai" Animation Sequence (100% GPU accelerated) ─────────
+  // Seamlessly overlaps with hero fade-out to prevent any momentary black screen
+  const bloomRadiusNum = useTransform(smoothProgress, [0.26, 0.60], [0, 160]);
+  const authClipPath = useTransform(bloomRadiusNum, (r) => `circle(${r}% at 50% 50%)`);
 
-  // Navigation Bar on Login Stage
-  const navOpacity = useTransform(smoothProgress, [0.35, 0.6], [0, 1]);
-  const navY = useTransform(smoothProgress, [0.35, 0.6], [-20, 0]);
-  const navPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.35 ? "auto" : "none"));
+  const authOpacity = useTransform(smoothProgress, [0.26, 0.44], [0, 1]);
+  const authScale = useTransform(smoothProgress, [0.26, 0.60], [0.35, 1.0]);
+  const authPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.45 ? "auto" : "none"));
 
-  // Stage 3 Dynamic Floating Auth Cockpit Emergence
-  const authOpacity = useTransform(smoothProgress, [0.38, 0.6], [0, 1]);
-  const authScale = useTransform(smoothProgress, [0.38, 0.65], [0.96, 1.0]);
-  const authX = useTransform(smoothProgress, [0.38, 0.65], [40, 0]);
-  const authY = useTransform(smoothProgress, [0.38, 0.65], [10, 0]);
-  const authPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.5 ? "auto" : "none"));
+  const scrollToAuth = () => {
+    window.scrollTo({
+      top: window.innerHeight * 1.8,
+      behavior: "smooth",
+    });
+  };
 
   const handleLoginSuccess = () => {
     navigate("/dashboard");
@@ -136,16 +135,9 @@ export default function LandingPage() {
         />
 
         {/* ── TOP NAVIGATION BAR ──────────────────────────────────────────── */}
-        <motion.div
-          style={{
-            opacity: prefersReducedMotion ? 1 : navOpacity,
-            y: prefersReducedMotion ? 0 : navY,
-            pointerEvents: prefersReducedMotion ? "auto" : navPointerEvents,
-          }}
-          className="w-full z-50 sticky top-0"
-        >
+        <div className="w-full z-50 sticky top-0 transform-gpu">
           <RoleNavigation />
-        </motion.div>
+        </div>
 
         {/* ── 3D EARTH GLOBE LAYER (Optimized Lifecycle & Auto-Paused on Auth) ─ */}
         {!prefersReducedMotion && (
@@ -155,7 +147,7 @@ export default function LandingPage() {
               x: globeX,
               opacity: globeOpacity,
             }}
-            className="absolute inset-0 flex items-center justify-center pointer-events-auto z-10"
+            className="absolute inset-0 flex items-center justify-center pointer-events-auto z-10 transform-gpu"
           >
             <div className="w-[950px] h-[950px] sm:w-[1150px] sm:h-[1150px] lg:w-[1350px] lg:h-[1350px] xl:w-[1550px] xl:h-[1550px] flex items-center justify-center">
               <TradeGlobe
@@ -180,7 +172,7 @@ export default function LandingPage() {
               y: heroY,
               pointerEvents: heroPointerEvents,
             }}
-            className="absolute left-6 sm:left-12 lg:left-20 top-1/2 -translate-y-1/2 max-w-[620px] xl:max-w-[680px] space-y-7 z-20 pointer-events-none"
+            className="absolute left-6 sm:left-12 lg:left-20 top-1/2 -translate-y-1/2 max-w-[620px] xl:max-w-[680px] space-y-7 z-20 pointer-events-none transform-gpu"
           >
             <h1 className="text-5xl sm:text-6xl lg:text-[4.3rem] xl:text-[4.75rem] font-display font-extrabold tracking-tight leading-[1.02] text-[var(--text-primary)] pointer-events-auto">
               <Balancer>
@@ -195,8 +187,11 @@ export default function LandingPage() {
               Connect with verified international buyers and sellers, verify trade papers automatically, and protect every payment with programmable escrow.
             </p>
 
-            {/* Pulsing Scroll Cue */}
-            <div className="pt-2 flex items-center gap-3 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto">
+            {/* Pulsing Scroll Cue with Click-to-Scroll Trigger */}
+            <div
+              onClick={scrollToAuth}
+              className="pt-2 inline-flex items-center gap-3 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto cursor-pointer hover:text-white transition-colors"
+            >
               <div className="w-8 h-8 rounded-full border border-white/[0.15] bg-[#111824]/90 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
                 <ChevronDown className="w-4 h-4" />
               </div>
@@ -205,46 +200,23 @@ export default function LandingPage() {
           </motion.div>
         )}
 
-        {/* ── STAGE 2: ORBITAL HUD TELEMETRY PILL ─────────────────────────── */}
-        {!prefersReducedMotion && (
+        {/* ── STAGE 2: "BLOOM FROM MUMBAI" AUTH SURFACE REVEAL ───────────── */}
+        <div className="absolute inset-0 z-40 w-full h-full min-h-screen flex items-center justify-center p-4 sm:p-6 pointer-events-none">
           <motion.div
             style={{
-              opacity: hudOpacity,
-              y: hudY,
+              opacity: prefersReducedMotion ? 1 : authOpacity,
+              scale: prefersReducedMotion ? 1 : authScale,
+              clipPath: prefersReducedMotion ? "none" : authClipPath,
+              WebkitClipPath: prefersReducedMotion ? "none" : authClipPath,
+              pointerEvents: prefersReducedMotion ? "auto" : authPointerEvents,
+              transformOrigin: "50% 50%",
             }}
-            className="absolute top-24 z-20 pointer-events-none px-4"
+            className="w-full max-w-[760px] pointer-events-auto transform-gpu will-change-[transform,opacity,clip-path]"
           >
-            <div className="p-3.5 rounded-2xl border border-cyan-500/30 bg-[#0C121D]/90 backdrop-blur-xl shadow-2xl flex items-center gap-3 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span className="text-[var(--text-secondary)]">
-                {landingPhase === "idle" || landingPhase === "rotating" ? (
-                  <>
-                    Global Radar: <strong className="text-cyan-400">India Trade Hubs</strong>
-                  </>
-                ) : (
-                  <>
-                    Zooming to Gateway: <strong className="text-emerald-400">Mumbai Port Hub (JNPT)</strong>
-                  </>
-                )}
-              </span>
-            </div>
+            {/* Translucent Near-Square Auth Shell */}
+            <AuthShell onSuccess={handleLoginSuccess} />
           </motion.div>
-        )}
-
-        {/* ── STAGE 3: TRANSLUCENT FLOATING AUTH COCKPIT (Emerges from Mumbai) ─ */}
-        <motion.div
-          style={{
-            opacity: prefersReducedMotion ? 1 : authOpacity,
-            scale: prefersReducedMotion ? 1 : authScale,
-            x: prefersReducedMotion ? 0 : authX,
-            y: prefersReducedMotion ? 0 : authY,
-            pointerEvents: prefersReducedMotion ? "auto" : authPointerEvents,
-          }}
-          className="absolute inset-0 z-40 w-full h-full min-h-screen flex items-center justify-center p-4 sm:p-6"
-        >
-          {/* Translucent Floating Auth Shell */}
-          <AuthShell onSuccess={handleLoginSuccess} />
-        </motion.div>
+        </div>
 
         {/* Minimal Bottom Bar */}
         <div className="w-full py-2 px-6 border-t border-white/[0.04] flex items-center justify-between text-[11px] font-mono text-slate-500 z-30">

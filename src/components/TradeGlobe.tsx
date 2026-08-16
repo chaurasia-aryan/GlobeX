@@ -507,6 +507,8 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
       .catch(console.error);
   }, []);
 
+  const initialMountedRef = useRef(false);
+
   // Setup auto-rotate slowly (speed 0.25)
   useEffect(() => {
     const globe = globeRef.current;
@@ -524,7 +526,8 @@ export const TradeGlobe = forwardRef<TradeGlobeRef, TradeGlobeProps>(({
     };
 
     setupControls();
-    if (!cameraPosition) {
+    if (!cameraPosition && !initialMountedRef.current) {
+      initialMountedRef.current = true;
       globe.pointOfView({ lat: 20, lng: 55, altitude: 2.2 });
     }
 
