@@ -28,20 +28,28 @@
     --hairline-strong: rgba(255, 255, 255, 0.12);
 
     /* Semantic Accent Palette */
-    --accent: #38BDF8;          /* Active / in-transit / cyan-sky */
+    --accent: #38BDF8;
+    /* Active / in-transit / cyan-sky */
     --accent-dim: rgba(56, 189, 248, 0.12);
-    --emerald: #34C795;         /* Verified, completed, positive savings */
+    --emerald: #34C795;
+    /* Verified, completed, positive savings */
     --emerald-dim: rgba(52, 199, 149, 0.12);
-    --amber: #F59E0B;           /* Review, discrepancy, warning */
+    --amber: #F59E0B;
+    /* Review, discrepancy, warning */
     --amber-dim: rgba(245, 158, 11, 0.12);
-    --red: #EF4444;             /* Error, rejected, disputed */
+    --red: #EF4444;
+    /* Error, rejected, disputed */
     --red-dim: rgba(239, 68, 68, 0.12);
 
     /* Text hierarchy */
-    --text-primary: #F8FAFC;    /* Headings, primary values (Slate 50) */
-    --text-secondary: #94A3B8;  /* Labels, descriptive text (Slate 400) */
-    --text-tertiary: #64748B;   /* Metadata, codes (Slate 500) */
-    --text-muted: #475569;      /* Disabled, subtle captions (Slate 600) */
+    --text-primary: #F8FAFC;
+    /* Headings, primary values (Slate 50) */
+    --text-secondary: #94A3B8;
+    /* Labels, descriptive text (Slate 400) */
+    --text-tertiary: #64748B;
+    /* Metadata, codes (Slate 500) */
+    --text-muted: #475569;
+    /* Disabled, subtle captions (Slate 600) */
   }
 }
 
@@ -61,15 +69,18 @@
 }
 
 @layer components {
+
   /* Surface Containers */
   .surface-0 {
     background-color: var(--surface-0);
   }
+
   .surface-1 {
     background-color: var(--surface-1);
     border: 1px solid var(--hairline);
     border-radius: var(--radius-md);
   }
+
   .surface-2 {
     background-color: var(--surface-2);
     border: 1px solid var(--hairline-strong);
@@ -83,6 +94,7 @@
     border-radius: var(--radius-md);
     transition: border-color 0.2s ease, background-color 0.2s ease;
   }
+
   .neo-glass-card:hover {
     border-color: var(--hairline-strong);
     background-color: var(--surface-2);
@@ -93,6 +105,7 @@
     border: 1px solid var(--hairline);
     border-radius: var(--radius-md);
   }
+
   .glass-panel-raised {
     background-color: var(--surface-2);
     border: 1px solid var(--hairline-strong);
@@ -105,17 +118,21 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
+
 .scrollbar-thin::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }

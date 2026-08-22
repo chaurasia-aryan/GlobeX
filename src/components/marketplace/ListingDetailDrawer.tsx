@@ -18,23 +18,23 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 transition-opacity cursor-pointer"
           />
 
-          {/* Slide-over Drawer */}
-          <motion.aside
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed top-0 right-0 bottom-0 w-full max-w-lg bg-[#0A0F18] border-l border-white/[0.08] p-6 shadow-2xl z-50 overflow-y-auto flex flex-col justify-between font-sans select-none"
+          {/* Front-Appearing Centered Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 16 }}
+            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+            className="relative w-full max-w-xl max-h-[85vh] bg-[#0A0F18] border border-white/[0.12] rounded-3xl p-6 sm:p-7 shadow-2xl z-50 overflow-y-auto flex flex-col justify-between font-sans select-none"
           >
             <div className="space-y-6">
               {/* Header */}
@@ -145,8 +145,8 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                 </SpecularButton>
               </Link>
             </div>
-          </motion.aside>
-        </>
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

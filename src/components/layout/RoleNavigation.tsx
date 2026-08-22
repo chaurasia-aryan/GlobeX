@@ -21,6 +21,7 @@ import {
   LogOut,
   UserPlus,
   Mail,
+  PlusCircle,
 } from "lucide-react";
 import CommandPalette from "@/components/common/CommandPalette";
 import PillNav, { PillNavItem } from "@/components/ui/PillNav";
@@ -58,10 +59,11 @@ export const RoleNavigation: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Primary 5 Core Navigation Items
+  // Primary Core Navigation Items
   const pillNavItems: PillNavItem[] = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Marketplace", href: "/marketplace" },
+    { label: "Create Listing", href: "/create-listing" },
     { label: "Trade Requests", href: "/trade-requests" },
     { label: "Active Trades", href: "/trades/TRD-IND-UAE-550K" },
     { label: "Documents", href: "/documents" },
@@ -69,6 +71,7 @@ export const RoleNavigation: React.FC = () => {
 
   // Secondary Tools for drawer
   const secondaryNavItems = [
+    { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add product to global marketplace" },
     { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Organization export catalog" },
     { label: "Smart Escrow Vault", href: "/escrow", icon: Coins, desc: "Programmable multi-sig settlement" },
     { label: "Shipment Telemetry", href: "/shipments", icon: Ship, desc: "Live AIS satellite tracking" },
@@ -132,7 +135,7 @@ export const RoleNavigation: React.FC = () => {
           </div>
 
           {/* ── Center: Restrained Global Navigation Group ─────────────────── */}
-          <div className="hidden md:flex items-center justify-center flex-1 max-w-2xl mx-auto">
+          <div className="hidden md:flex items-center justify-center flex-1 max-w-4xl mx-auto">
             <PillNav
               items={pillNavItems}
               activeHref={location.pathname}

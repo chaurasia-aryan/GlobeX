@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { appwriteService, UserSession, OrganizationRole, UploadedDoc } from "@/services/appwrite/client";
+import { Listing } from "@/types/trade";
+import { DEMO_LISTINGS } from "@/data/mockTradeData";
 
 export type RoleType = OrganizationRole;
 export type DutyMode = "dual" | "import" | "export";
@@ -19,6 +21,8 @@ interface WorkspaceContextType {
   roleLabel: string;
   roleAccentColor: string;
   roleBadgeClass: string;
+  listings: Listing[];
+  addListing: (newListing: Listing) => void;
   register: (payload: {
     adminName: string;
     organizationName: string;
@@ -37,6 +41,18 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserSession>(() => appwriteService.getCurrentUser());
   const [dutyMode, setDutyMode] = useState<DutyMode>("import");
+  const [listings, setListings] = useState<Listing[]>(() => {
+    const saved = localStorage.getItem("globex_listings");
+    return saved ? JSON.parse(saved) : DEMO_LISTINGS;
+  });
+
+  const handleAddListing = (newListing: Listing) => {
+    setListings((prev) => {
+      const updated = [newListing, ...prev];
+      localStorage.setItem("globex_listings", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -144,6 +160,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         roleLabel,
         roleAccentColor,
         roleBadgeClass,
+        listings,
+        addListing: handleAddListing,
         register: handleRegister,
         login: handleLogin,
         logout: handleLogout,
