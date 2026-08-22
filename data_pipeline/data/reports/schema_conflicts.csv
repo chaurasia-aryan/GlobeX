@@ -1,0 +1,3 @@
+dataset_name,expected_schema,actual_schema,drift_detected,type_mismatches,action
+trade_observations,"period,reporter_iso3,partner_iso3,cmd_code,flow_code,primary_value,net_weight","period,reporter_iso3,partner_iso3,cmd_code,flow_code,primary_value,net_weight",False,0,PASS
+entity_master,"lei,legal_name,entity_status,jurisdiction,registration_id","lei,legal_name,entity_status,jurisdiction,registration_id",False,0,PASS

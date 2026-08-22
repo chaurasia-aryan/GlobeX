@@ -119,17 +119,17 @@ export default function LandingPage() {
   return (
     <div
       ref={containerRef}
-      className="relative h-[320vh] bg-[#070A0E] text-[var(--text-primary)] font-sans select-none"
+      className="relative h-[320vh] bg-[var(--bg-app)] text-[var(--text-primary)] font-sans select-none transition-colors duration-200"
     >
       {/* ─── STICKY FULLSCREEN VIEWPORT CONTAINER ─────────────────────────────────── */}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between overflow-hidden">
         
-        {/* Background ambient lighting glow */}
+        {/* Background ambient lighting glow (Semantic Teal & Cyan) */}
         <div
           className="absolute inset-0 pointer-events-none opacity-40 -z-10"
           style={{
             background:
-              "radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.14) 0%, transparent 65%), radial-gradient(circle at 80% 80%, rgba(52, 199, 149, 0.1) 0%, transparent 50%)",
+              "radial-gradient(circle at 50% 40%, var(--info-bg) 0%, transparent 65%), radial-gradient(circle at 80% 80%, var(--success-bg) 0%, transparent 50%)",
           }}
         />
 
@@ -213,9 +213,9 @@ export default function LandingPage() {
         </div>
 
         {/* Minimal Bottom Bar */}
-        <div className="w-full py-2 px-6 border-t border-white/[0.04] flex items-center justify-between text-[11px] font-mono text-slate-500 z-30">
+        <div className="w-full py-2 px-6 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] font-mono text-[var(--text-tertiary)] z-30">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
             <span>GLOBEX Protocol · India ⇄ UAE ⇄ Global Trade</span>
           </div>
           <span>CEPA Schedule Rules · EVM Verified</span>

@@ -1,0 +1,95 @@
+dataset,column,description,source,grain,data_type,unit,join_role,notes
+01_partner_discovery_eda.csv,reporter_iso3,ISO 3166-1 alpha-3 code of declaring exporter country (India = IND),UN Comtrade,Corridor,VARCHAR(3),ISO3,BASE_KEY,Strictly IND
+01_partner_discovery_eda.csv,partner_iso3,ISO 3166-1 alpha-3 code of trading partner country,UN Comtrade,Corridor,VARCHAR(3),ISO3,BASE_KEY,World & 14 major corridors
+01_partner_discovery_eda.csv,partner_iso2,ISO 3166-1 alpha-2 code of trading partner,Country/Currency Master,Country,VARCHAR(2),ISO2,ENRICHMENT,Bridge to UN/LOCODE & GLEIF
+01_partner_discovery_eda.csv,partner_numeric,UN M49 numeric country code of partner,Country/Currency Master,Country,VARCHAR(3),M49,ENRICHMENT,Statistical standard
+01_partner_discovery_eda.csv,hs6,6-digit Harmonized System commodity classification code,UN Comtrade,Corridor,VARCHAR(6),HS6,BASE_KEY,Commodity chapter level
+01_partner_discovery_eda.csv,year,Trade reporting calendar year,UN Comtrade,Corridor,INTEGER,Year,BASE_KEY,Temporal axis
+01_partner_discovery_eda.csv,trade_value_usd,Total bilateral trade value in US Dollars,UN Comtrade,Corridor,"DECIMAL(18,2)",USD,METRIC,Exports + Imports
+01_partner_discovery_eda.csv,export_value_usd,Outbound export trade value from India to partner,UN Comtrade,Corridor,"DECIMAL(18,2)",USD,METRIC,Flow = Export
+01_partner_discovery_eda.csv,import_value_usd,Inbound import trade value from partner into India,UN Comtrade,Corridor,"DECIMAL(18,2)",USD,METRIC,Flow = Import
+01_partner_discovery_eda.csv,trade_balance_usd,Net bilateral trade balance (Exports - Imports),Derived,Corridor,"DECIMAL(18,2)",USD,METRIC,Positive = Surplus
+01_partner_discovery_eda.csv,net_weight_kg,Aggregate net weight of traded goods in kilograms,UN Comtrade,Corridor,"DECIMAL(18,2)",kg,METRIC,Physical volume
+01_partner_discovery_eda.csv,quantity,Aggregate physical quantity of shipments,UN Comtrade,Corridor,"DECIMAL(18,2)",Units,METRIC,Supplementary quantity
+01_partner_discovery_eda.csv,unit_value_usd_per_kg,Average unit price in USD per kilogram,Derived,Corridor,"DECIMAL(18,4)",USD/kg,FEATURE,Value / Net Weight
+01_partner_discovery_eda.csv,corridor_product_share_pct,Percentage share of HS6 code within partner corridor trade,Derived,Corridor,"DECIMAL(6,2)",%,FEATURE,Product concentration
+01_partner_discovery_eda.csv,transaction_count,Total recorded Comtrade monthly/annual flow observations,UN Comtrade,Corridor,INTEGER,Count,METRIC,Granular observations
+01_partner_discovery_eda.csv,currency_code,ISO 4217 alphabetic national currency code of partner,Country/Currency Master,Country,VARCHAR(3),ISO4217,ENRICHMENT,Official currency
+01_partner_discovery_eda.csv,currency_name,Official currency name,Country/Currency Master,Country,VARCHAR(64),Text,ENRICHMENT,Currency description
+01_partner_discovery_eda.csv,gdp,Gross Domestic Product in current US Dollars,World Bank WDI,Country,"DECIMAL(20,2)",USD,ENRICHMENT,NY.GDP.MKTP.CD
+01_partner_discovery_eda.csv,gdp_per_capita,GDP per capita in current US Dollars,World Bank WDI,Country,"DECIMAL(12,2)",USD,ENRICHMENT,NY.GDP.PCAP.CD
+01_partner_discovery_eda.csv,gdp_growth,Annual real GDP growth rate,World Bank WDI,Country,"DECIMAL(6,2)",%,ENRICHMENT,NY.GDP.MKTP.KD.ZG
+01_partner_discovery_eda.csv,inflation,Consumer price index annual inflation rate,World Bank WDI,Country,"DECIMAL(6,2)",%,ENRICHMENT,FP.CPI.TOTL.ZG
+01_partner_discovery_eda.csv,population,Total national population,World Bank WDI,Country,BIGINT,Persons,ENRICHMENT,SP.POP.TOTL
+01_partner_discovery_eda.csv,trade_pct_gdp,Trade openness indicator (% of GDP),World Bank WDI,Country,"DECIMAL(6,2)",%,ENRICHMENT,NE.TRD.GNFS.ZS
+01_partner_discovery_eda.csv,tariff_rate,Effectively applied tariff rate percentage on HS6 product,WITS / WTO,Product,"DECIMAL(6,2)",%,ENRICHMENT,2024 applied schedule
+01_partner_discovery_eda.csv,tariff_type,Tariff agreement schedule type (PREFERENTIAL / MFN_APPLIED),WITS / WTO,Product,VARCHAR(32),Categorical,ENRICHMENT,Classification type
+01_partner_discovery_eda.csv,tariff_year,Tariff schedule applicable year,WITS / WTO,Product,INTEGER,Year,ENRICHMENT,Reference year
+01_partner_discovery_eda.csv,tariff_source,Tariff data provider,WITS / WTO,Product,VARCHAR(64),Source,ENRICHMENT,WITS_UNCTAD_TRAINS
+01_partner_discovery_eda.csv,rta_exists,"Binary indicator (1=Active RTA with India, 0=No RTA / MFN)",WTO RTA Database,Country-Pair,INTEGER,Binary,ENRICHMENT,WTO RTA status
+01_partner_discovery_eda.csv,rta_name,Official name of bilateral/plurilateral trade agreement,WTO RTA Database,Country-Pair,VARCHAR(128),Text,ENRICHMENT,e.g. India-UAE CEPA
+01_partner_discovery_eda.csv,rta_status,Legal status of agreement (In Force / Under Negotiation),WTO RTA Database,Country-Pair,VARCHAR(64),Categorical,ENRICHMENT,WTO legal status
+01_partner_discovery_eda.csv,rta_entry_into_force,Effective date of agreement entry into force,WTO RTA Database,Country-Pair,DATE,ISO8601,ENRICHMENT,Treaty effective date
+01_partner_discovery_eda.csv,rta_type,"Agreement scope type (FTA, CEPA, CECA, PTA)",WTO RTA Database,Country-Pair,VARCHAR(32),Categorical,ENRICHMENT,Agreement scope
+01_partner_discovery_eda.csv,rta_coverage,Trade coverage domains (Goods / Goods & Services),WTO RTA Database,Country-Pair,VARCHAR(32),Categorical,ENRICHMENT,Coverage domain
+01_partner_discovery_eda.csv,partner_locode_count,Total official UN/LOCODE trade locations in partner country,UN/LOCODE 2025-1,Country,INTEGER,Count,ENRICHMENT,Logistics breadth
+01_partner_discovery_eda.csv,partner_port_count,Total active maritime seaport locations in partner country,UN/LOCODE 2025-1,Country,INTEGER,Count,ENRICHMENT,Function classifier = 1
+01_partner_discovery_eda.csv,partner_airport_count,Total active international airport cargo hubs,UN/LOCODE 2025-1,Country,INTEGER,Count,ENRICHMENT,Function classifier = 4
+01_partner_discovery_eda.csv,partner_inland_terminal_count,Total active rail/road ICD inland terminals,UN/LOCODE 2025-1,Country,INTEGER,Count,ENRICHMENT,Function classifier = 2/3/6
+01_partner_discovery_eda.csv,scomet_match_flag,"Binary indicator (1=Controlled SCOMET Dual-Use, 0=Standard)",DGFT SCOMET,Product,INTEGER,Binary,ENRICHMENT,Export control tag
+01_partner_discovery_eda.csv,scomet_category,DGFT SCOMET category classification reference,DGFT SCOMET,Product,VARCHAR(64),Text,ENRICHMENT,Appendix 3 Category
+01_partner_discovery_eda.csv,scomet_item_reference,Official SCOMET schedule item citation,DGFT SCOMET,Product,VARCHAR(64),Citation,ENRICHMENT,DGFT citation
+01_partner_discovery_eda.csv,scomet_mapping_status,Product code mapping maturity status (MAPPED_ITC_HS / NOT_MAPPED_YET),DGFT SCOMET,Product,VARCHAR(32),Status,ENRICHMENT,Mapping status
+01_partner_discovery_eda.csv,gleif_entity_count,Total registered LEI entities in partner jurisdiction,GLEIF Golden Copy,Country,INTEGER,Count,ENRICHMENT,Registry breadth
+01_partner_discovery_eda.csv,gleif_active_entity_count,Total active compliant LEI entities in partner jurisdiction,GLEIF Golden Copy,Country,INTEGER,Count,ENRICHMENT,Active LEI status
+01_partner_discovery_eda.csv,gleif_parent_relationship_count,Total ultimate parent hierarchy linkages registered,GLEIF Golden Copy,Country,INTEGER,Count,ENRICHMENT,Corporate structure
+01_partner_discovery_eda.csv,sanctions_entity_count,Total sanctioned/PEP target entities in partner country,OpenSanctions / OFAC,Country,INTEGER,Count,ENRICHMENT,Compliance exposure
+01_partner_discovery_eda.csv,sanctions_high_risk_entity_count,Total active sanctions enforcement target entities,OpenSanctions / OFAC,Country,INTEGER,Count,ENRICHMENT,High risk sanctions
+01_partner_discovery_eda.csv,ofac_entity_count,Total US OFAC SDN designated targets in partner country,OpenSanctions / OFAC,Country,INTEGER,Count,ENRICHMENT,OFAC designations
+03_document_intelligence_eda.csv,document_id,Unique document sample identifier,FUNSD/SROIE/CORD/XFUND,Token,VARCHAR(64),UUID,BASE_KEY,Document reference
+03_document_intelligence_eda.csv,source_dataset,Benchmark dataset name,Official Benchmark,Token,VARCHAR(32),Categorical,METADATA,"FUNSD, SROIE, CORD, XFUND"
+03_document_intelligence_eda.csv,source_version,Benchmark release version,Official Benchmark,Token,VARCHAR(16),Version,METADATA,Release 1.0
+03_document_intelligence_eda.csv,split,Official dataset split partition,Official Benchmark,Token,VARCHAR(16),Categorical,METADATA,"TRAIN, TEST, VALIDATION"
+03_document_intelligence_eda.csv,image_reference,Relative path to original document image,Official Benchmark,Token,VARCHAR(128),Path,METADATA,Image file path
+03_document_intelligence_eda.csv,language,Document natural language code,Official Benchmark,Token,VARCHAR(8),ISO639,METADATA,"eng, zho, deu, fra"
+03_document_intelligence_eda.csv,document_type,"Document category schema (INVOICE, RECEIPT, FORM)",Official Benchmark,Token,VARCHAR(32),Categorical,METADATA,Document taxonomy
+03_document_intelligence_eda.csv,token_index,Sequential 0-indexed position of token in document,OCR Engine,Token,INTEGER,Index,BASE_KEY,Token order
+03_document_intelligence_eda.csv,token,Extracted OCR text word/subword token,OCR Engine,Token,TEXT,String,FEATURE,Raw word string
+03_document_intelligence_eda.csv,x0,Left horizontal coordinate of token bounding box,OCR Engine,Token,INTEGER,Pixels/Norm,FEATURE,Bounding box left
+03_document_intelligence_eda.csv,y0,Top vertical coordinate of token bounding box,OCR Engine,Token,INTEGER,Pixels/Norm,FEATURE,Bounding box top
+03_document_intelligence_eda.csv,x1,Right horizontal coordinate of token bounding box,OCR Engine,Token,INTEGER,Pixels/Norm,FEATURE,Bounding box right
+03_document_intelligence_eda.csv,y1,Bottom vertical coordinate of token bounding box,OCR Engine,Token,INTEGER,Pixels/Norm,FEATURE,Bounding box bottom
+03_document_intelligence_eda.csv,entity_label,"BIO/NER semantic entity label (HEADER, QUESTION, ANSWER, O)",Ground Truth,Token,VARCHAR(32),Categorical,LABEL,Entity classification
+03_document_intelligence_eda.csv,linked_token_ids,Array of entity-relation paired token indices,Ground Truth,Token,VARCHAR(128),JSON Array,LABEL,Key-Value link
+03_document_intelligence_eda.csv,key,Standardized key text token if field header,Derived,Token,TEXT,String,FEATURE,Header text
+03_document_intelligence_eda.csv,value,Standardized value text token if field payload,Derived,Token,TEXT,String,FEATURE,Value text
+04_trade_risk_eda.csv,reporter_iso3,Declaring reporter country code (IND),UN Comtrade,Corridor-Period,VARCHAR(3),ISO3,BASE_KEY,Declared trade origin
+04_trade_risk_eda.csv,partner_iso3,Trade partner country code,UN Comtrade,Corridor-Period,VARCHAR(3),ISO3,BASE_KEY,Declared partner
+04_trade_risk_eda.csv,hs6,6-digit Harmonized System commodity classification,UN Comtrade,Corridor-Period,VARCHAR(6),HS6,BASE_KEY,Commodity code
+04_trade_risk_eda.csv,period,Trade observation temporal period (monthly/annual),UN Comtrade,Corridor-Period,VARCHAR(10),Period,BASE_KEY,Temporal slice
+04_trade_risk_eda.csv,trade_value_usd,Declared trade value in US Dollars,UN Comtrade,Corridor-Period,"DECIMAL(18,2)",USD,METRIC,Declared FOB/CIF
+04_trade_risk_eda.csv,quantity,Reported physical shipment quantity,UN Comtrade,Corridor-Period,"DECIMAL(18,2)",Units,METRIC,Declared units
+04_trade_risk_eda.csv,net_weight_kg,Reported shipment net weight in kg,UN Comtrade,Corridor-Period,"DECIMAL(18,2)",kg,METRIC,Weight in kg
+04_trade_risk_eda.csv,unit_value,Calculated price per kg (USD/kg),Derived,Corridor-Period,"DECIMAL(18,4)",USD/kg,FEATURE,Value / Net Weight
+04_trade_risk_eda.csv,trade_growth,Period-over-period percentage trade value growth,Derived,Corridor-Period,"DECIMAL(8,4)",Ratio,FEATURE,Value velocity
+04_trade_risk_eda.csv,yoy_growth,Year-over-year trade growth rate,Derived,Corridor-Period,"DECIMAL(8,4)",Ratio,FEATURE,Annual velocity
+04_trade_risk_eda.csv,partner_share,Percentage share of total period trade held by partner,Derived,Corridor-Period,"DECIMAL(6,3)",%,FEATURE,Corridor share
+04_trade_risk_eda.csv,partner_share_change,Change in partner share compared to prior period,Derived,Corridor-Period,"DECIMAL(6,3)",%,FEATURE,Share shift
+04_trade_risk_eda.csv,mirror_trade_value,Mirror trade value reported by partner country,Comtrade Mirror,Corridor-Period,"DECIMAL(18,2)",USD,FEATURE,Partner reported trade
+04_trade_risk_eda.csv,mirror_ratio,Ratio of declared export value to partner declared import value,Derived,Corridor-Period,"DECIMAL(8,4)",Ratio,FEATURE,Declared / Mirror (Anomaly signal)
+04_trade_risk_eda.csv,mirror_difference,Absolute discrepancy between declared and mirror values,Derived,Corridor-Period,"DECIMAL(18,2)",USD,FEATURE,|Declared - Mirror|
+04_trade_risk_eda.csv,mirror_missing_flag,"Binary indicator (1=Mirror observation missing from partner, 0=Present)",Derived,Corridor-Period,INTEGER,Binary,FEATURE,Under-reporting flag
+05_rag_evidence.csv,evidence_id,Globally unique evidence record identifier,Generated,Evidence Item,VARCHAR(64),UUID,BASE_KEY,Primary key
+05_rag_evidence.csv,source_type,Classification taxonomy of source document,Registry Authority,Evidence Item,VARCHAR(32),Categorical,METADATA,"STATUTE, TRADE_AGREEMENT, SANCTIONS"
+05_rag_evidence.csv,source_name,Official source organization or repository name,Registry Authority,Evidence Item,VARCHAR(64),Source,METADATA,"DGFT, WTO, UNECE, GLEIF, OFAC"
+05_rag_evidence.csv,source_url,Authoritative web link to live regulation or record,Registry Authority,Evidence Item,VARCHAR(256),URL,PROVENANCE,Official source URL
+05_rag_evidence.csv,source_record_id,Native identification code within source system,Registry Authority,Evidence Item,VARCHAR(64),ID,PROVENANCE,"LEI, RTA ID, SCOMET ID"
+05_rag_evidence.csv,country_iso3,Associated country jurisdiction ISO-3 code,Registry Authority,Evidence Item,VARCHAR(3),ISO3,INDEX,Geographic tag
+05_rag_evidence.csv,hs_code,Associated Harmonized System product code (if product-specific),Registry Authority,Evidence Item,VARCHAR(6),HS6,INDEX,Commodity tag
+05_rag_evidence.csv,entity_id,Associated legal entity identifier (LEI / OpenSanctions ID),Registry Authority,Evidence Item,VARCHAR(64),ID,INDEX,Entity tag
+05_rag_evidence.csv,title,Title headline of evidence snippet,Curated,Evidence Item,VARCHAR(128),Title,PAYLOAD,Header
+05_rag_evidence.csv,text,Complete factual legal/regulatory text passage for RAG chunking,Official Statute,Evidence Item,TEXT,String,PAYLOAD,Grounded text
+05_rag_evidence.csv,claim_type,Semantic claim category,Curated,Evidence Item,VARCHAR(64),Categorical,METADATA,"EXPORT_CONTROL, TARIFF_LINE, DESIGNATION"
+05_rag_evidence.csv,date,Effective/enacted date of regulation,Registry Authority,Evidence Item,DATE,ISO8601,METADATA,Statute date
+05_rag_evidence.csv,retrieved_at,System timestamp when record was downloaded,Pipeline,Evidence Item,TIMESTAMP,ISO8601,PROVENANCE,Audit trail
+05_rag_evidence.csv,citation,Formal bibliographic/legal citation string,Curated,Evidence Item,VARCHAR(256),Citation,PROVENANCE,Standard citation

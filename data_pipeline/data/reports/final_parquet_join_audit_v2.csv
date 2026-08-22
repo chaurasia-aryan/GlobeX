@@ -1,0 +1,13 @@
+left_dataset,right_dataset,left_grain,right_grain,join_key,join_type,left_rows_before,right_rows,matched_rows,unmatched_left,unmatched_right,duplicate_right_keys,rows_after_join,row_multiplier,match_rate,action
+01_partner_discovery,raw/iso_3166_countries_unece.csv,reporter_iso3 × partner_iso3 × hs6 × year,partner_iso3,partner_iso3,LEFT (many-to-one),1408,249,1320,88,-1071,0,1408,1.0,93.75%,JOINED
+01_partner_discovery,staging/worldbank_country_indicators.csv,reporter_iso3 × partner_iso3 × hs6 × year,country_iso3 × year,partner_iso3 + year,LEFT (many-to-one),1408,165,1320,88,-1155,0,1408,1.0,93.75%,JOINED
+01_partner_discovery,staging/india_tariffs.csv,reporter_iso3 × partner_iso3 × hs6 × year,reporter_iso3 × partner_iso3 × hs6 × year,reporter_iso3 + partner_iso3 + hs6 + year,LEFT (many-to-one),1408,1320,1320,88,0,0,1408,1.0,93.75%,JOINED
+01_partner_discovery,raw/unlocode (aggregated),reporter_iso3 × partner_iso3 × hs6 × year,partner_iso2,partner_iso2,LEFT (many-to-one),1408,248,1320,88,-1072,0,1408,1.0,93.75%,JOINED
+01_partner_discovery,raw/wto_rta (normalized),reporter_iso3 × partner_iso3 × hs6 × year,partner_iso3,partner_iso3,LEFT (many-to-one),1408,14,592,816,-578,0,1408,1.0,42.05%,JOINED
+01_partner_discovery,staging/sanctions_entities.csv (aggregated),reporter_iso3 × partner_iso3 × hs6 × year,partner_iso3,partner_iso3,LEFT (many-to-one),1408,5,88,1320,-83,0,1408,1.0,6.25%,JOINED
+04_trade_risk,raw/iso_3166_countries_unece.csv,period × reporter_iso3 × partner_iso3 × hs6,partner_iso3,partner_iso3,LEFT (many-to-one),6144,249,5760,384,-5511,0,6144,1.0,93.75%,JOINED
+04_trade_risk,staging/worldbank_country_indicators.csv,period × reporter_iso3 × partner_iso3 × hs6,country_iso3 × year,partner_iso3 + year,LEFT (many-to-one),6144,165,5760,384,-5595,0,6144,1.0,93.75%,JOINED
+04_trade_risk,staging/india_tariffs.csv,period × reporter_iso3 × partner_iso3 × hs6,reporter_iso3 × partner_iso3 × hs6 × year,reporter_iso3 + partner_iso3 + hs6 + year,LEFT (many-to-one),6144,1320,5760,384,-4440,0,6144,1.0,93.75%,JOINED
+04_trade_risk,raw/wto_rta (normalized),period × reporter_iso3 × partner_iso3 × hs6,partner_iso3,partner_iso3,LEFT (many-to-one),6144,14,3072,3072,-3058,0,6144,1.0,50.0%,JOINED
+04_trade_risk,raw/unlocode (aggregated),period × reporter_iso3 × partner_iso3 × hs6,partner_iso2,partner_iso2,LEFT (many-to-one),6144,248,5760,384,-5512,0,6144,1.0,93.75%,JOINED
+04_trade_risk,staging/sanctions_entities.csv (aggregated),period × reporter_iso3 × partner_iso3 × hs6,partner_iso3,partner_iso3,LEFT (many-to-one),6144,5,384,5760,-379,0,6144,1.0,6.25%,JOINED

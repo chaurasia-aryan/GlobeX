@@ -1,0 +1,9 @@
+dataset,check_name,target_column,violations,violation_pct,status,severity
+trade_observations,NULL_PRIMARY_VALUE_CHECK,primary_value,0,0.0,PASSED,CRITICAL
+trade_observations,NEGATIVE_VALUE_CHECK,primary_value,0,0.0,PASSED,CRITICAL
+trade_observations,NEGATIVE_NET_WEIGHT_CHECK,net_weight,0,0.0,PASSED,HIGH
+trade_observations,VALID_ISO3_COUNTRY_CODE_CHECK,"reporter_iso3,partner_iso3",0,0.0,PASSED,HIGH
+trade_observations,VALID_HS6_COMMODITY_CODE_CHECK,cmd_code,0,0.0,PASSED,HIGH
+trade_observations,IMPOSSIBLE_UNIT_PRICE_BOUNDS,unit_price,0,0.0,PASSED,MEDIUM
+anomaly_sequences,TRAIN_VAL_TEMPORAL_LEAKAGE_CHECK,year,0,0.0,PASSED,CRITICAL
+anomaly_sequences,VAL_TEST_TEMPORAL_LEAKAGE_CHECK,year,0,0.0,PASSED,CRITICAL

@@ -24,10 +24,10 @@ export const AppShell: React.FC<AppShellProps> = ({
   }[maxWidth];
 
   return (
-    <div className="min-h-screen bg-[#070A0E] text-slate-100 font-sans flex flex-col antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] font-sans flex flex-col antialiased selection:bg-emerald-500/20 selection:text-emerald-300 transition-colors duration-200">
       {/* Subtle ambient lighting layer (non-distracting, calm) */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-20 -z-10"
+        className="fixed inset-0 pointer-events-none opacity-20 -z-10 dark:block hidden"
         style={{
           backgroundImage:
             "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.08), transparent 70%)",
@@ -50,10 +50,10 @@ export const AppShell: React.FC<AppShellProps> = ({
       </div>
 
       {/* Clean minimal footer */}
-      <footer className="border-t border-white/[0.06] py-5 px-4 text-center text-xs text-slate-400 font-sans">
+      <footer className="border-t border-[var(--hairline)] py-5 px-4 text-center text-xs text-[var(--text-tertiary)] font-sans transition-colors">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>GLOBEX AI — Verified Cross-Border Trade & Programmable Escrow Settlement</span>
-          <span className="font-mono text-[11px] text-slate-400">CEPA Schedule Rules · EVM Verified</span>
+          <span className="font-mono text-[11px] text-[var(--text-muted)]">CEPA Schedule Rules · EVM Verified</span>
         </div>
       </footer>
     </div>

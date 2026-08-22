@@ -217,18 +217,18 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Compact Dual View Mode Selector (Section 5 & 7) */}
-            <div className="flex items-center p-0.5 rounded-xl bg-[#070A0E] border border-white/[0.08] shrink-0 self-start md:self-auto">
+            <div className="flex items-center p-0.5 rounded-xl bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] shrink-0 self-start md:self-auto shadow-sm">
               <button
                 type="button"
                 onClick={() => setViewMode("dual")}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer",
                   viewMode === "dual"
-                    ? "bg-white/[0.1] text-white font-bold shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold border border-[var(--border-default)] shadow-sm"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Columns className="w-3.5 h-3.5 text-slate-400" />
+                <Columns className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
                 <span>Dual View</span>
               </button>
 
@@ -238,11 +238,11 @@ export const DashboardPage: React.FC = () => {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer",
                   viewMode === "import"
-                    ? "bg-sky-500/20 text-sky-300 font-bold border border-sky-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-sky-300"
+                    ? "bg-[var(--info-bg)] text-[var(--brand-blue)] font-bold border border-[var(--brand-cyan)]/40 shadow-sm"
+                    : "text-[var(--text-secondary)] hover:text-[var(--brand-blue)]"
                 )}
               >
-                <ArrowDownLeft className="w-3.5 h-3.5 text-sky-400" />
+                <ArrowDownLeft className="w-3.5 h-3.5 text-[var(--brand-cyan)]" />
                 <span>↙ Import Duty</span>
               </button>
 
@@ -252,11 +252,11 @@ export const DashboardPage: React.FC = () => {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer",
                   viewMode === "export"
-                    ? "bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-emerald-300"
+                    ? "bg-[var(--success-bg)] text-[var(--brand-teal-dark)] font-bold border border-[var(--brand-teal)]/40 shadow-sm"
+                    : "text-[var(--text-secondary)] hover:text-[var(--brand-teal-dark)]"
                 )}
               >
-                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
                 <span>↗ Export Duty</span>
               </button>
             </div>
@@ -279,10 +279,10 @@ export const DashboardPage: React.FC = () => {
             {(viewMode === "dual" || viewMode === "import") && (
               <div
                 id="import-operations"
-                className="p-5 rounded-2xl bg-[#0C121D] border border-sky-500/20 flex flex-col justify-between space-y-5"
+                className="p-5 rounded-2xl bg-[var(--bg-surface)] light:bg-[#F1F8FC] border border-sky-500/20 flex flex-col justify-between space-y-5 shadow-sm"
               >
                 {/* Column Header */}
-                <div className="space-y-3 border-b border-white/[0.06] pb-4">
+                <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
@@ -460,10 +460,10 @@ export const DashboardPage: React.FC = () => {
             {(viewMode === "dual" || viewMode === "export") && (
               <div
                 id="export-operations"
-                className="p-5 rounded-2xl bg-[#0C121D] border border-emerald-500/20 flex flex-col justify-between space-y-5"
+                className="p-5 rounded-2xl bg-[var(--bg-surface)] light:bg-[#F1FAF7] border border-emerald-500/20 flex flex-col justify-between space-y-5 shadow-sm"
               >
                 {/* Column Header */}
-                <div className="space-y-3 border-b border-white/[0.06] pb-4">
+                <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">

@@ -24,9 +24,18 @@ import {
 } from "lucide-react";
 import CommandPalette from "@/components/common/CommandPalette";
 import PillNav, { PillNavItem } from "@/components/ui/PillNav";
+import ThemeToggle from "@/components/common/ThemeToggle";
+import { useTheme } from "@/context/ThemeContext";
 
 export const RoleNavigation: React.FC = () => {
-  const { user, logout } = useWorkspace();
+  const {
+    user,
+    role,
+    setRole,
+    logout,
+  } = useWorkspace();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -100,32 +109,33 @@ export const RoleNavigation: React.FC = () => {
   return (
     <>
       {/* ── Seamless Header (80px desktop height, NO visible bottom border) ─ */}
-      <header className="sticky top-0 z-40 w-full bg-[#070A0E]/95 backdrop-blur-md select-none">
+      {/* ── Seamless Header (80px desktop height, NO visible bottom border) ─ */}
+      <header className="sticky top-0 z-40 w-full bg-[var(--bg-app)]/95 backdrop-blur-md select-none transition-colors duration-200">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-20 flex items-center justify-between gap-5">
 
           {/* ── Left: Brand Logo & Organization Breathing Room ───────────── */}
           <div className="flex items-center gap-4 shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-sky-500/10 border border-emerald-500/30 group-hover:border-emerald-400/60 flex items-center justify-center transition-all shadow-sm">
-                <Globe2 className="w-4.5 h-4.5 text-emerald-400" />
+                <Globe2 className="w-4.5 h-4.5 text-[var(--brand-teal)]" />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-lg tracking-wider text-white">
+                <span className="font-display font-black text-lg tracking-wider text-[var(--text-primary)]">
                   GLOBEX
                 </span>
-                <span className="hidden sm:inline text-[9px] font-mono text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40">
+                <span className="hidden sm:inline text-[9px] font-mono text-[var(--brand-teal)] font-bold px-1.5 py-0.5 rounded bg-[var(--success-bg)] border border-[var(--brand-teal)]/30">
                   AI
                 </span>
               </div>
             </Link>
 
             {/* Separator Pipe */}
-            <div className="hidden lg:block w-px h-7 bg-white/[0.08]" />
+            <div className="hidden lg:block w-px h-7 bg-[var(--border-subtle)]" />
 
             {/* Organization Context Pill */}
-            <div className="hidden lg:flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#0C121D] border border-white/[0.06] max-w-[240px] text-xs">
-              <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="text-slate-200 truncate font-medium text-xs" title={user.companyName}>
+            <div className="hidden lg:flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] max-w-[240px] text-xs">
+              <Building2 className="w-4 h-4 text-[var(--brand-teal)] shrink-0" />
+              <span className="text-[var(--text-primary)] truncate font-medium text-xs" title={user.companyName}>
                 {user.companyName}
               </span>
             </div>
@@ -138,31 +148,33 @@ export const RoleNavigation: React.FC = () => {
               activeHref={location.pathname}
               embedded={true}
               hideLogo={true}
-              baseColor="#070A0E"
-              pillColor="rgba(255, 255, 255, 0.05)"
-              hoveredPillTextColor="#19D3AE"
-              pillTextColor="#94A3B8"
+              baseColor={isDark ? "#070A0E" : "#F5F7FA"}
+              pillColor={isDark ? "rgba(255, 255, 255, 0.05)" : "#E7F7F4"}
+              hoveredPillTextColor={isDark ? "#19D3AE" : "#087F73"}
+              pillTextColor={isDark ? "#94A3B8" : "#526273"}
               initialLoadAnimation={false}
             />
           </div>
 
-          {/* ── Right: Search Command Trigger & User Profile ───────────── */}
-          <div className="flex items-center gap-3 shrink-0">
-
+          {/* ── Right: Search Command Trigger, Theme Toggle & User Profile ── */}
+          <div className="flex items-center gap-2.5 shrink-0">
             {/* Global Search Trigger (Ctrl + K) */}
             <button
               type="button"
               onClick={() => setCommandPaletteOpen(true)}
-              className="flex items-center gap-2.5 h-10 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-400 hover:text-white transition-all text-xs cursor-pointer"
+              className="flex items-center gap-2.5 h-10 px-3.5 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all text-xs cursor-pointer shadow-sm"
               title="Search workspaces, corridors, and tools (Ctrl + K)"
             >
-              <Search className="w-4 h-4 text-slate-400" />
-              <span className="hidden xl:inline text-slate-400 text-xs">Search</span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded">
+              <Search className="w-4 h-4 text-[var(--text-tertiary)]" />
+              <span className="hidden xl:inline text-[var(--text-secondary)] text-xs">Search</span>
+              <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono text-[var(--text-tertiary)] bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] rounded">
                 <Command className="w-2.5 h-2.5" />
                 <span>K</span>
               </kbd>
             </button>
+
+            {/* Dark / Light Mode Theme Toggle */}
+            <ThemeToggle />
 
             {/* Account Profile Trigger */}
             <div className="relative" ref={accountMenuRef}>
@@ -170,24 +182,24 @@ export const RoleNavigation: React.FC = () => {
                 type="button"
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
                 className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-sans transition-all cursor-pointer border",
+                  "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-sans transition-all cursor-pointer border shadow-sm",
                   accountMenuOpen
-                    ? "bg-white/[0.1] border-white/[0.15] text-white"
-                    : "bg-white/[0.03] border-white/[0.07] hover:bg-white/[0.06] text-slate-300"
+                    ? "bg-[var(--bg-surface-subtle)] border-[var(--border-default)] text-[var(--text-primary)]"
+                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:bg-[var(--bg-surface-subtle)] text-[var(--text-primary)]"
                 )}
               >
-                <div className="w-6.5 h-6.5 rounded-lg flex items-center justify-center text-xs font-bold text-black bg-emerald-400 shrink-0">
+                <div className="w-6.5 h-6.5 rounded-lg flex items-center justify-center text-xs font-bold text-white bg-[var(--brand-teal)] shrink-0 shadow-sm">
                   {user.name ? user.name.charAt(0) : "J"}
                 </div>
                 <div className="text-left hidden sm:block">
-                  <div className="font-semibold text-white text-xs leading-none truncate max-w-[90px]">
+                  <div className="font-semibold text-[var(--text-primary)] text-xs leading-none truncate max-w-[90px]">
                     {user.name ? user.name.split(" ")[0] : "John"}
                   </div>
-                  <div className="text-[10px] font-mono text-emerald-400 leading-tight mt-0.5">
+                  <div className="text-[10px] font-mono text-[var(--brand-teal)] leading-tight mt-0.5 font-medium">
                     {user.roleTitle || "Admin"}
                   </div>
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
               </button>
 
               {/* Account Popover Menu */}
@@ -198,7 +210,7 @@ export const RoleNavigation: React.FC = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 4, scale: 0.98 }}
                     transition={{ duration: 0.12 }}
-                    className="absolute right-0 top-12 w-72 p-3 rounded-2xl bg-[#0C121D] border border-white/[0.1] shadow-2xl z-50 space-y-3 text-xs font-sans"
+                    className="absolute right-0 top-12 w-72 p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl z-50 space-y-3 text-xs font-sans"
                   >
                     {/* Organization & User entity details */}
                     <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] space-y-1">
@@ -275,6 +287,12 @@ export const RoleNavigation: React.FC = () => {
                 className="relative w-full max-w-sm h-[calc(100vh-5rem)] bg-[#0C121D] border-l border-white/[0.08] p-5 overflow-y-auto flex flex-col justify-between"
               >
                 <div className="space-y-5">
+                  {/* Quick Settings & Theme */}
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                    <span className="text-[11px] font-mono text-slate-400">Appearance Theme</span>
+                    <ThemeToggle showLabel />
+                  </div>
+
                   {/* Primary Workspaces */}
                   <div className="space-y-2 border-b border-white/[0.06] pb-4">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 px-1 font-bold">

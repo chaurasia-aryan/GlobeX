@@ -1,0 +1,2 @@
+dataset_a,dataset_b,overlap_dimension,overlap_records,resolution_strategy,status
+UN_Comtrade_Annual,UN_Comtrade_Monthly,period (2022-2025),49920,MONTHLY_PANEL_AGGREGATION_PRECEDENCE,HARMONIZED

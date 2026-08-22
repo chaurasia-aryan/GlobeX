@@ -1,0 +1,7 @@
+{
+  "source": "OpenCorporates",
+  "status": "SKIPPED_OPTIONAL",
+  "reason": "Missing OPENCORPORATES_API_KEY",
+  "impact": "None \u2014 Primary entity resolution operates via GLEIF Golden Copy & National Registry IDs",
+  "timestamp": "2026-08-20T01:03:06.230886+00:00"
+}

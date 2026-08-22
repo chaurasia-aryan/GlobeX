@@ -32,54 +32,54 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
   return (
     <div className={cn("w-full space-y-4 font-sans select-none", className)}>
       {/* ── 1. Candidate Pool Summary Metric Strip (Level A Funnel) ───── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#0C121D] border border-white/[0.07] text-xs font-mono">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs font-mono shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-white font-bold tracking-wide">
+          <span className="w-2 h-2 rounded-full bg-[var(--brand-teal)] animate-pulse" />
+          <span className="text-[var(--text-primary)] font-bold tracking-wide">
             ML MATCHING FUNNEL
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-slate-400">
+        <div className="flex items-center gap-4 text-[var(--text-secondary)]">
           <div>
-            <strong className="text-white font-mono">{candidateCount.toLocaleString()}</strong>{" "}
+            <strong className="text-[var(--text-primary)] font-mono">{candidateCount.toLocaleString()}</strong>{" "}
             <span>eligible</span>
           </div>
           <span>•</span>
           <div>
-            <strong className="text-emerald-400 font-mono">{strongMatchCount}</strong>{" "}
+            <strong className="text-[var(--brand-teal)] font-mono">{strongMatchCount}</strong>{" "}
             <span>strong matches</span>
           </div>
           <span>•</span>
           <div>
-            <strong className="text-sky-400 font-mono">{recommendations.length}</strong>{" "}
+            <strong className="text-[var(--brand-cyan)] font-mono">{recommendations.length}</strong>{" "}
             <span>recommended</span>
           </div>
         </div>
       </div>
 
       {/* ── 2. Contextual Recommendations Ranked Surface ──────────────── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] shadow-lg space-y-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-lg space-y-4">
         {/* Contextual Title */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3">
           <div className="space-y-0.5">
-            <h3 className="font-display font-bold text-sm text-white">
+            <h3 className="font-display font-bold text-sm text-[var(--text-primary)]">
               Recommended Buyers for{" "}
-              <span className="text-emerald-400">
+              <span className="text-[var(--brand-teal)] font-semibold">
                 {query.quantity ? `${query.quantity.toLocaleString()} ${query.unit}` : ""}{" "}
                 {query.commodity}
               </span>{" "}
               ➔{" "}
-              <span className="text-sky-400">
+              <span className="text-[var(--brand-cyan)] font-semibold">
                 {query.destinationCountry || "Global Corridor"}
               </span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-secondary)]">
               Ranked by verified demand, corridor compatibility, and procurement capacity.
             </p>
           </div>
 
-          <span className="text-[11px] font-mono text-slate-500 shrink-0">
+          <span className="text-[11px] font-mono text-[var(--text-tertiary)] shrink-0">
             Top {recommendations.length} Ranked
           </span>
         </div>
@@ -101,8 +101,8 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
                   className={cn(
                     "p-3 sm:p-3.5 rounded-xl border transition-all duration-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group",
                     state.selected
-                      ? "bg-[#0B1320] border-emerald-500/50 shadow-md ring-1 ring-emerald-500/20"
-                      : "bg-[#070A0E] border-white/[0.06] hover:border-emerald-500/30 hover:bg-[#090E17]"
+                      ? "bg-[var(--bg-surface-subtle)] border-[var(--brand-teal)] shadow-md ring-1 ring-[var(--brand-teal)]/20"
+                      : "bg-[var(--bg-surface-subtle)] border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/40 hover:bg-[var(--bg-surface)]"
                   )}
                 >
                   {/* Left: Rank, Name, Location */}
@@ -111,19 +111,19 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
                       className={cn(
                         "w-6 h-6 rounded-lg border flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-colors",
                         state.selected
-                          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-                          : "bg-white/[0.03] border-white/[0.06] text-emerald-400"
+                          ? "bg-[var(--success-bg)] border-[var(--brand-teal)]/40 text-[var(--brand-teal-dark)]"
+                          : "bg-[var(--success-bg)] border-[var(--brand-teal)]/30 text-[var(--brand-teal-dark)]"
                       )}
                     >
                       {buyer.rank}
                     </span>
 
                     <div className="min-w-0 space-y-0.5">
-                      <h4 className="font-semibold text-xs text-white group-hover:text-emerald-300 transition-colors truncate">
+                      <h4 className="font-semibold text-xs text-[var(--text-primary)] group-hover:text-[var(--brand-teal-dark)] transition-colors truncate">
                         {buyer.name}
                       </h4>
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                        <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)]">
+                        <MapPin className="w-3 h-3 text-[var(--text-tertiary)] shrink-0" />
                         <span>{buyer.country} · {buyer.city}</span>
                       </div>
                     </div>
@@ -137,30 +137,30 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
                         <button
                           type="button"
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-mono font-bold transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--success-bg)] border border-[var(--brand-teal)]/30 text-[var(--brand-teal-dark)] hover:opacity-90 text-xs font-mono font-bold transition-colors cursor-pointer"
                           aria-label="Why this match?"
                         >
                           <span>{matchPercent}% Match</span>
-                          <Info className="w-3 h-3 text-emerald-400/80" />
+                          <Info className="w-3 h-3 text-[var(--brand-teal-dark)]" />
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
                         side="top"
                         align="end"
-                        className="w-64 p-3 bg-[#0C121D] border border-white/[0.1] text-xs space-y-2 text-slate-300 shadow-xl rounded-xl"
+                        className="w-64 p-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs space-y-2 text-[var(--text-secondary)] shadow-xl rounded-xl"
                       >
-                        <div className="font-display font-semibold text-white text-xs border-b border-white/[0.06] pb-1.5 flex items-center justify-between">
+                        <div className="font-display font-semibold text-[var(--text-primary)] text-xs border-b border-[var(--border-subtle)] pb-1.5 flex items-center justify-between">
                           <span>Why this match?</span>
-                          <span className="font-mono text-emerald-400 font-bold">{matchPercent}% Score</span>
+                          <span className="font-mono text-[var(--brand-teal)] font-bold">{matchPercent}% Score</span>
                         </div>
                         <div className="space-y-1.5 text-[11px]">
                           {buyer.matchSignals?.map((sig, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-slate-300">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
+                            <div key={i} className="flex items-start gap-1.5 text-[var(--text-secondary)]">
+                              <CheckCircle2 className="w-3 h-3 text-[var(--brand-teal)] shrink-0 mt-0.5" />
                               <span className="leading-tight">{sig}</span>
                             </div>
                           )) || (
-                            <div className="text-slate-400">High compatibility across corridor and capacity.</div>
+                            <div className="text-[var(--text-tertiary)]">High compatibility across corridor and capacity.</div>
                           )}
                         </div>
                       </PopoverContent>
@@ -174,9 +174,9 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
                           e.stopPropagation();
                           onInspectBuyer(buyer);
                         }}
-                        className="h-7 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer"
+                        className="h-7 px-2.5 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer shadow-sm"
                       >
-                        <Eye className="w-3 h-3 text-slate-400" />
+                        <Eye className="w-3 h-3 text-[var(--text-tertiary)]" />
                         <span>Inspect</span>
                       </button>
 
@@ -186,9 +186,9 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
                           e.stopPropagation();
                           onCreateTradeRequest(buyer);
                         }}
-                        className="h-7 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer active:scale-[0.98]"
+                        className="h-7 px-3 rounded-lg bg-[var(--brand-teal-dark)] hover:bg-[var(--brand-teal)] text-white text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer active:scale-[0.98] shadow-sm"
                       >
-                        <PlusCircle className="w-3 h-3 text-emerald-400" />
+                        <PlusCircle className="w-3 h-3 text-white" />
                         <span>Create Request</span>
                       </button>
                     </div>
@@ -198,9 +198,9 @@ export const BuyerMatchingResults: React.FC<BuyerMatchingResultsProps> = ({
             }}
           />
         ) : (
-          <div className="p-8 text-center rounded-xl border border-dashed border-white/[0.08] bg-[#070A0E] space-y-2">
-            <p className="text-xs text-slate-300 font-semibold">No strong matches found.</p>
-            <p className="text-[11px] text-slate-400">
+          <div className="p-8 text-center rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface-subtle)] space-y-2">
+            <p className="text-xs text-[var(--text-primary)] font-semibold">No strong matches found.</p>
+            <p className="text-[11px] text-[var(--text-secondary)]">
               Try adjusting the commodity name, target volume, destination market, or optional specifications.
             </p>
           </div>

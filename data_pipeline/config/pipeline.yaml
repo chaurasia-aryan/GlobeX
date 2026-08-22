@@ -1,0 +1,70 @@
+# Global Pipeline Execution & Feature Engineering Configuration
+
+pipeline:
+  name: "globex_trade_intelligence_pipeline"
+  version: "1.0.0"
+  environment: "production"
+  random_seed: 42
+
+paths:
+  base_dir: "data"
+  raw_dir: "data/raw"
+  staging_dir: "data/staging"
+  processed_dir: "data/processed"
+  features_dir: "data/features"
+  manifests_dir: "data/manifests"
+  reports_dir: "data/reports"
+  models_dir: "data/models"
+
+time_splits:
+  train_years: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
+  val_years: [2023]
+  test_years: [2024, 2025]
+
+sequence_parameters:
+  window_size_months: 12
+  horizon_months: 1
+  min_sequence_length: 6
+  target_column: "anomaly_flag"
+  feature_columns:
+    - "log_trade_value"
+    - "trade_growth"
+    - "yoy_growth"
+    - "rolling_mean"
+    - "rolling_std"
+    - "unit_value"
+    - "unit_value_zscore"
+    - "unit_value_iqr_score"
+    - "quantity_growth"
+    - "weight_growth"
+    - "partner_share"
+    - "partner_share_change"
+    - "new_partner_flag"
+    - "new_product_flag"
+    - "partner_concentration"
+    - "product_concentration"
+    - "mirror_value_difference"
+    - "mirror_ratio"
+    - "mirror_missing_flag"
+
+anomaly_rules:
+  unit_value_iqr_multiplier: 2.5
+  sudden_trade_spike_growth: 3.0 # 300% sudden surge
+  mirror_discrepancy_ratio_threshold: 1.8 # 80%+ difference in reported bilateral values
+  quantity_value_mismatch_std: 2.5
+
+synthetic_perturbation:
+  perturbation_rate: 0.08 # 8% synthetic anomaly injection for validation benchmarking
+  noise_types:
+    - "value_spike"
+    - "quantity_drop"
+    - "unit_value_outlier"
+    - "mirror_divergence"
+    - "partner_shift"
+
+entity_resolution:
+  exact_lei_weight: 1.0
+  tax_id_weight: 0.95
+  normalized_name_jurisdiction_weight: 0.85
+  normalized_address_weight: 0.70
+  fuzzy_threshold: 82.0

@@ -1,0 +1,9 @@
+query_entity_id,matched_entity_id,legal_name,match_score,matching_fields,dataset,topic,source,decision,sanctions_program,countries,retrieved_at
+QRY-os-entity-918231,os-entity-918231,ROSOBORONEXPORT JSC,100.0,"name,alias,country",us_ofac_sdn;eu_fsf;un_sc;uk_ofsi,sanction;debarment,OpenSanctions,FLAGGED,CAATSA Section 231; Ukraine-/Russia-Related Sanctions,ru,2026-08-20T01:03:06.149679+00:00
+QRY-os-entity-481920,os-entity-481920,OCEAN STAR TITAN,100.0,"name,alias,country",us_ofac_sdn;un_sc,sanction,OpenSanctions,FLAGGED,IRAN-EO13846; Shadow Tanker Fleet,pa;ir,2026-08-20T01:03:06.149679+00:00
+QRY-os-entity-319028,os-entity-319028,MYANMAR CHEMICAL LOGISTICS LTD,100.0,"name,alias,country",eu_fsf;uk_ofsi,sanction;debarment,OpenSanctions,FLAGGED,Myanmar / Burma Sanctions Regime,mm;sg,2026-08-20T01:03:06.149679+00:00
+QRY-os-entity-827104,os-entity-827104,AL-BARAKA PETROCHEMICALS FZE,100.0,"name,alias,country",us_ofac_sdn,sanction,OpenSanctions,FLAGGED,IRAN-TRAFFIC-EO13902,ae;ir,2026-08-20T01:03:06.149679+00:00
+QRY-os-entity-102938,os-entity-102938,WORLD WIDE GLOBAL TRADING DEBARRED CORP,100.0,"name,alias,country",worldbank_debarred;iadb_sanctions,debarment;crime,OpenSanctions,FLAGGED,World Bank Group Procurement Debarment,ng;ae,2026-08-20T01:03:06.149679+00:00
+QRY-BHARATAGRO-01,NO_MATCH,BHARAT AGRO COMMODITIES EXPORTS LIMITED,12.0,none,clean_corridor,commercial,OpenSanctions,CLEAR,N/A,IN;AE,2026-08-20T01:03:06.149679+00:00
+QRY-GULFAGRI-02,NO_MATCH,GULF AGRI FOODS TRADING LLC,8.5,none,clean_corridor,commercial,OpenSanctions,CLEAR,N/A,IN;AE,2026-08-20T01:03:06.149679+00:00
+QRY-HINDUSTAN-03,NO_MATCH,HINDUSTAN SPICES & HERBS TRADING PRIVATE LIMITED,15.0,none,clean_corridor,commercial,OpenSanctions,CLEAR,N/A,IN;AE,2026-08-20T01:03:06.149679+00:00

@@ -60,26 +60,26 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
   return (
     <div
       className={cn(
-        "w-full rounded-2xl bg-[#0C121D] border border-white/[0.08] p-5 sm:p-6 space-y-4 shadow-lg font-sans select-none",
+        "w-full rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 sm:p-6 space-y-4 shadow-lg font-sans select-none",
         className
       )}
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3.5">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <h3 className="font-display font-bold text-sm text-white tracking-wide uppercase">
+            <span className="w-2 h-2 rounded-full bg-[var(--brand-teal)]" />
+            <h3 className="font-display font-bold text-sm text-[var(--text-primary)] tracking-wide uppercase">
               What Are You Looking For?
             </h3>
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[var(--text-secondary)]">
             Query verified institutional buyers and matching import demand across 7,420+ global organizations.
           </p>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/30 px-2 py-0.5 rounded-lg shrink-0">
-          <ShieldCheck className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-1 text-[11px] font-mono text-[var(--brand-teal-dark)] bg-[var(--success-bg)] border border-[var(--brand-teal)]/30 px-2 py-0.5 rounded-lg shrink-0 font-medium">
+          <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
           <span>ML Candidate Filter</span>
         </div>
       </div>
@@ -88,11 +88,11 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           
-          {/* 1. Commodity Name (6 cols) */}
+          {/* 1. Commodity Name (5 cols) */}
           <div className="md:col-span-5 space-y-1.5">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <label className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)] flex items-center justify-between">
               <span>Commodity / Product</span>
-              <span className="text-[10px] text-slate-500 font-sans">e.g. Basmati Rice</span>
+              <span className="text-[10px] text-[var(--text-tertiary)] font-sans">e.g. Basmati Rice</span>
             </label>
             <div className="relative">
               <input
@@ -101,14 +101,14 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
                 value={commodity}
                 onChange={(e) => setCommodity(e.target.value)}
                 placeholder="e.g. 1121 Steam Basmati Rice, Organic Wheat..."
-                className="w-full h-10 px-3.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full h-10 px-3.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)] transition-colors"
               />
             </div>
           </div>
 
           {/* 2. Quantity & Unit (4 cols) */}
           <div className="md:col-span-4 space-y-1.5">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+            <label className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)]">
               Quantity & Volume
             </label>
             <div className="flex items-center gap-2">
@@ -119,12 +119,12 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
                 placeholder="1000"
-                className="w-full h-10 px-3.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-emerald-500/50 font-mono"
+                className="w-full h-10 px-3.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)] font-mono"
               />
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="h-10 px-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none cursor-pointer focus:border-emerald-500/50 shrink-0 font-mono"
+                className="h-10 px-3 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none cursor-pointer focus:border-[var(--brand-teal)] shrink-0 font-mono"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -137,13 +137,13 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
 
           {/* 3. Destination Country (3 cols) */}
           <div className="md:col-span-3 space-y-1.5">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+            <label className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)]">
               Destination Market
             </label>
             <select
               value={destinationCountry}
               onChange={(e) => setDestinationCountry(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none cursor-pointer focus:border-emerald-500/50"
+              className="w-full h-10 px-3 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none cursor-pointer focus:border-[var(--brand-teal)]"
             >
               {DESTINATIONS.map((d) => (
                 <option key={d} value={d}>
@@ -157,7 +157,7 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
 
         {/* Quick Suggestion Pills */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
-          <span className="text-slate-500 text-[10px] font-mono mr-1">Quick Select:</span>
+          <span className="text-[var(--text-tertiary)] text-[10px] font-mono mr-1">Quick Select:</span>
           {POPULAR_COMMODITIES.map((item) => (
             <button
               key={item}
@@ -166,8 +166,8 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
               className={cn(
                 "px-2.5 py-1 rounded-lg text-xs transition-colors cursor-pointer border",
                 commodity === item
-                  ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300 font-medium"
-                  : "bg-white/[0.03] border-white/[0.06] text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                  ? "bg-[var(--success-bg)] border-[var(--brand-teal)]/40 text-[var(--brand-teal-dark)] font-medium"
+                  : "bg-[var(--bg-surface-subtle)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-muted)]"
               )}
             >
               {item}
@@ -176,15 +176,15 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
         </div>
 
         {/* Submit & Requirements Bar */}
-        <div className="pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="pt-2 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 max-w-md">
-            <span className="text-[11px] font-mono text-slate-500 shrink-0">Specifications:</span>
+            <span className="text-[11px] font-mono text-[var(--text-tertiary)] shrink-0">Specifications:</span>
             <input
               type="text"
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
               placeholder="e.g. ISO 22000, Halal, SGS Inspection"
-              className="w-full h-8 px-2.5 rounded-lg bg-[#070A0E] border border-white/[0.06] text-slate-300 text-xs outline-none focus:border-emerald-500/40"
+              className="w-full h-8 px-2.5 rounded-lg bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)]"
             />
           </div>
 
@@ -194,13 +194,13 @@ export const BuyerMatchingForm: React.FC<BuyerMatchingFormProps> = ({
             className={cn(
               "h-10 px-5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md shrink-0",
               isLoading
-                ? "bg-slate-800 text-slate-400 cursor-not-allowed"
-                : "bg-emerald-500 hover:bg-emerald-400 text-black active:scale-[0.98]"
+                ? "bg-[var(--bg-surface-muted)] text-[var(--text-disabled)] cursor-not-allowed"
+                : "bg-[var(--brand-teal-dark)] hover:bg-[var(--brand-teal)] text-white active:scale-[0.98]"
             )}
           >
             {isLoading ? (
               <>
-                <span className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Filtering 7,420 Organizations...</span>
               </>
             ) : (

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GLOBEX Trade OS — Data Quality & Integrity Report</title>
+    <style>
+        body { background: #070B12; color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 30px; }
+        .card { background: #0F172A; border: 1px solid #1E293B; border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1E293B; padding-bottom: 16px; margin-bottom: 20px; }
+        .metric-strip { display: flex; gap: 20px; margin-bottom: 24px; }
+        .metric { background: #1E293B; border-radius: 6px; padding: 16px 20px; flex: 1; }
+        .metric-val { font-size: 28px; font-weight: 700; margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { background: #1E293B; padding: 12px 10px; color: #94A3B8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div>
+                <h1 style="margin: 0; font-size: 22px; color: #38BDF8;">GLOBEX Trade OS — Data Quality Audit</h1>
+                <p style="margin: 4px 0 0 0; color: #94A3B8; font-size: 13px;">Generated at 2026-08-20 01:03:40 UTC • Pipeline Version 1.0.0</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 12px; color: #94A3B8;">System Health Index</span>
+                <div style="font-size: 28px; font-weight: 800; color: #34C795;">100.0%</div>
+            </div>
+        </div>
+
+        <div class="metric-strip">
+            <div class="metric">
+                <div style="color: #94A3B8; font-size: 12px;">Total Checks Executed</div>
+                <div class="metric-val" style="color: #F8FAFC;">8</div>
+            </div>
+            <div class="metric">
+                <div style="color: #94A3B8; font-size: 12px;">Checks Passed</div>
+                <div class="metric-val" style="color: #34C795;">8</div>
+            </div>
+            <div class="metric">
+                <div style="color: #94A3B8; font-size: 12px;">Warnings</div>
+                <div class="metric-val" style="color: #F59E0B;">0</div>
+            </div>
+            <div class="metric">
+                <div style="color: #94A3B8; font-size: 12px;">Critical Failures</div>
+                <div class="metric-val" style="color: #EF4444;">0</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Dataset</th>
+                    <th>Audit Rule</th>
+                    <th>Target Field(s)</th>
+                    <th style="text-align: right;">Violations</th>
+                    <th style="text-align: right;">Violation %</th>
+                    <th style="text-align: center;">Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">NULL_PRIMARY_VALUE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">primary_value</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">NEGATIVE_VALUE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">primary_value</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">NEGATIVE_NET_WEIGHT_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">net_weight</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">VALID_ISO3_COUNTRY_CODE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">reporter_iso3,partner_iso3</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">VALID_HS6_COMMODITY_CODE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">cmd_code</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">trade_observations</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">IMPOSSIBLE_UNIT_PRICE_BOUNDS</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">unit_price</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">anomaly_sequences</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">TRAIN_VAL_TEMPORAL_LEAKAGE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">year</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace;">anomaly_sequences</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-weight: 600;">VAL_TEST_TEMPORAL_LEAKAGE_CHECK</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; font-family: monospace; color: #94A3B8;">year</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: right;">0.0%</td>
+            <td style="padding: 10px; border-bottom: 1px solid #1E293B; text-align: center;">
+                <span style="background: #34C79520; color: #34C795; border: 1px solid #34C79550; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+                    PASSED
+                </span>
+            </td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

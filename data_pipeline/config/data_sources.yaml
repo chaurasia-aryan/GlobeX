@@ -1,0 +1,88 @@
+# Data Sources Configuration for Cross-Border Trade Intelligence Pipeline
+
+comtrade:
+  base_url: "https://comtradeapi.un.org/public/v1/preview"
+  subscription_url: "https://comtradeapi.un.org/data/v1/get"
+  annual:
+    start_year: 2015
+    end_year: 2025
+  monthly:
+    start_period: "202201"
+    end_period: "202512"
+  reporters: ["IND", "USA", "ARE", "CHN", "DEU", "GBR", "SGP", "JPN"]
+  partners: ["WORLD", "IND", "USA", "ARE", "CHN", "DEU", "GBR", "SGP", "SAU"]
+  classifications: ["HS"]
+  type_code: "C" # Commodities
+  freq_code: "A" # Annual default, 'M' for monthly
+  rate_limit_per_second: 1.0
+  max_retries: 5
+  backoff_factor: 2.0
+  timeout_seconds: 45
+
+gleif:
+  level1_url: "https://goldencopy.gleif.org/api/v2/golden-copies/publishes"
+  direct_level1_csv: "https://leidata-preview.gleif.org/api/v1/concatenated-files/latest/lei2/csv"
+  direct_level2_rr_csv: "https://leidata-preview.gleif.org/api/v1/concatenated-files/latest/rr/csv"
+  delta_url: "https://goldencopy.gleif.org/api/v2/golden-copies/deltas"
+  user_agent: "GlobexDataPipeline/1.0 (Institutional Trade Research; contact@globex.trade)"
+  chunk_size_mb: 25
+  hash_check: true
+
+opensanctions:
+  api_url: "https://api.opensanctions.org"
+  bulk_sanctions_csv: "https://data.opensanctions.org/datasets/latest/sanctions/targets.simple.csv"
+  bulk_entities_ftm_json: "https://data.opensanctions.org/datasets/latest/sanctions/entities.ftm.json"
+  target_datasets: ["sanctions", "debarment", "pep"]
+  min_match_score: 70.0
+  timeout_seconds: 60
+
+ofac:
+  sdn_csv_url: "https://www.treasury.gov/ofac/downloads/sdn.csv"
+  consolidated_csv_url: "https://www.treasury.gov/ofac/downloads/consolidated/consolidated.csv"
+  alt_names_csv_url: "https://www.treasury.gov/ofac/downloads/alt.csv"
+  address_csv_url: "https://www.treasury.gov/ofac/downloads/add.csv"
+  timeout_seconds: 45
+
+opencorporates:
+  base_url: "https://api.opencorporates.com/v0.4"
+  rate_limit_per_minute: 20
+  timeout_seconds: 30
+  optional: true
+
+worldbank:
+  api_base_url: "https://api.worldbank.org/v2"
+  format: "json"
+  per_page: 1000
+  countries: ["IND", "USA", "ARE", "CHN", "DEU", "GBR", "SGP", "SAU", "JPN", "VNM", "KOR", "NLD", "BRA", "ZAF", "AUS", "CAN", "MEX", "IDN", "MYS", "THA"]
+  start_year: 2015
+  end_year: 2025
+
+wits:
+  base_url: "https://wits.worldbank.org/API/V1/SDMX/V21/rest"
+  unctad_trains_url: "https://wits.worldbank.org/API/V1/SDMX/V21/rest/data/DF_WITS_Tariff_TRAINS"
+  reporters: ["IND", "USA", "ARE", "CHN", "DEU"]
+  partners: ["000", "IND", "USA", "ARE", "CHN"]
+  start_year: 2015
+  end_year: 2025
+  nomenclature: "H5" # HS 2017 / H5 or H6 for HS 2022
+
+ocr_datasets:
+  funsd:
+    hf_path: "nielsr/funsd"
+    fallback_url: "https://guillaumejaume.github.io/FUNSD/dataset.zip"
+    splits: ["train", "test"]
+  sroie:
+    hf_path: "dpl123/sroie"
+    fallback_url: "https://github.com/zzzDavid/ICDAR-2019-SROIE"
+    splits: ["train", "test"]
+  cord:
+    hf_path: "naver-clova-ix/cord-v2"
+    splits: ["train", "validation", "test"]
+  xfund:
+    hf_path: "nielsr/xfund"
+    languages: ["en", "zh", "de", "es", "fr", "it", "ja", "pt"]
+    splits: ["train", "validation"]
+  rvl_cdip:
+    hf_path: "rvl_cdip"
+    optional: true
+    min_disk_free_gb: 40.0

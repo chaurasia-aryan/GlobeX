@@ -1,0 +1,5 @@
+source,page_url,filters,filename,retrieved_at,sha256,status
+UN_Comtrade,https://comtradeplus.un.org/,"reporter=IND;partners=all;flows=X,M;classification=HS;years=2015-2025",comtrade_raw_IND_WLD_annual_2015_2025.json,2026-08-20T01:17:41.572977+00:00,a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0,PROGRAMMATIC_API_VERIFIED
+GLEIF,https://www.gleif.org/en/lei-data/gleif-golden-copy/download-golden-copy,"dataset=golden_copy_level1;jurisdiction=all",gleif_golden_copy_latest.csv,2026-08-20T01:17:41.826000+00:00,60d6a246d2c56a2a4af68b311dd2c3cd6fb81de2eea4ab50938e42110422ccfb,BULK_DOWNLOAD_VERIFIED
+OFAC_Treasury,https://sanctionssearch.ofac.treasury.gov/,"list=sdn,consolidated",sanctions_and_ofac_targets_latest.csv,2026-08-20T01:17:41.874000+00:00,3a45233b6f884813417b297b323e3dafe6d2003a863cf9ed15f02bd44537d535,HTTP_DIRECT_FEED_VERIFIED
+WITS_UNCTAD,https://wits.worldbank.org/tariff/trains/,"reporter=IND;partner=all;nomen=HS",wits_india_tariffs_raw.json,2026-08-20T01:17:42.040000+00:00,e800d7232a7fb474251db46500926317cd98fb16102a95ab9f0ffa8020ef030c,REST_SDMX_FEED_VERIFIED

@@ -1,0 +1,86 @@
+# India-Centric Trade Scope Configuration — GLOBEX Trade OS
+
+reporter:
+  iso3: IND
+  name: India
+  m49_code: 356
+
+partners:
+  mode: all
+  priority_partners:
+    - iso3: "WLD"
+      name: "World"
+      m49_code: 0
+    - iso3: "USA"
+      name: "United States"
+      m49_code: 842
+    - iso3: "ARE"
+      name: "United Arab Emirates"
+      m49_code: 784
+    - iso3: "CHN"
+      name: "China"
+      m49_code: 156
+    - iso3: "SAU"
+      name: "Saudi Arabia"
+      m49_code: 682
+    - iso3: "DEU"
+      name: "Germany"
+      m49_code: 276
+    - iso3: "GBR"
+      name: "United Kingdom"
+      m49_code: 826
+    - iso3: "SGP"
+      name: "Singapore"
+      m49_code: 702
+    - iso3: "JPN"
+      name: "Japan"
+      m49_code: 392
+    - iso3: "NLD"
+      name: "Netherlands"
+      m49_code: 528
+    - iso3: "KOR"
+      name: "South Korea"
+      m49_code: 410
+    - iso3: "BRA"
+      name: "Brazil"
+      m49_code: 76
+    - iso3: "IDN"
+      name: "Indonesia"
+      m49_code: 360
+    - iso3: "AUS"
+      name: "Australia"
+      m49_code: 36
+    - iso3: "ZAF"
+      name: "South Africa"
+      m49_code: 710
+
+flows:
+  - flow_code: 2
+    symbol: "X"
+    desc: "Export"
+  - flow_code: 1
+    symbol: "M"
+    desc: "Import"
+  - flow_code: 3
+    symbol: "RX"
+    desc: "Re-export"
+  - flow_code: 4
+    symbol: "RM"
+    desc: "Re-import"
+
+classification:
+  type: "HS"
+  preferred_level: 6
+  versions:
+    historical: "HS2017"
+    current: "HS2022"
+
+annual:
+  start_year: 2015
+  end_year: 2025
+
+monthly:
+  start_period: "202201"
+  end_period: "202512"
+
+second_partner: "world"

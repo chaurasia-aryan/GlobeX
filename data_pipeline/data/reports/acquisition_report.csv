@@ -1,0 +1,7 @@
+source_name,source_authority,acquisition_method,credential_required,raw_files_downloaded,raw_records_acquired,retained_staging_rows,target_staging_table,status
+UN_Comtrade,United Nations (UNSD),PROGRAMMATIC_REST_API,NO (Public Preview API),30,75520,75520,comtrade_india_world.csv,VALIDATED_ACQUIRED
+GLEIF_Golden_Copy,Global Legal Entity Identifier Foundation,OFFICIAL_BULK_FEED,NO (CC0 Public Domain),1,7,7,entity_master.csv,VALIDATED_ACQUIRED
+OpenSanctions_and_OFAC,OpenSanctions / US Treasury,BULK_TARGET_STREAM_AND_HTTP,NO (Open / US Public Domain),1,5,5,sanctions_entities.csv,VALIDATED_ACQUIRED
+WorldBank_WDI,The World Bank Group,OFFICIAL_API_V2,NO (CC BY 4.0),1,990,990,worldbank_country_indicators.csv,VALIDATED_ACQUIRED
+WITS_UNCTAD_TRAINS,World Bank / UNCTAD,REST_SDMX_FEED,NO (Open WITS Access),1,1320,1320,india_tariffs.csv,VALIDATED_ACQUIRED
+OCR_Document_Benchmarks,"FUNSD, SROIE, CORD, XFUND",BENCHMARK_EXTRACTION,NO (Open Benchmark Access),1,8,81,document_annotations.csv,VALIDATED_ACQUIRED

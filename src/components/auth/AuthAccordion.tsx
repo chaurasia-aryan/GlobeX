@@ -79,32 +79,27 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
 
   return (
     <div className={cn("w-full flex items-center justify-center p-2 sm:p-4 select-none font-sans", className)}>
-      {/* ── Enterprise Dark Translucent Auth Card (Near-Square, max 580px, restrained blur & border) ── */}
+      {/* ── Enterprise Institutional Auth Card (Consistent Semantic Surface) ── */}
       <div
-        style={{
-          background: "rgba(8, 14, 24, 0.84)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-        }}
         className={cn(
           "w-full max-w-[540px] rounded-3xl p-5 sm:p-7 overflow-hidden flex flex-col justify-between",
-          "border border-white/[0.08] hover:border-white/[0.14]",
-          "shadow-2xl shadow-black/50 transition-all duration-200"
+          "bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--border-default)]",
+          "shadow-2xl shadow-black/10 dark:shadow-black/50 transition-all duration-200"
         )}
       >
         {/* ── SEGMENTED TOP TOGGLE SWITCH ──────────────────────────────────── */}
-        <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#070A0E] border border-white/[0.06] mb-5">
+        <div className="grid grid-cols-2 p-1 rounded-2xl bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] mb-5">
           <button
             type="button"
             onClick={() => setActiveTab("signin")}
             className={cn(
               "py-2 px-3 sm:px-4 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2",
               activeTab === "signin"
-                ? "bg-[#111A29] text-white border border-white/[0.1] shadow-sm"
-                : "text-slate-400 hover:text-white"
+                ? "bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] shadow-sm"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             )}
           >
-            <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
+            <Globe2 className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
             <span>Sign In</span>
           </button>
 
@@ -114,11 +109,11 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
             className={cn(
               "py-2 px-3 sm:px-4 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2",
               activeTab === "register"
-                ? "bg-[#111A29] text-white border border-white/[0.1] shadow-sm"
-                : "text-slate-400 hover:text-white"
+                ? "bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] shadow-sm"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             )}
           >
-            <Building2 className="w-3.5 h-3.5 text-sky-400" />
+            <Building2 className="w-3.5 h-3.5 text-[var(--brand-cyan)]" />
             <span>Register Org</span>
           </button>
         </div>
@@ -140,14 +135,14 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               {/* Header */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display font-bold text-base text-white">
+                  <h3 className="font-display font-bold text-base text-[var(--text-primary)]">
                     Sign in to GLOBEX
                   </h3>
-                  <span className="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40">
+                  <span className="text-[10px] font-mono text-[var(--brand-teal)] px-2 py-0.5 rounded bg-[var(--success-bg)] border border-[var(--brand-teal)]/30 font-semibold">
                     TLS-256
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Access verified cross-border trade operations & smart escrow.
                 </p>
               </div>
@@ -156,14 +151,14 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               <form onSubmit={handleSignInSubmit} className="space-y-3 text-xs">
                 {/* Active Persona Role */}
                 <div className="space-y-1">
-                  <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                    <Briefcase className="w-3 h-3 text-slate-500" />
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                    <Briefcase className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>Active Persona Role</span>
                   </label>
                   <select
                     value={role}
                     onChange={(e) => setSelectedRole(e.target.value as RoleType)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none cursor-pointer focus:border-emerald-500/40"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none cursor-pointer focus:border-[var(--brand-teal)]"
                   >
                     <option value="admin">Admin (John Doe · Example Global)</option>
                     <option value="compliance">Compliance Officer (Jane Doe)</option>
@@ -173,8 +168,8 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
 
                 {/* Corporate Email */}
                 <div className="space-y-1">
-                  <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                    <Mail className="w-3 h-3 text-slate-500" />
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                    <Mail className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>Corporate Email</span>
                   </label>
                   <input
@@ -183,21 +178,21 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@organization.com"
-                    className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-emerald-500/40"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
 
                 {/* Password */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <label className="text-slate-400 flex items-center gap-1.5 font-medium">
-                      <Lock className="w-3 h-3 text-slate-500" />
+                    <label className="text-[var(--text-secondary)] flex items-center gap-1.5 font-medium">
+                      <Lock className="w-3 h-3 text-[var(--text-tertiary)]" />
                       <span>Password</span>
                     </label>
                     <button
                       type="button"
                       onClick={() => alert("Password reset link sent to your corporate email.")}
-                      className="text-[10px] text-slate-500 hover:text-emerald-400 transition-colors cursor-pointer"
+                      className="text-[10px] text-[var(--text-tertiary)] hover:text-[var(--brand-teal)] transition-colors cursor-pointer"
                     >
                       Forgot?
                     </button>
@@ -210,12 +205,12 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full px-3 py-2 pr-9 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-emerald-500/40 font-mono"
+                      className="w-full px-3 py-2 pr-9 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)] font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer p-1"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer p-1"
                       aria-label="Toggle password visibility"
                     >
                       {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -224,18 +219,18 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                 </div>
 
                 {/* Remember session */}
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-0.5">
+                <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] pt-0.5">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="rounded border-white/[0.1] bg-[#070A0E] text-emerald-500 cursor-pointer"
+                      className="rounded border-[var(--border-subtle)] bg-[var(--bg-surface-subtle)] text-[var(--brand-teal)] cursor-pointer"
                     />
                     <span className="text-[11px]">Remember session</span>
                   </label>
-                  <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                  <span className="text-[10px] font-mono text-[var(--text-tertiary)] flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-[var(--brand-teal)]" />
                     <span>EVM Escrow</span>
                   </span>
                 </div>
@@ -256,8 +251,8 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               </form>
 
               {/* Social Login Strip */}
-              <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-                <div className="text-center text-[10px] text-slate-500 uppercase font-mono tracking-wider">
+              <div className="space-y-2 pt-2 border-t border-[var(--border-subtle)]">
+                <div className="text-center text-[10px] text-[var(--text-tertiary)] uppercase font-mono tracking-wider">
                   Or continue with SSO
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -266,7 +261,7 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                       key={provider}
                       type="button"
                       onClick={() => alert(`SSO Authentication via ${provider} initiated.`)}
-                      className="py-2 px-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] text-slate-300 text-xs font-mono transition-colors cursor-pointer text-center"
+                      className="py-2 px-2 rounded-xl bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-mono transition-colors cursor-pointer text-center"
                     >
                       {provider}
                     </button>
@@ -275,27 +270,27 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               </div>
 
               {/* Demo Quick Fill Pills */}
-              <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-slate-400">
+              <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono text-[var(--text-tertiary)]">
                 <span>Demo Fill:</span>
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleQuickPersona("admin", "John Doe", "Example Global Trading Ltd.", "john.doe@example.com")}
-                    className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 cursor-pointer transition-colors"
+                    className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
                   >
                     Admin
                   </button>
                   <button
                     type="button"
                     onClick={() => handleQuickPersona("compliance", "Jane Doe", "Example Global Trading Ltd.", "jane.doe@example.com")}
-                    className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 cursor-pointer transition-colors"
+                    className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
                   >
                     Compliance
                   </button>
                   <button
                     type="button"
                     onClick={() => handleQuickPersona("salesman", "Alex Morgan", "Example Global Trading Ltd.", "alex.morgan@example.com")}
-                    className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 cursor-pointer transition-colors"
+                    className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
                   >
                     Trader
                   </button>
@@ -317,14 +312,14 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               {/* Header */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display font-bold text-base text-white">
+                  <h3 className="font-display font-bold text-base text-[var(--text-primary)]">
                     Register Organization
                   </h3>
-                  <span className="text-[10px] font-mono text-sky-400 px-2 py-0.5 rounded bg-sky-950/60 border border-sky-800/40">
+                  <span className="text-[10px] font-mono text-[var(--brand-cyan)] px-2 py-0.5 rounded bg-[var(--info-bg)] border border-[var(--brand-cyan)]/30 font-semibold">
                     Enterprise KYC
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Create an institutional workspace for global export & trade.
                 </p>
               </div>
@@ -333,8 +328,8 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               <form onSubmit={handleRegisterSubmit} className="space-y-3 text-xs">
                 {/* Organization Legal Name */}
                 <div className="space-y-1">
-                  <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                    <Building2 className="w-3 h-3 text-slate-500" />
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                    <Building2 className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>Organization Legal Name</span>
                   </label>
                   <input
@@ -343,21 +338,21 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
                     placeholder="e.g. Example Global Trading Ltd."
-                    className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-sky-500/40"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-cyan)]"
                   />
                 </div>
 
                 {/* Role / Representative Row */}
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                      <Briefcase className="w-3 h-3 text-slate-500" />
+                    <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                      <Briefcase className="w-3 h-3 text-[var(--text-tertiary)]" />
                       <span>Entity Type</span>
                     </label>
                     <select
                       value={role}
                       onChange={(e) => setSelectedRole(e.target.value as RoleType)}
-                      className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none cursor-pointer"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none cursor-pointer"
                     >
                       <option value="admin">Admin (Org Lead)</option>
                       <option value="compliance">Compliance Officer</option>
@@ -368,8 +363,8 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                      <User className="w-3 h-3 text-slate-500" />
+                    <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                      <User className="w-3 h-3 text-[var(--text-tertiary)]" />
                       <span>Representative</span>
                     </label>
                     <input
@@ -378,15 +373,15 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                       value={adminName}
                       onChange={(e) => setAdminName(e.target.value)}
                       placeholder="Full Name"
-                      className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-sky-500/40"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-cyan)]"
                     />
                   </div>
                 </div>
 
                 {/* Corporate Email */}
                 <div className="space-y-1">
-                  <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                    <Mail className="w-3 h-3 text-slate-500" />
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                    <Mail className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>Corporate Email</span>
                   </label>
                   <input
@@ -395,14 +390,14 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="admin@organization.com"
-                    className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-sky-500/40"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-cyan)]"
                   />
                 </div>
 
                 {/* Password */}
                 <div className="space-y-1">
-                  <label className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
-                    <Lock className="w-3 h-3 text-slate-500" />
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                    <Lock className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>Password</span>
                   </label>
                   <input
@@ -411,7 +406,7 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-3 py-2 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white text-xs outline-none focus:border-sky-500/40 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-cyan)] font-mono"
                   />
                 </div>
 
@@ -431,8 +426,8 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               </form>
 
               {/* Social Login Strip */}
-              <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-                <div className="text-center text-[10px] text-slate-500 uppercase font-mono tracking-wider">
+              <div className="space-y-2 pt-2 border-t border-[var(--border-subtle)]">
+                <div className="text-center text-[10px] text-[var(--text-tertiary)] uppercase font-mono tracking-wider">
                   Or continue with SSO
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -441,7 +436,7 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                       key={provider}
                       type="button"
                       onClick={() => alert(`SSO Authentication via ${provider} initiated.`)}
-                      className="py-2 px-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] text-slate-300 text-xs font-mono transition-colors cursor-pointer text-center"
+                      className="py-2 px-2 rounded-xl bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-mono transition-colors cursor-pointer text-center"
                     >
                       {provider}
                     </button>

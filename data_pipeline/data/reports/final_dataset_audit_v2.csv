@@ -1,0 +1,6 @@
+dataset,rows,columns,grain,duplicate_key_rows,missing_percentage,source_count,status
+01_partner_discovery_eda.csv,1408,47,India × partner × HS6 × year,0,7.05%,7,EDA_READY_VALIDATED
+02_trade_anomaly_dl.csv,61440,27,India × partner × HS6 × period,55296,3.01%,3,FROZEN_VALIDATED
+03_document_intelligence_eda.csv,91,17,document × token_index,0,4.20%,4,EDA_READY_VALIDATED
+04_trade_risk_eda.csv,61440,39,India × partner × HS6 × period,55296,4.26%,6,EDA_READY_VALIDATED
+05_rag_evidence.csv,23,14,evidence_id,0,9.63%,7,EDA_READY_VALIDATED

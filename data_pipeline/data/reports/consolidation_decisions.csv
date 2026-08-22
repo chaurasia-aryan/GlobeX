@@ -1,0 +1,2 @@
+dataset,file_a,file_b,relationship,overlap_pct,decision,reason,preferred_source
+UN_Comtrade,comtrade_annual_*.json,comtrade_monthly_*.json,MULTI_TEMPORAL_RESOLUTION,25.0,PRESERVE_BOTH_IN_DISTINCT_PANELS,Annual provides 10-year macroeconomic baseline; Monthly provides 12-month sequence window for LSTM modeling,UN Comtrade API v1

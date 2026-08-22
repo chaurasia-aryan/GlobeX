@@ -152,21 +152,21 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="w-screen max-w-lg bg-[#0A0F18] border-l border-white/[0.08] shadow-2xl flex flex-col justify-between"
+            className="w-screen max-w-lg bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] shadow-2xl flex flex-col justify-between"
           >
             {/* Header */}
-            <div className="p-5 border-b border-white/[0.08] flex items-start justify-between">
+            <div className="p-5 border-b border-[var(--border-subtle)] flex items-start justify-between">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--success-bg)] text-[var(--brand-teal-dark)] border border-[var(--brand-teal)]/30 flex items-center gap-1 font-semibold">
                     <Lock className="w-3 h-3" />
                     CREATE TRADE REQUEST · 4-STEP WIZARD
                   </span>
                 </div>
-                <h2 className="text-lg font-display font-bold text-white leading-snug">
+                <h2 className="text-lg font-display font-bold text-[var(--text-primary)] leading-snug">
                   {listing ? listing.title : "Trade Request Configuration"}
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Direct inquiry to {listing?.exporterName || "Verified Supplier"} · Escrow Secured
                 </p>
               </div>
@@ -174,14 +174,14 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
               <button
                 type="button"
                 onClick={onClose}
-                className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0 cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0 cursor-pointer shadow-sm"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Stepper Progress Bar */}
-            <div className="px-5 py-3 bg-[#070A0E] border-b border-white/[0.06] grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
+            <div className="px-5 py-3 bg-[var(--bg-surface-subtle)] border-b border-[var(--border-subtle)] grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
               {[
                 { num: 1, label: "Product", icon: Package },
                 { num: 2, label: "Route", icon: Route },
@@ -195,10 +195,10 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                   className={cn(
                     "py-1.5 px-2 rounded-lg border transition-all flex items-center justify-center gap-1 cursor-pointer",
                     step === s.num
-                      ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold"
+                      ? "bg-[var(--success-bg)] border-[var(--brand-teal)] text-[var(--brand-teal-dark)] font-bold shadow-sm"
                       : step > s.num
-                      ? "bg-white/[0.04] border-white/[0.08] text-slate-300"
-                      : "bg-transparent border-transparent text-slate-400"
+                      ? "bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-primary)]"
+                      : "bg-[var(--bg-surface-subtle)] border-[var(--border-subtle)] text-[var(--text-tertiary)]"
                   )}
                 >
                   <span>{s.num}.</span>

@@ -177,7 +177,7 @@ export const TradeIntentWizardPage: React.FC = () => {
       />
 
       {/* ── Status Filters Row (Quiet, clean horizontal control) ───────── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[#0C121D] border border-white/[0.07]">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm">
         <div className="flex items-center gap-1.5 overflow-x-auto">
           {["All", "New", "Under Review", "Quoted", "Accepted", "Rejected"].map((status) => (
             <button
@@ -187,8 +187,8 @@ export const TradeIntentWizardPage: React.FC = () => {
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-mono transition-colors cursor-pointer",
                 statusFilter === status
-                  ? "bg-white/[0.1] text-white font-semibold border border-white/[0.12]"
-                  : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] font-semibold border border-[var(--border-default)] shadow-sm"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-muted)]"
               )}
             >
               {status}
@@ -196,7 +196,7 @@ export const TradeIntentWizardPage: React.FC = () => {
           ))}
         </div>
 
-        <span className="text-[11px] font-mono text-slate-400">
+        <span className="text-[11px] font-mono text-[var(--text-tertiary)]">
           Showing {filteredRequests.length} received inquiries
         </span>
       </div>
@@ -206,34 +206,34 @@ export const TradeIntentWizardPage: React.FC = () => {
         {filteredRequests.map((rfq) => (
           <div
             key={rfq.id}
-            className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.12] transition-colors space-y-3 font-sans select-none"
+            className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--border-default)] transition-colors space-y-3 font-sans select-none shadow-sm"
           >
             {/* Top Row: Buyer, Product, Value */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-semibold text-xs text-white">
+                  <h4 className="font-semibold text-xs text-[var(--text-primary)]">
                     {rfq.buyerName}
                   </h4>
-                  <span className="text-slate-500 text-xs">·</span>
-                  <span className="text-slate-400 text-xs">{rfq.buyerCity}, {rfq.buyerCountry}</span>
+                  <span className="text-[var(--text-tertiary)] text-xs">·</span>
+                  <span className="text-[var(--text-secondary)] text-xs">{rfq.buyerCity}, {rfq.buyerCountry}</span>
                 </div>
 
-                <h3 className="font-display font-bold text-sm text-white">
+                <h3 className="font-display font-bold text-sm text-[var(--text-primary)]">
                   {rfq.quantityMT.toLocaleString()} MT · {rfq.productName}
                 </h3>
 
-                <div className="text-xs text-slate-400 font-mono">
+                <div className="text-xs text-[var(--text-secondary)] font-mono">
                   {rfq.route}
                 </div>
               </div>
 
               {/* Right: Value */}
               <div className="text-left sm:text-right shrink-0">
-                <div className="text-base font-mono font-bold text-emerald-400">
+                <div className="text-base font-mono font-bold text-[var(--brand-teal)]">
                   ${rfq.totalValueUSD.toLocaleString()} USD
                 </div>
-                <div className="text-[11px] font-mono text-slate-500">
+                <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
                   ${rfq.targetPriceUSD.toLocaleString()} / MT
                 </div>
               </div>

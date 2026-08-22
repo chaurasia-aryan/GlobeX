@@ -1,0 +1,10 @@
+{
+  "dataset": "GLEIF_GOLDEN_COPY",
+  "version": "2026.03.01_v3.1",
+  "file_name": "gleif_golden_copy_level1_latest.csv",
+  "sha256": "fb5fa027bd193533723c9a5ad654e1799688dab3288bf54c3b6f1973c0456f67",
+  "records_count": 7,
+  "retrieved_at": "2026-08-20T01:03:05.922107+00:00",
+  "source_url": "https://leidata-preview.gleif.org/api/v1/concatenated-files/latest/lei2/csv",
+  "status": "VALIDATED"
+}

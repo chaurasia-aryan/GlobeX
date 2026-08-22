@@ -30,3 +30,12 @@ dist-ssr
 .env
 .env.*.local
 coverage/
+
+# Python virtual environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Large raw archive files (>100MB)
+data_pipeline/data/raw/ofac/SDN_ENHANCED.XML

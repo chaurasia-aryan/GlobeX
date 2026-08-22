@@ -1,0 +1,6 @@
+left_table,right_table,join_key,left_rows,right_rows,matched_rows,unmatched_left,unmatched_right,match_rate,match_type
+01_partner_discovery (Base Corridors),entity_master.csv,country_iso3 == partner_iso3,128,7,48,80,0,37.5,LEFT_OUTER_ENRICHMENT
+01_partner_discovery (Base Corridors),sanctions_entities.csv,country_iso3 == partner_iso3,128,5,8,120,5,6.25,LEFT_OUTER_SCREENING
+01_partner_discovery (Base Corridors),worldbank_country_indicators.csv,country_iso3 == partner_iso3,128,990,120,8,870,93.75,LEFT_OUTER_MACRO
+01_partner_discovery (Base Corridors),india_tariffs.csv,"partner_iso3, hs6",128,1320,128,0,1192,100.0,LEFT_OUTER_TARIFF
+comtrade_india_world (Export),comtrade_india_world (Import),"period, partner_iso3, hs6",37760,37760,37760,0,0,100.0,BILATERAL_MIRROR_SELF_JOIN

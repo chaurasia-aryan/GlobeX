@@ -1,0 +1,32 @@
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+env/
+venv/
+ENV/
+
+# Large Raw Data Downloads & Temporary Caches
+data/raw/*
+!data/raw/.gitkeep
+data/staging/*
+!data/staging/.gitkeep
+
+# Checkpoint files
+*.ckpt
+*.pt
+*.pth
+*.h5
+
+# OS specific
+.DS_Store
+Thumbs.db

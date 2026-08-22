@@ -87,58 +87,58 @@ export const SpecularButton: React.FC<SpecularButtonProps> = ({
     setMousePos({ x: 50, y: 50, isHovered: false });
   }, []);
 
-  // Theme styling configurations (Clean, 100% GPU CSS without WebGL context overhead)
+  // Theme styling configurations (Semantic Tokens across Dark & Light Mode)
   const getVariantStyles = () => {
     switch (variant) {
       case "sky":
         return {
-          bg: "bg-[#082338]/90 hover:bg-[#0C324E]/95 active:bg-[#071D2F]",
-          border: "border-sky-500/35 hover:border-sky-400/60",
-          text: textColor || "text-sky-200 hover:text-white",
-          glow: "rgba(56, 189, 248, 0.25)",
-          rim: "linear-gradient(135deg, rgba(56, 189, 248, 0.5) 0%, rgba(56, 189, 248, 0.1) 50%, rgba(255, 255, 255, 0.2) 100%)",
+          bg: "bg-[var(--brand-blue)]/90 hover:bg-[var(--brand-blue)] active:scale-[0.98]",
+          border: "border-[var(--brand-cyan)]/40 hover:border-[var(--brand-cyan)]/70",
+          text: textColor || "text-white",
+          glow: "var(--info-bg)",
+          rim: "linear-gradient(135deg, var(--brand-cyan) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)",
         };
       case "amber":
         return {
-          bg: "bg-[#2D1604]/90 hover:bg-[#3D1E06]/95 active:bg-[#201003]",
-          border: "border-amber-500/35 hover:border-amber-400/60",
-          text: textColor || "text-amber-200 hover:text-white",
-          glow: "rgba(245, 158, 11, 0.25)",
-          rim: "linear-gradient(135deg, rgba(245, 158, 11, 0.5) 0%, rgba(245, 158, 11, 0.1) 50%, rgba(255, 255, 255, 0.2) 100%)",
+          bg: "bg-[var(--warning)]/90 hover:bg-[var(--warning)] active:scale-[0.98]",
+          border: "border-[var(--warning)]/40 hover:border-[var(--warning)]/70",
+          text: textColor || "text-white",
+          glow: "var(--warning-bg)",
+          rim: "linear-gradient(135deg, var(--warning) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)",
         };
       case "outline":
         return {
-          bg: "bg-[#0C121D]/80 hover:bg-[#111A29]/95 active:bg-[#090E17]",
-          border: "border-white/[0.12] hover:border-white/[0.25]",
-          text: textColor || "text-slate-300 hover:text-white",
-          glow: "rgba(255, 255, 255, 0.15)",
-          rim: "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.15) 100%)",
+          bg: "bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-subtle)] active:bg-[var(--bg-surface-muted)]",
+          border: "border-[var(--border-default)] hover:border-[var(--border-strong)]",
+          text: textColor || "text-[var(--text-primary)]",
+          glow: "var(--neutral-bg)",
+          rim: "linear-gradient(135deg, var(--border-default) 0%, transparent 50%, var(--border-subtle) 100%)",
         };
       case "ghost":
         return {
-          bg: "bg-transparent hover:bg-white/[0.06] active:bg-white/[0.03]",
-          border: "border-transparent hover:border-white/[0.08]",
-          text: textColor || "text-slate-400 hover:text-white",
-          glow: "rgba(255, 255, 255, 0.1)",
+          bg: "bg-transparent hover:bg-[var(--bg-surface-subtle)] active:bg-[var(--bg-surface-muted)]",
+          border: "border-transparent hover:border-[var(--border-subtle)]",
+          text: textColor || "text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
+          glow: "var(--neutral-bg)",
           rim: "transparent",
         };
       case "secondary":
         return {
-          bg: "bg-[#111827]/90 hover:bg-[#1F2937]/95 active:bg-[#0B0F19]",
-          border: "border-white/[0.08] hover:border-white/[0.16]",
-          text: textColor || "text-slate-200 hover:text-white",
-          glow: "rgba(148, 163, 184, 0.2)",
-          rim: "linear-gradient(135deg, rgba(148, 163, 184, 0.3) 0%, rgba(255, 255, 255, 0.05) 100%)",
+          bg: "bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-muted)] active:bg-[var(--bg-surface)]",
+          border: "border-[var(--border-subtle)] hover:border-[var(--border-default)]",
+          text: textColor || "text-[var(--text-primary)]",
+          glow: "var(--neutral-bg)",
+          rim: "linear-gradient(135deg, var(--border-default) 0%, transparent 100%)",
         };
       case "primary":
       case "emerald":
       default:
         return {
-          bg: "bg-[#062D22]/90 hover:bg-[#0A4132]/95 active:bg-[#042018]",
-          border: "border-emerald-500/35 hover:border-emerald-400/60",
-          text: textColor || "text-emerald-200 hover:text-white",
-          glow: "rgba(52, 211, 153, 0.25)",
-          rim: "linear-gradient(135deg, rgba(52, 211, 153, 0.5) 0%, rgba(52, 211, 153, 0.1) 50%, rgba(255, 255, 255, 0.2) 100%)",
+          bg: "bg-[var(--brand-teal-dark)] hover:bg-[var(--brand-teal)] active:scale-[0.98]",
+          border: "border-[var(--brand-teal)]/40 hover:border-[var(--brand-teal)]/70",
+          text: textColor || "text-white",
+          glow: "var(--success-bg)",
+          rim: "linear-gradient(135deg, var(--brand-teal) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)",
         };
     }
   };

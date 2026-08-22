@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import PageTransition from "@/components/layout/PageTransition";
 
@@ -103,18 +104,20 @@ const App: React.FC = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <WorkspaceProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <div className="flex flex-col min-h-screen bg-[#070A0E] text-slate-100 selection:bg-emerald-500/20 selection:text-emerald-300">
-            <main className="flex-1">
-              <ErrorBoundary>
-                <AnimatedRoutes />
-              </ErrorBoundary>
-            </main>
-          </div>
-        </BrowserRouter>
-      </WorkspaceProvider>
+      <ThemeProvider>
+        <WorkspaceProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <div className="flex flex-col min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] selection:bg-emerald-500/20 selection:text-emerald-300 transition-colors duration-200">
+              <main className="flex-1">
+                <ErrorBoundary>
+                  <AnimatedRoutes />
+                </ErrorBoundary>
+              </main>
+            </div>
+          </BrowserRouter>
+        </WorkspaceProvider>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

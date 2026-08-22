@@ -1,0 +1,50 @@
+# World Bank Macroeconomic and Trade Indicator Definitions
+
+indicators:
+  - code: "NY.GDP.MKTP.CD"
+    name: "GDP (current US$)"
+    description: "Gross Domestic Product at purchaser prices in current US Dollars."
+    unit: "USD"
+    importance: "Core country economic size and demand scale."
+
+  - code: "NY.GDP.PCAP.CD"
+    name: "GDP per capita (current US$)"
+    description: "Gross Domestic Product divided by midyear population."
+    unit: "USD"
+    importance: "Income level, purchasing power, and consumption sophistication."
+
+  - code: "NY.GDP.MKTP.KD.ZG"
+    name: "GDP growth (annual %)"
+    description: "Annual percentage growth rate of GDP at market prices based on constant local currency."
+    unit: "Percent"
+    importance: "Macroeconomic momentum and expansion velocity."
+
+  - code: "FP.CPI.TOTL.ZG"
+    name: "Inflation, consumer prices (annual %)"
+    description: "Inflation as measured by the consumer price index reflects annual percentage change."
+    unit: "Percent"
+    importance: "Price volatility, currency risk, and trade margin stability."
+
+  - code: "SP.POP.TOTL"
+    name: "Population, total"
+    description: "Total population count based on the de facto definition of population."
+    unit: "Count"
+    importance: "Demographic scale and market depth."
+
+  - code: "NE.TRD.GNFS.ZS"
+    name: "Trade (% of GDP)"
+    description: "Trade is the sum of exports and imports of goods and services measured as a share of gross domestic product."
+    unit: "Percent"
+    importance: "Trade openness and cross-border commercial reliance."
+
+  - code: "BX.KLT.DINV.WD.GD.ZS"
+    name: "Foreign direct investment, net inflows (% of GDP)"
+    description: "Net inflows of investment to acquire a lasting management interest in an enterprise."
+    unit: "Percent"
+    importance: "Bilateral investment integration and capital flows."
+
+  - code: "TM.TAX.MRCH.SM.AR.ZS"
+    name: "Tariff rate, applied, simple mean, all products (%)"
+    description: "Simple mean applied tariff is the unweighted average of effectively applied rates for all products."
+    unit: "Percent"
+    importance: "Baseline border barrier metric."

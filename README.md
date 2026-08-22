@@ -1,4 +1,4 @@
-# GLOBEX — Global B2B Cross-Border Trade & Intelligence Platform
+﻿# GLOBEX — Global B2B Cross-Border Trade & Intelligence Platform
 
 <div align="center">
 
@@ -11,7 +11,7 @@
 
 **Enterprise-Grade B2B Cross-Border Trade Matching, Smart Escrow & Regulatory Verification Platform**
 
-[Installation & Quick Start](#-installation--quick-start) • [Core Features](#-core-capabilities) • [Architecture Index](#-architecture--docs) • [User Flow](./USER_FLOW.md) • [AI Model Context](./AI_CONTEXT.md)
+[Installation & Quick Start](#-installation--quick-start) • [Core Capabilities](#-core-capabilities) • [Documentation Hub](./docs/README.md) • [User Flow](./docs/design/USER_FLOW.md) • [AI Context](./docs/AI_CONTEXT.md)
 
 </div>
 
@@ -19,14 +19,14 @@
 
 ## 🌍 Overview
 
-**GLOBEX** is an enterprise-grade cross-border trade execution and trust infrastructure connecting verified exporters and global buyers/importers. Built to eliminate trade friction, prevent payment fraud, and automate regulatory compliance, GLOBEX delivers:
+**GLOBEX** is an institutional cross-border trade execution and trust operating system connecting verified exporters and global buyers/importers. Built to eliminate cross-border trade frictions, prevent payment fraud, and automate regulatory compliance, GLOBEX delivers:
 
-1. **Interactive 3D Maritime Earth (`TradeGlobe`)**: High-performance WebGL visualization rendering major maritime trading hubs, city coordinates, live shipping arcs, and multi-stage camera zoom physics.
+1. **Interactive 3D Maritime Earth (`TradeGlobe`)**: High-performance WebGL visualization rendering major maritime trading hubs, port coordinates, live shipping arcs, and multi-stage camera zoom physics.
 2. **AI Semantic Matching & Preferential Tariff Calculation**: Automatically matches buyers with top-tier suppliers based on specifications, FOB pricing, APEDA/ISO/Halal food safety certifications, and preferential trade agreements (e.g. India-UAE CEPA 0% duty).
-3. **Smart Safe Escrow Vaults**: Conditional multi-sig smart contract vaults that securely lock contract funds and automate release upon port inspection sign-off and IoT GPS geofence arrival.
-4. **Automated OCR Document Verification**: Instant cross-reconciliation of Commercial Invoices, Clean On-Board Bills of Lading, and Phytosanitary certificates with cryptographic tamper-evident proof.
+3. **Programmable USDC Smart Escrow Vaults**: Conditional multi-sig smart contract vaults that securely lock contract funds and automate release upon port inspection sign-off and IoT GPS geofence arrival.
+4. **Automated OCR Document Cross-Verification**: Instant cross-reconciliation of Commercial Invoices, Clean On-Board Bills of Lading, and Phytosanitary certificates with cryptographic tamper-evident SHA-256 proof.
 5. **Real-Time IoT Vessel Telemetry**: Live AIS marine tracking and choke-point route risk monitoring (e.g., Red Sea / Arabian Sea transit buffers).
-6. **Decentralized Dispute Resolution Suite**: Evidence-backed arbitration workflow with split-fund escrow release.
+6. **Decentralized Dispute Resolution Suite**: Evidence-backed human-in-the-loop arbitration workflow with split-fund escrow release.
 
 ---
 
@@ -44,7 +44,7 @@
 git clone https://github.com/chaurasia-aryan/GlobeX.git
 cd GlobeX
 
-# 2. Install all dependencies
+# 2. Install dependencies
 npm install
 
 # 3. Start the local Vite development server
@@ -62,49 +62,67 @@ The application will launch at `http://localhost:8080` (or `http://localhost:517
 | `npm run dev` | Starts Vite local development server with HMR |
 | `npm run build` | Runs TypeScript type checks & generates optimized production bundle in `dist/` |
 | `npm run preview` | Previews the production bundle locally |
+| `npm test` | Runs Vitest suite for UI flows, state machines, and components |
 | `npm run lint` | Runs ESLint across all TypeScript and React files |
 
 ---
 
-## 📂 Project Architecture
+## 📂 Repository Structure
 
 ```
 globex_match/
-├── docs/                        # Enterprise Architecture Documentation
-│   ├── ui_rules.md              # UI/UX design rules & cognitive load limits
-│   ├── ui_decisions.md          # Architecture Decision Records (ADRs)
-│   ├── component_inventory.md   # Inventory of active & retained components
-│   └── refactor_progress.md     # Progressive refactor tracking status
-├── src/
-│   ├── components/
-│   │   ├── ai/                  # MatchExplanation (shadcn Collapsible)
-│   │   ├── blockchain/          # PublicTradeLedgerTable & on-chain proofs
-│   │   ├── documents/           # DocumentVerificationStudio & DocumentDetailDrawer
-│   │   ├── escrow/              # CryptoEscrowCard & milestone release
-│   │   ├── layout/              # Navbar, Sidebar, Footer, DemoPersonaSwitcher
-│   │   ├── marketplace/         # ListingCard, ListingDetailDrawer, TrustedPartnerShelf
-│   │   ├── shipments/           # ShipmentTracker & live maritime telemetry
-│   │   ├── trade/               # TradeTabs (Unified 6-domain workspace tabs)
-│   │   ├── trust/               # TrustScoreGauge, TrustBreakdownDrawer, RiskBreakdown
-│   │   ├── ui/                  # shadcn/ui components (tabs, drawer, collapsible, etc.)
-│   │   └── TradeGlobe.tsx       # Three.js / WebGL 3D Globe with smooth camera physics
-│   ├── data/
-│   │   └── mockTradeData.ts     # Verified partner catalogs, listings, flagship demo trade
-│   ├── pages/
-│   │   ├── LandingPage.tsx      # 3D Globe hero with scroll-linked camera zoom
-│   │   ├── DashboardPage.tsx    # 4-lens Intelligence & Analytics Studio (shadcn Tabs)
-│   │   ├── MarketplacePage.tsx  # Product catalog with ListingDetailDrawer & filters
-│   │   ├── TradeIntentWizardPage.tsx # 4-step progressive trade intake questionnaire
-│   │   └── TradeWorkspacePage.tsx # Simplified 6-domain trade lifecycle workspace
-│   ├── services/
-│   │   ├── api/aiService.ts     # AI matching & RAG pipeline integration
-│   │   ├── appwrite/client.ts   # Appwrite authentication & user session management
-│   │   └── blockchain/escrowService.ts # Cryptographic escrow & hashing service
-│   └── types/                   # TypeScript schemas for Trade, Company, Listing, etc.
-├── AI_CONTEXT.md                # System documentation index for AI assistants
-├── USER_FLOW.md                 # 5-stage progressive user flow specification
-├── design_standards.md          # Master UI/UX guidelines
-└── README.md                    # Project README
+├── docs/                                  # Central Documentation Hub
+│   ├── README.md                          # Master documentation index
+│   ├── PROJECT_OVERVIEW.md                # System mission & hackathon scope
+│   ├── AI_CONTEXT.md                      # AI assistant & engineer context index
+│   ├── TECH_STACK.md                      # Technology stack specifications
+│   ├── FINAL_IMPLEMENTATION_STATUS.md     # Feature verification & demo flow guide
+│   ├── architecture/                      # Architecture Specifications
+│   │   ├── ARCHITECTURE.md                # High-level system architecture
+│   │   ├── AI_ML_ARCHITECTURE.md          # Semantic matching & RAG pipeline
+│   │   ├── BLOCKCHAIN_ARCHITECTURE.md     # Smart contracts & USDC escrow
+│   │   ├── GLOBE_ARCHITECTURE.md          # 3D WebGL cartography
+│   │   ├── GLOBE_INTEGRATION.md           # TradeGlobe developer guide
+│   │   ├── APPWRITE_ARCHITECTURE.md       # Database schemas & BaaS
+│   │   ├── N8N_ARCHITECTURE.md            # Event automation workflows
+│   │   ├── DATA_MODEL.md                  # TypeScript interfaces & state
+│   │   └── API_CONTRACTS.md               # REST & webhook API contracts
+│   ├── design/                            # Design System & Workflows
+│   │   ├── design_standards.md            # The 76 UI/UX design standards
+│   │   ├── USER_FLOW.md                   # Persona operational flows
+│   │   └── workflow.md                    # 10-stage autonomous trade lifecycle
+│   └── decisions/                         # Architecture Decision Records & Audits
+│       ├── DECISIONS.md                   # ADRs & technical trade-offs
+│       ├── IMPLEMENTATION_DECISIONS.md    # Engineering implementation notes
+│       ├── UX_DECISIONS.md                # Cognitive load & UX design records
+│       ├── DESIGN_AUDIT.md                # Design audit report
+│       └── COMPONENT_AUDIT.md             # React component audit
+├── src/                                   # Frontend Application (React + Vite + TypeScript)
+│   ├── components/                        # UI Components by domain
+│   │   ├── ai/                            # MatchExplanation & AI assistants
+│   │   ├── blockchain/                    # PublicTradeLedgerTable & on-chain proofs
+│   │   ├── documents/                     # DocumentVerificationStudio & OCR
+│   │   ├── escrow/                        # CryptoEscrowCard & milestone release
+│   │   ├── layout/                        # Navbar, ErrorBoundary, DemoPersonaSwitcher
+│   │   ├── marketplace/                   # ListingCard, TrustedPartnerShelf
+│   │   ├── shipments/                     # ShipmentTracker & maritime telemetry
+│   │   ├── trade/                         # 6-domain trade workspace tabs
+│   │   ├── trust/                         # TrustScoreGauge, TrustBreakdownDrawer
+│   │   ├── ui/                            # shadcn/ui primitives
+│   │   └── TradeGlobe.tsx                 # 3D WebGL Globe component
+│   ├── data/                              # Mock data & verified partner catalogs
+│   ├── pages/                             # Route view pages
+│   ├── services/                          # API clients (Appwrite, AI, Blockchain, n8n)
+│   └── types/                             # Domain TypeScript definitions
+├── data_pipeline/                         # Data Engineering & CSV Datasets
+│   ├── config/                            # Data pipeline configurations
+│   ├── data/                              # Raw, staging, and deliverable final CSVs
+│   ├── scripts/                           # Data acquisition, join, and audit scripts
+│   ├── DATASET_CATALOG.md                 # Dataset catalog & inventory
+│   ├── DATA_PIPELINE.md                   # Data processing specifications
+│   ├── DATA_SCHEMA.md                     # CSV dataset schemas
+│   └── DATA_LIMITATIONS.md                # Boundary conditions & limitations
+└── package.json                           # Root dependencies and scripts
 ```
 
 ---

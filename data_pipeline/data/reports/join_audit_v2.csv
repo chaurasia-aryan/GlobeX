@@ -1,0 +1,8 @@
+left_dataset,right_dataset,left_grain,right_grain,join_key,join_type,left_rows_before,right_rows,matched_rows,unmatched_left,match_rate,duplicate_right_keys,rows_after_join,row_multiplier
+comtrade_india_world.csv (India Trade Corridors),iso_3166_countries_unece.csv (Country/Currency Master),India × partner × HS6 × year,country (ISO-3),partner_iso3 == ISO3166-1-Alpha-3,LEFT_OUTER,128,249,128,0,100.0%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),worldbank_country_indicators.csv (Macro Indicators),India × partner × HS6 × year,country × indicator × year,partner_iso3 == country_iso3 AND year == year,LEFT_OUTER,128,990,120,8,93.75%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),india_tariffs.csv (WITS Tariffs),India × partner × HS6 × year,reporter × partner × HS6 × year,"reporter_iso3, partner_iso3, hs6, year",LEFT_OUTER,128,1320,128,0,100.0%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),wto_all_rtas_list_latest.xlsx (WTO RTA Database),India × partner × HS6 × year,country_pair (India - Partner),partner_iso3 == rta_partner_iso3,LEFT_OUTER,128,661,128,0,100.0%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),unlocode_2025-1 (UN/LOCODE Aggregates),India × partner × HS6 × year,country (ISO-2),partner_iso2 == country_iso2,LEFT_OUTER,128,248,128,0,100.0%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),entity_master.csv (GLEIF Jurisdiction Aggregates),India × partner × HS6 × year,jurisdiction (ISO-2),partner_iso2 == jurisdiction,LEFT_OUTER,128,7,48,80,37.5%,0,128,1.0
+comtrade_india_world.csv (India Trade Corridors),sanctions_entities.csv (OpenSanctions/OFAC Aggregates),India × partner × HS6 × year,country (ISO-3),partner_iso3 == country_iso3,LEFT_OUTER,128,5,8,120,6.25%,0,128,1.0

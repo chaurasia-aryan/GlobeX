@@ -1,0 +1,2 @@
+dataset,total_raw_files,exact_file_duplicates,total_raw_records,logical_duplicate_rows,duplicate_percentage,composite_key_dimensions,resolution_action
+UN_Comtrade_India_Raw,161,0,75520,15104,20.0,"period,reporterISO,partnerISO,cmdCode,flowCode,motCode,customsCode",PRESERVE_ALL_CONFLICTS_WITH_PROVENANCE

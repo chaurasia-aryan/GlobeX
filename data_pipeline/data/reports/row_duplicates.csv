@@ -1,0 +1,4 @@
+dataset,total_rows,duplicate_rows,duplicate_pct,primary_keys,status
+trade_observations,61360,0,0.0,"period,reporter_iso3,partner_iso3,cmd_code,flow_code",VALIDATED_UNIQUE
+entity_master,7,0,0.0,lei,VALIDATED_UNIQUE
+sanctions_entities,8,0,0.0,"query_entity_id,matched_entity_id",VALIDATED_UNIQUE
