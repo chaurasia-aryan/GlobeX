@@ -32,6 +32,7 @@ const DisputesPage = lazy(() => import("@/pages/DisputesPage"));
 const BlockchainLedgerPage = lazy(() => import("@/pages/BlockchainLedgerPage"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const AdminSystemPage = lazy(() => import("@/pages/AdminSystemPage"));
+const WishlistPage = lazy(() => import("@/pages/WishlistPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -94,6 +95,7 @@ const AnimatedRoutes = () => {
           <Route path="/arbitrator" element={<PageTransition><DisputesPage /></PageTransition>} />
           <Route path="/blockchain" element={<PageTransition><BlockchainLedgerPage /></PageTransition>} />
           <Route path="/admin" element={<PageTransition><AdminSystemPage /></PageTransition>} />
+          <Route path="/wishlist" element={<PageTransition><WishlistPage /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

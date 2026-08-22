@@ -4,7 +4,7 @@ import { appwriteService, UserSession } from "@/services/appwrite/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
-  Search,
+  Heart,
   LayoutDashboard,
   Store,
   TrendingUp,
@@ -30,8 +30,6 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<UserSession>(appwriteService.getCurrentUser());
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -74,12 +72,7 @@ export const Navbar = () => {
   ];
 
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/marketplace?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+
 
   return (
     <>
@@ -118,31 +111,9 @@ export const Navbar = () => {
             </div>
           </Link>
 
-          {/* ── Spotlight Search Trigger Pill ─────────────────────────────────────── */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className={cn(
-              "relative hidden md:flex items-center flex-1 max-w-[260px] lg:max-w-[300px] h-9 px-3 rounded-xl bg-[#111824]/80 border transition-all duration-200",
-              searchFocused
-                ? "border-emerald-500/50 bg-[#141F30] shadow-[0_0_12px_rgba(52,199,149,0.15)]"
-                : "border-white/[0.08] hover:border-white/[0.15]"
-            )}
-          >
-            <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] mr-2 flex-shrink-0" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              placeholder="Search corridors, HS codes..."
-              className="w-full bg-transparent border-none outline-none text-xs text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] font-sans"
-            />
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-tertiary)] bg-white/[0.04] border border-white/[0.08] rounded">
-              <Command className="w-2.5 h-2.5" />
-              <span>K</span>
-            </kbd>
-          </form>
+
+          {/* Spacer to push nav to right when no search */}
+          <div className="flex-1" />
 
           {/* ── Segmented Navigation Tabs ─────────────────────────────────────────── */}
           <nav className="hidden sm:flex items-center gap-1">
@@ -199,6 +170,20 @@ export const Navbar = () => {
               </select>
               <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] pointer-events-none" />
             </div>
+
+            {/* Wishlist Button */}
+            <Link
+              to="/wishlist"
+              className={cn(
+                "p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center",
+                location.pathname === "/wishlist"
+                  ? "bg-orange-500/20 border-orange-500/50 text-orange-400"
+                  : "bg-[#111824]/80 border-white/[0.08] hover:border-orange-500/40 hover:bg-[#1e1208] text-[var(--text-secondary)] hover:text-orange-400"
+              )}
+              title="Wishlist"
+            >
+              <Heart className={cn("w-4 h-4 transition-all", location.pathname === "/wishlist" ? "fill-orange-400" : "")} />
+            </Link>
 
             {/* Hamburger Drawer Trigger */}
             <button
