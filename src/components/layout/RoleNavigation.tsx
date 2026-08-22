@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import {
   Building2,
   Globe2,
-  Search,
+  Heart,
   ChevronDown,
   Package,
   Coins,
@@ -152,20 +152,24 @@ export const RoleNavigation: React.FC = () => {
           {/* ── Right: Search Command Trigger & User Profile ───────────── */}
           <div className="flex items-center gap-3 shrink-0">
 
-            {/* Global Search Trigger (Ctrl + K) */}
-            <button
-              type="button"
-              onClick={() => setCommandPaletteOpen(true)}
-              className="flex items-center gap-2.5 h-10 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-400 hover:text-white transition-all text-xs cursor-pointer"
-              title="Search workspaces, corridors, and tools (Ctrl + K)"
+            {/* Wishlist Button */}
+            <Link
+              to="/wishlist"
+              className={cn(
+                "flex items-center justify-center h-10 w-10 rounded-xl border transition-all cursor-pointer",
+                location.pathname === "/wishlist"
+                  ? "bg-orange-500/20 border-orange-500/40 text-orange-400"
+                  : "bg-white/[0.03] hover:bg-orange-500/10 border-white/[0.07] hover:border-orange-500/30 text-slate-400 hover:text-orange-400"
+              )}
+              title="Wishlist"
             >
-              <Search className="w-4 h-4 text-slate-400" />
-              <span className="hidden xl:inline text-slate-400 text-xs">Search</span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded">
-                <Command className="w-2.5 h-2.5" />
-                <span>K</span>
-              </kbd>
-            </button>
+              <Heart
+                className={cn(
+                  "w-4 h-4 transition-all",
+                  location.pathname === "/wishlist" ? "fill-orange-400 text-orange-400" : ""
+                )}
+              />
+            </Link>
 
             {/* Account Profile Trigger */}
             <div className="relative" ref={accountMenuRef}>
