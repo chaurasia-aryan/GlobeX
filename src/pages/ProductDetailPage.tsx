@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { DEMO_LISTINGS, TOP_10_TRUSTED_PARTNERS } from "@/data/mockTradeData";
+import { useWorkspace } from "@/context/WorkspaceContext";
+import { TOP_10_TRUSTED_PARTNERS } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -13,8 +14,9 @@ import { MapPin, ShieldCheck, Coins } from "lucide-react";
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const listing = DEMO_LISTINGS.find((p) => p.id === id) || DEMO_LISTINGS[0];
-  const supplier = TOP_10_TRUSTED_PARTNERS.find((c) => c.id === listing.exporterId) || TOP_10_TRUSTED_PARTNERS[0];
+  const { listings } = useWorkspace();
+  const listing = listings.find((p) => p.id === id) || listings[0];
+  const supplier = TOP_10_TRUSTED_PARTNERS.find((c) => c.id === listing?.exporterId) || TOP_10_TRUSTED_PARTNERS[0];
 
   return (
     <AppShell maxWidth="lg">

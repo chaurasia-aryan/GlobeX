@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
-import { DEMO_LISTINGS, TopBuyer } from "@/data/mockTradeData";
+import { TopBuyer } from "@/data/mockTradeData";
 import { Listing } from "@/types/trade";
 import { aiService, BuyerMatchQuery, BuyerMatchResponse } from "@/services/api/aiService";
 import { AppShell } from "@/components/layout/AppShell";
@@ -27,7 +27,7 @@ const CATEGORIES = [
 ] as const;
 
 export const MarketplacePage: React.FC = () => {
-  const { isBuyer } = useWorkspace();
+  const { isBuyer, listings } = useWorkspace();
 
   // ML Demand Matching State
   const [matchResponse, setMatchResponse] = useState<BuyerMatchResponse | null>(null);
@@ -45,7 +45,7 @@ export const MarketplacePage: React.FC = () => {
 
   // Filter listings
   const filteredListings = useMemo<Listing[]>(() => {
-    return DEMO_LISTINGS.filter((item) => {
+    return listings.filter((item) => {
       const matchesCategory =
         selectedCategory === "All Commodities" || item.category === selectedCategory;
       const q = searchQuery.toLowerCase();
@@ -73,7 +73,7 @@ export const MarketplacePage: React.FC = () => {
 
   const handleOpenCreateRequest = (listing?: Listing) => {
     setRequestBuyer(null);
-    setRequestListing(listing || DEMO_LISTINGS[0]);
+    setRequestListing(listing || listings[0]);
     setIsRequestDrawerOpen(true);
   };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Listing } from "@/types/trade";
-import { MapPin, ShieldCheck, Info } from "lucide-react";
+import { MapPin, ShieldCheck, Info, HelpCircle } from "lucide-react";
 import SpecularButton from "@/components/ui/SpecularButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -103,29 +103,26 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         </div>
       </div>
 
-      {/* 4. Level A Actions (At most 2) */}
-      <div className="pt-1 grid grid-cols-2 gap-2">
-        <SpecularButton
-          type="button"
-          variant="outline"
-          size="sm"
-          radius={10}
-          className="w-full justify-center"
-          onClick={() => onInspect && onInspect(listing)}
-        >
-          <span>Inspect Trade</span>
-        </SpecularButton>
-
+      {/* 4. Level A Actions */}
+      <div className="pt-1 flex gap-2 items-center">
         <SpecularButton
           type="button"
           variant="emerald"
           size="sm"
           radius={10}
-          className="w-full justify-center font-semibold"
+          className="flex-1 justify-center font-semibold"
           onClick={() => onRequest && onRequest(listing)}
         >
           <span>Create Request</span>
         </SpecularButton>
+
+        <div
+          onMouseEnter={() => onInspect && onInspect(listing)}
+          className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-emerald-500/40 text-slate-400 hover:text-emerald-400 transition-all cursor-help shrink-0"
+          title="Inspect trade information"
+        >
+          <HelpCircle className="w-4 h-4" />
+        </div>
       </div>
     </div>
   );

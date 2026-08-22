@@ -42,6 +42,7 @@ export const Navbar = () => {
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Global Marketplace", href: "/marketplace", icon: Store },
+    { label: "Create Listing", href: "/create-listing", icon: PlusCircle },
     { label: "My Export Listings", href: "/my-listings", icon: Package },
     { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle },
     { label: "Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, isLive: true },
@@ -59,6 +60,7 @@ export const Navbar = () => {
       group: "Browse & Catalog",
       items: [
         { label: "Global Exporters Marketplace", href: "/marketplace", icon: Store, desc: "Source products from verified international exporters" },
+        { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add a new export product listing to the global marketplace" },
         { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Manage your organization's export products and catalog" },
         { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Trade overview, active shipments & alerts" },
       ],
