@@ -37,6 +37,26 @@ venv/
 __pycache__/
 *.pyc
 
+# Blockchain (Hardhat) build/deploy output — never commit addresses or artifacts
+blockchain/node_modules/
+blockchain/artifacts/
+blockchain/cache/
+blockchain/deployments/
+blockchain/types/
+blockchain/coverage/
+
+# chain-adapter service
+services/chain-adapter/node_modules/
+services/chain-adapter/dist/
+
+# Locally installed agent skills / MCP config (tooling, not product code)
+.agents/
+.claude/skills/
+.mcp.json
+
+# Runtime document storage (test/demo uploads, not source)
+backend/storage/
+
 # Large raw archive files (>100MB)
 data_pipeline/data/raw/ofac/SDN_ENHANCED.XML
 

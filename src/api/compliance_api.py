@@ -16,6 +16,9 @@ from typing import Any, Dict, List, Optional, Tuple
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from src.compliance.entity_screening import screen_transaction_parties
+from src.compliance.transaction_gate import GateInput, evaluate_transaction
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Compliance & Tariffs"])
@@ -258,3 +261,130 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
         flags=flags,
         disclaimer="Rule-based engine. Verify with official customs authorities before shipment.",
     ).model_dump()
+
+
+# ---------------------------------------------------------------------------
+# Transaction Compliance Gate (Phase 8) — 08_TRANSACTION_COMPLIANCE_GATE.md
+# ---------------------------------------------------------------------------
+
+class TransactionGateRequest(BaseModel):
+    trade_id: str = Field(..., example="TRD-IND-ARE-550K")
+    hs6: str = Field(..., example="090121")
+    origin_country: str = Field(default="IND", example="IND")
+    destination_country: str = Field(..., example="ARE")
+    exporter_name: str = Field(..., example="Arvind Global Agro Exports Ltd")
+    importer_name: str = Field(..., example="Gulf Trading LLC")
+    beneficial_owners: Optional[List[Dict[str, Any]]] = Field(
+        default=None, description="[{name, pct_ownership}] — omit if unknown"
+    )
+    freight_forwarder_name: Optional[str] = None
+    carrier_name: Optional[str] = None
+    consignee_name: Optional[str] = None
+    end_user_name: Optional[str] = None
+
+
+@router.post(
+    "/compliance/transaction-gate",
+    summary="Transaction Compliance Gate",
+    description=(
+        "The single deterministic gate before trade creation, escrow creation, "
+        "marketplace activation, shipment release, or payment release. Returns "
+        "CLEAR / REVIEW / BLOCKED / UNSUPPORTED — never conflate UNSUPPORTED "
+        "or REVIEW with CLEAR. Escrow may only proceed on CLEAR."
+    ),
+)
+def transaction_gate(req: TransactionGateRequest) -> Dict[str, Any]:
+    result = evaluate_transaction(GateInput(
+        trade_id=req.trade_id,
+        hs6=req.hs6,
+        origin=req.origin_country,
+        destination=req.destination_country,
+        exporter_name=req.exporter_name,
+        importer_name=req.importer_name,
+        beneficial_owners=req.beneficial_owners,
+        freight_forwarder_name=req.freight_forwarder_name,
+        carrier_name=req.carrier_name,
+        consignee_name=req.consignee_name,
+        end_user_name=req.end_user_name,
+    ))
+    return result.to_dict()
+
+
+# ---------------------------------------------------------------------------
+# Sanctions / Restricted-Party Screening (Phase 8a)
+# ---------------------------------------------------------------------------
+
+class SanctionsScreenRequest(BaseModel):
+    exporter_name: Optional[str] = None
+    importer_name: Optional[str] = None
+    freight_forwarder_name: Optional[str] = None
+    carrier_name: Optional[str] = None
+    consignee_name: Optional[str] = None
+    end_user_name: Optional[str] = None
+
+
+@router.post(
+    "/compliance/sanctions-screen",
+    summary="Restricted-Party / Sanctions Screening",
+    description=(
+        "Screens named transaction parties against OFAC SDN + UN Security "
+        "Council Consolidated List. NO_MATCH / POTENTIAL_MATCH / "
+        "MATCH_REQUIRES_RESTRICTION / CLEARED_AFTER_REVIEW / UNSUPPORTED. "
+        "A POTENTIAL_MATCH is a fuzzy candidate requiring human review, "
+        "never a legal finding by itself."
+    ),
+)
+def sanctions_screen(req: SanctionsScreenRequest) -> Dict[str, Any]:
+    parties = {
+        role: name
+        for role, name in {
+            "exporter": req.exporter_name,
+            "importer": req.importer_name,
+            "freight_forwarder": req.freight_forwarder_name,
+            "carrier": req.carrier_name,
+            "consignee": req.consignee_name,
+            "end_user": req.end_user_name,
+        }.items()
+        if name
+    }
+    return screen_transaction_parties(parties)
+
+
+# ---------------------------------------------------------------------------
+# Coverage — what the compliance subsystems actually cover right now
+# ---------------------------------------------------------------------------
+
+@router.get(
+    "/compliance/coverage",
+    summary="Compliance Subsystem Coverage",
+    description="Reports what current-facts and entity-screening actually cover — never silently omits a gap.",
+)
+def compliance_coverage() -> Dict[str, Any]:
+    from src.compliance.current_facts import get_registry as get_facts_registry, RegistryError as FactsRegistryError
+    from src.compliance.entity_screening import get_registry as get_entity_registry, RegistryError as EntityRegistryError
+
+    coverage: Dict[str, Any] = {}
+
+    try:
+        facts_reg = get_facts_registry()
+        coverage["current_facts"] = {
+            "available": True,
+            "in_scope_hs6_count": len(facts_reg.in_scope_hs6()),
+            "in_scope_partners_count": len(facts_reg.in_scope_partners()),
+            "exporter_scope": facts_reg.scope.get("exporter"),
+            "sources_fetched": len(facts_reg.sources.get("sources_fetched_successfully", [])),
+        }
+    except FactsRegistryError as exc:
+        coverage["current_facts"] = {"available": False, "reason": str(exc)}
+
+    try:
+        entity_reg = get_entity_registry()
+        coverage["entity_screening"] = {
+            "available": True,
+            "entity_count": len(entity_reg.entities),
+            "unsupported_sources": [g["source"] for g in entity_reg.unsupported_sources()],
+        }
+    except EntityRegistryError as exc:
+        coverage["entity_screening"] = {"available": False, "reason": str(exc)}
+
+    return coverage

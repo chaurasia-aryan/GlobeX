@@ -58,6 +58,9 @@ from src.api.counterparty_api import router as counterparty_router
 from src.api.compliance_api import router as compliance_router
 from src.api.documents_api import router as documents_router
 from src.api.marketplace_api import router as marketplace_router
+from src.api.trades_api import router as trades_router
+from src.db.client import init_pool, close_pool, is_configured as db_is_configured
+from src.services import chain_client
 
 
 @asynccontextmanager
@@ -86,11 +89,15 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("HS Catalogue warm-up warning: %s", exc)
 
+    # Initialize DB pool — never raises; the 7 ML routers work with zero DB.
+    await init_pool()
+
     elapsed_ms = round((time.perf_counter() - t0) * 1000, 1)
     logger.info("GlobeXAI Trade OS API ready in %sms", elapsed_ms)
 
     yield
 
+    await close_pool()
     logger.info("Shutting down GlobeXAI Trade OS Unified API...")
 
 
@@ -133,6 +140,7 @@ app.include_router(counterparty_router)
 app.include_router(compliance_router)
 app.include_router(documents_router)
 app.include_router(marketplace_router)
+app.include_router(trades_router)
 
 
 # Root and health check endpoints
@@ -158,7 +166,7 @@ def root_info() -> Dict[str, Any]:
 
 
 @app.get("/health", summary="Unified System Health Check")
-def health_check() -> Dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Returns aggregated status of all subsystem models and data sources."""
     # Trade Anomaly health
     anomaly_ok = False
@@ -178,6 +186,21 @@ def health_check() -> Dict[str, Any]:
     except Exception:
         pd_ok = False
 
+    # Real DB round-trip, not just "is an env var set"
+    if not db_is_configured():
+        db_status = "NOT_CONFIGURED"
+    else:
+        try:
+            from src.db.client import acquire
+            async with acquire() as conn:
+                await conn.fetchval("select 1")
+            db_status = "CONNECTED"
+        except Exception:
+            db_status = "UNAVAILABLE"
+
+    # Real adapter ping, not a hardcoded "OPERATIONAL" string
+    chain_status = await chain_client.get_chain_status()
+
     return {
         "status": "HEALTHY",
         "timestamp": time.time(),
@@ -187,7 +210,8 @@ def health_check() -> Dict[str, Any]:
             "hs_classifier": "ACTIVE",
             "compliance_engine": "ACTIVE",
             "counterparty_engine": "ACTIVE",
-            "database_connection": "CONNECTED" if (os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY")) else "STUB_SEED_DATA",
+            "database_connection": db_status,
+            "blockchain_adapter": chain_status,
         },
     }
 

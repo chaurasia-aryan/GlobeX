@@ -20,6 +20,7 @@ export interface BuyerMatchResponse {
   strongMatchCount: number;
   recommendations: TopBuyer[];
   executedAt: string;
+  data_source?: string;
 }
 
 export interface HSClassificationResult {
@@ -27,6 +28,7 @@ export interface HSClassificationResult {
   category: string;
   confidence: number;
   alternativeCodes: string[];
+  dataSource?: "live" | "fallback";
 }
 
 export interface CounterpartyMatchResult {
@@ -48,6 +50,7 @@ export interface CounterpartyMatchResult {
   historicalVolumeMT: number;
   disputeRate: string;
   explanation: string;
+  dataSource?: "live" | "fallback";
 }
 
 export interface TradeRiskAnalysis {
@@ -76,6 +79,7 @@ export interface ComplianceAnalysis {
     mandatory: boolean;
   }[];
   disclaimer: string;
+  dataSource?: "live" | "fallback";
 }
 
 // ─────────────────────────────────────────────────
@@ -200,6 +204,7 @@ export interface MarketOpportunityResult {
   model_version?: string;
   analysis_id?: string;
   message?: string;
+  dataSource?: "live" | "fallback";
 }
 
 export interface TradeIntakePayload {
@@ -328,11 +333,13 @@ class AIService {
             alternativeCodes: (data.candidates || [])
               .filter((c: any) => c.hs6 !== data.hs6)
               .map((c: any) => String(c.hs6)),
+            dataSource: "live",
           };
         }
       }
     } catch {
-      // Fallback
+      // Backend unreachable — falls through to the keyword-matched demo
+      // response below. Never presented as a live classification.
     }
 
     const lower = (productName + " " + description).toLowerCase();
@@ -342,6 +349,7 @@ class AIService {
         category: "Semi-milled or wholly milled basmati rice",
         confidence: 0.96,
         alternativeCodes: ["1006.20", "1006.40"],
+        dataSource: "fallback",
       };
     } else if (lower.includes("pepper") || lower.includes("spice") || lower.includes("cardamom")) {
       return {
@@ -349,6 +357,7 @@ class AIService {
         category: "Spices & Pepper: neither crushed nor ground",
         confidence: 0.94,
         alternativeCodes: ["0908.31", "0910.30"],
+        dataSource: "fallback",
       };
     }
 
@@ -357,6 +366,7 @@ class AIService {
       category: "Processed Commercial Goods / Agri Commodities",
       confidence: 0.90,
       alternativeCodes: ["0904.11", "5205.23"],
+      dataSource: "fallback",
     };
   }
 
@@ -379,14 +389,16 @@ class AIService {
         }),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        return { ...data, dataSource: "live" };
       }
     } catch {
-      // Fallback
+      // Backend unreachable — falls through to the demo response below.
     }
 
     return {
       status: "success",
+      dataSource: "fallback",
       product_resolution: {
         status: "exact_match",
         hs6: 100630,
@@ -575,14 +587,17 @@ class AIService {
         }),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        return { ...data, status: data.status ?? "OK" };
       }
     } catch {
-      // Fallback
+      // Backend unreachable — honestly reported as FALLBACK, not OK. An
+      // anomaly/risk signal the model never actually computed must never be
+      // presented as if it had.
     }
 
     return {
-      status: "OK",
+      status: "FALLBACK",
       risk: {
         anomaly_score: 0.18,
         is_anomaly: false,
@@ -641,17 +656,19 @@ class AIService {
             historicalVolumeMT: 14800,
             disputeRate: "0.0%",
             explanation: `Verified candidate matching ${query} in ${destinationCountry} corridor.`,
+            dataSource: "live" as const,
           }));
         }
       }
     } catch {
-      // Fallback
+      // Backend unreachable — falls through to the demo candidates below.
     }
 
     return [
       {
         exporterId: "EXP-IND-001",
         companyName: "Arvind Global Agro Exports Ltd",
+        dataSource: "fallback" as const,
         originCountry: "India",
         port: "JNPT Nhava Sheva (INNSA)",
         trustScore: 94,
@@ -672,6 +689,7 @@ class AIService {
       {
         exporterId: "EXP-IND-002",
         companyName: "Bharat Heritage Agro Industries",
+        dataSource: "fallback" as const,
         originCountry: "India",
         port: "Mundra Port (INMUN)",
         trustScore: 91,
@@ -760,10 +778,13 @@ class AIService {
             mandatory: d.mandatory,
           })),
           disclaimer: data.disclaimer || "AI-generated regulatory analysis grounded in official tariff schedules.",
+          dataSource: "live",
         };
       }
     } catch {
-      // Fallback
+      // Backend unreachable — falls through to the labelled demo response
+      // below. A compliance result is safety-critical: it must never look
+      // indistinguishable from a live regulatory answer.
     }
 
     return {
@@ -785,14 +806,15 @@ class AIService {
         { name: "Phytosanitary Certificate", issuingAuthority: "NPPO / Plant Quarantine of India", mandatory: true },
         { name: "Independent Weight & Quality Certificate", issuingAuthority: "SGS / Bureau Veritas", mandatory: false },
       ],
-      disclaimer: "AI-generated regulatory analysis grounded in official tariff schedules. Final customs clearance subject to port inspection.",
+      disclaimer: "DEMO DATA — NOT LIVE COMPLIANCE. AI-generated regulatory analysis grounded in official tariff schedules. Final customs clearance subject to port inspection.",
+      dataSource: "fallback",
     };
   }
 
   /**
-   * ML Demand Matching Engine for Marketplace
-   * Filters eligible organizations across global trade network (7,420 candidates)
-   * and ranks top buyer recommendations based on commodity fit, destination corridor, and capacity.
+   * ML Demand Matching Engine for Marketplace. Calls the real backend when
+   * reachable; falls back to a small local deterministic demo pool
+   * (TOP_BUYERS_DATA) otherwise, honestly labelled via `data_source`.
    */
   public async matchBuyers(query: BuyerMatchQuery): Promise<BuyerMatchResponse> {
     try {
@@ -802,15 +824,17 @@ class AIService {
         body: JSON.stringify(query),
       });
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        return { ...data, data_source: data.data_source ?? "live" };
       }
     } catch {
-      // Graceful fallback to deterministic local ML engine
+      // Backend unreachable — falls through to the local deterministic
+      // demo pool below (TOP_BUYERS_DATA), never presented as a live
+      // network of thousands of buyers.
     }
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    const totalEligiblePool = 7420;
     const commLower = (query.commodity || "").toLowerCase();
     const destLower = (query.destinationCountry || "").toLowerCase();
 
@@ -866,14 +890,15 @@ class AIService {
       rank: (i + 1).toString().padStart(2, "0"),
     }));
 
-    const strongMatchCount = Math.max(14, Math.min(280, Math.round(142 + (query.quantity ? query.quantity % 25 : 0))));
+    const strongMatchCount = rankedRecommendations.filter((b) => (b.matchScore || 0) >= 90).length;
 
     return {
       query,
-      candidateCount: totalEligiblePool,
+      candidateCount: rankedRecommendations.length,
       strongMatchCount,
       recommendations: rankedRecommendations,
       executedAt: new Date().toISOString(),
+      data_source: "fallback_demo_pool",
     };
   }
 

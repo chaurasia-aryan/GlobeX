@@ -1,0 +1,456 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "transactionId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "exporterId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "importerId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "trustScoreAfterTrade",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "TradeRecorded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "name": "exporterReputation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "completedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "disputedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "failedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cancelledTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deliveredTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inspectedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "onTimeDeliveries",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "qualityPassedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTrustScore",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllTradeIds",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "exporterId",
+        "type": "string"
+      }
+    ],
+    "name": "getExporterReputation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "completedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "disputedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "failedTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cancelledTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "onTimeDeliveryRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "qualityPassRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "disputeRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTrustScore",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTrades",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "exporterId",
+        "type": "string"
+      }
+    ],
+    "name": "getExporterTradeIds",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "transactionId",
+        "type": "string"
+      }
+    ],
+    "name": "getTrade",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "transactionId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "exporterId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "importerId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "product",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quantity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "tradeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "inspectionStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "disputeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "settlementStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expectedDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "actualDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "invoiceHash",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "trustScoreAfterTrade",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TradeLedger.Trade",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "status",
+        "type": "string"
+      }
+    ],
+    "name": "getTradesByStatus",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "transactionId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "exporterId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "importerId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "product",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quantity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "tradeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "inspectionStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "disputeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "settlementStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expectedDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "actualDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "invoiceHash",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "trustScoreAfterTrade",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TradeLedger.Trade[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "transactionId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "exporterId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "importerId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "product",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quantity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "tradeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "inspectionStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "disputeStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "settlementStatus",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expectedDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "actualDelivery",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "invoiceHash",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TradeLedger.TradeInput",
+        "name": "input",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "trustScoreAfterTrade",
+        "type": "uint256"
+      }
+    ],
+    "name": "recordTrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

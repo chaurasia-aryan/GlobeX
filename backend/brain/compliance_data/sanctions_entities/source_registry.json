@@ -1,0 +1,41 @@
+{
+  "built_at": "2026-08-23T14:08:14+00:00",
+  "sources_fetched_successfully": [
+    {
+      "source": "OFAC_SDN",
+      "authority": "US Office of Foreign Assets Control",
+      "url": "https://sanctionslistservice.ofac.treas.gov/api/publicationpreview/exports/sdn.csv",
+      "alias_url": "https://sanctionslistservice.ofac.treas.gov/api/publicationpreview/exports/alt.csv",
+      "record_count": 19249,
+      "alias_count": 20194,
+      "retrieved_at": "2026-08-23T13:30:00Z"
+    },
+    {
+      "source": "UN_SC_CONSOLIDATED",
+      "authority": "United Nations Security Council",
+      "url": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+      "list_date_generated": "2026-08-22T23:00:03.221Z",
+      "record_count": 1011,
+      "retrieved_at": "2026-08-23T13:30:30Z"
+    }
+  ],
+  "sources_attempted_and_failed": [],
+  "sources_unsupported": [
+    {
+      "source": "BIS_CONSOLIDATED_SCREENING_LIST",
+      "reason": "Not integrated in this pass \u2014 no free bulk-download wired up yet. Entity screening against BIS Denied Persons/Entity/Unverified/MEU lists is NOT covered."
+    },
+    {
+      "source": "EU_CONSOLIDATED_FINANCIAL_SANCTIONS_LIST",
+      "reason": "Not integrated in this pass \u2014 EU sanctions map/consolidated list not wired up. NOT covered."
+    },
+    {
+      "source": "UK_SANCTIONS_LIST",
+      "reason": "Not integrated in this pass \u2014 UK Sanctions List not wired up. NOT covered."
+    },
+    {
+      "source": "DGFT_RESTRICTED_PARTIES",
+      "reason": "No machine-readable DGFT restricted-party list identified. NOT covered."
+    }
+  ]
+}

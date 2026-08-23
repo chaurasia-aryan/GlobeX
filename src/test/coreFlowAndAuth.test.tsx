@@ -41,7 +41,16 @@ describe("GLOBEX Iteration 4 - Information Architecture & Marketplace Demand Lay
       destinationCountry: "UAE",
     });
 
-    expect(result.candidateCount).toBe(7420);
+    // candidateCount must always be real, never the old fabricated 7420 —
+    // but its exact value legitimately depends on whether a live backend
+    // answered (real pool) or the frontend fell back to its local demo pool
+    // (TOP_BUYERS_DATA, 10 entries). Assert honesty, not a specific number.
+    if (result.data_source === "fallback_demo_pool") {
+      expect(result.candidateCount).toBe(TOP_BUYERS_DATA.length);
+    } else {
+      expect(result.candidateCount).toBe(result.recommendations.length);
+    }
+    expect(result.candidateCount).not.toBe(7420);
     expect(result.strongMatchCount).toBeGreaterThan(0);
     expect(result.recommendations.length).toBeGreaterThanOrEqual(5);
     expect(result.recommendations[0].matchScore).toBeGreaterThanOrEqual(90);

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter
@@ -104,6 +105,7 @@ class BuyerMatchResponse(BaseModel):
     recommendations: List[Dict[str, Any]]
     executedAt: str
     analysis_id: str
+    data_source: str = "in_memory_demo_set"
 
 
 @router.post(
@@ -154,11 +156,13 @@ def match_buyers(req: BuyerMatchRequest) -> Dict[str, Any]:
     for i, b in enumerate(scored):
         b["rank"] = str(i + 1).zfill(2)
 
+    strong_match_count = sum(1 for b in scored if b["matchScore"] >= 90)
+
     return BuyerMatchResponse(
         query=req.model_dump(),
-        candidateCount=7420,
-        strongMatchCount=142,
+        candidateCount=len(scored),
+        strongMatchCount=strong_match_count,
         recommendations=scored,
-        executedAt=uuid.uuid4().hex,
+        executedAt=datetime.now(timezone.utc).isoformat(),
         analysis_id=analysis_id,
     ).model_dump()
