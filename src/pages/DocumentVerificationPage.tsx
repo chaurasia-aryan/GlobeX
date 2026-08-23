@@ -9,9 +9,9 @@ export const DocumentVerificationPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          title="Document Verification"
-          subtitle="Multi-document OCR cross-reconciliation across Commercial Invoices, Bills of Lading, and Phytosanitary Certificates."
-          badge={<StatusBadge status="verified" label="On-Chain Anchoring Active" size="md" />}
+          title="Document Cryptographic Verification"
+          subtitle="Direct SHA-256 cryptographic document hashing & on-chain integrity anchoring across Commercial Invoices, Bills of Lading, and Phytosanitary Certificates."
+          badge={<StatusBadge status="verified" label="On-Chain Hash Anchoring Active" size="md" />}
         />
 
         <DocumentVerificationStudio />

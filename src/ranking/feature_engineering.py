@@ -11,8 +11,10 @@ class FeatureEngineer:
     def __init__(self, parquet_path: Optional[str] = None):
         if parquet_path is None:
             candidates = [
+                "backend/brain/processed/01_partner_discovery_india_as_exporter.parquet",
                 "data/processed/01_partner_discovery_india_as_exporter.parquet",
                 "data_pipeline/data/processed/01_partner_discovery_india_as_exporter.parquet",
+                os.path.join(os.path.dirname(__file__), "../../backend/brain/processed/01_partner_discovery_india_as_exporter.parquet"),
                 os.path.join(os.path.dirname(__file__), "../../data/processed/01_partner_discovery_india_as_exporter.parquet")
             ]
             for p in candidates:

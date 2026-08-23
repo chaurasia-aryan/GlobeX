@@ -1,0 +1,52 @@
+# Partner Demand and Price Forecasting Configuration
+model:
+  name: "GRUMultiOutputForecaster"
+  version: "1.0.0"
+  architecture: "Shared-Encoder Dual-Head GRU"
+  sequence_window_length: 5
+  forecast_horizon: 1 # T -> T+1
+  hidden_dim: 64
+  num_layers: 2
+  dropout: 0.15
+  batch_size: 32
+  learning_rate: 0.003
+  weight_decay: 0.0001
+  epochs: 80
+  early_stopping_patience: 15
+  loss_weights:
+    demand: 0.60
+    price: 0.40
+
+chronological_split:
+  train_end_year: 2020 # 2000-2020 training
+  val_start_year: 2021
+  val_end_year: 2022   # 2021-2022 validation
+  test_start_year: 2023
+  test_end_year: 2024  # 2023-2024 test holdout
+  inference_as_of_year: 2025 # Latest evaluation context
+
+features:
+  sequence_input_columns:
+    - "log_export_value"
+    - "log_export_net_weight"
+    - "fob_unit_value"
+    - "destination_market_share"
+    - "trade_growth_yoy"
+    - "log_gdp"
+    - "log_population"
+    - "applied_tariff_rate"
+    - "rta_active"
+    - "log_locode_count"
+    - "log_active_buyers"
+    - "sanctions_present"
+  targets:
+    demand: "export_net_weight_kg"
+    price: "fob_unit_value_usd_per_kg"
+
+baselines:
+  - "naive_last_value"
+  - "moving_average_3y"
+  - "ridge_regression"
+  - "random_forest_lag"
+  - "gru_multi_output"
+

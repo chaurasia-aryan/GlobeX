@@ -23,7 +23,21 @@ from src.trade_anomaly.feature_pipeline import (
 from src.trade_anomaly.models import XGBoostAnomalyModel
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-MODELS_DIR = PROJECT_ROOT / "models" / "trade_anomaly"
+
+
+def _discover_models_dir() -> Path:
+    candidates = [
+        PROJECT_ROOT / "models" / "trade_anomaly",
+        PROJECT_ROOT / "backend" / "brain" / "models" / "trade_anomaly",
+        PROJECT_ROOT / "backend" / "brain_temporary" / "models" / "trade_anomaly",
+    ]
+    for c in candidates:
+        if (c / "xgboost_anomaly_model.joblib").exists() or (c / "preprocessor.joblib").exists():
+            return c
+    return PROJECT_ROOT / "backend" / "brain" / "models" / "trade_anomaly"
+
+
+MODELS_DIR = _discover_models_dir()
 
 
 class TradeAnomalyInferenceService:
@@ -32,8 +46,8 @@ class TradeAnomalyInferenceService:
     fitted preprocessor, feature definitions, and locked validation thresholds.
     """
     
-    def __init__(self, models_dir: Optional[Path] = None):
-        self.models_dir = Path(models_dir) if models_dir else MODELS_DIR
+    def __init__(self, models_dir: Optional[Union[Path, str]] = None):
+        self.models_dir = Path(models_dir) if models_dir else _discover_models_dir()
         self.preprocessor: Optional[TradeAnomalyPreprocessor] = None
         self.model: Optional[Any] = None
         self.threshold_config: Dict[str, Any] = {}

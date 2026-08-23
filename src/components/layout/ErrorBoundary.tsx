@@ -36,6 +36,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleRetry = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
+    // If it is a chunk load error or dynamically imported module failure, force reload the page
+    if (this.state.error?.message?.includes("dynamically imported module") || this.state.error?.message?.includes("Failed to fetch dynamically imported module")) {
+      window.location.reload();
+    }
   };
 
   public render() {

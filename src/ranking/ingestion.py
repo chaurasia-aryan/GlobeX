@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -36,8 +37,55 @@ def convert_raw_csv_to_parquet(
 
     print(f"[Ingestion] Reading raw CSV from: {raw_csv_path}")
     df = pd.read_csv(raw_csv_path)
-    raw_rows, raw_cols = df.shape
-    print(f"[Ingestion] Raw records: {raw_rows:,} rows, {raw_cols} columns")
+    raw_rows = len(df)
+    print(f"[Ingestion] Raw records: {raw_rows:,} rows, {df.shape[1]} columns")
+
+    # Column Mapping from raw variants
+    rename_map = {
+        'reporter_iso3': 'exporter_iso3',
+        'partner_iso3': 'importer_iso3',
+        'partner_name': 'importer_country_name',
+        'partner_iso2': 'importer_iso2',
+        'partner_numeric': 'importer_numeric',
+        'gdp_usd': 'destination_gdp',
+        'gdp_per_capita_usd': 'destination_gdp_per_capita',
+        'gdp_growth_pct': 'destination_gdp_growth',
+        'inflation_pct': 'destination_inflation',
+        'population': 'destination_population',
+        'trade_pct_gdp': 'destination_trade_pct_gdp',
+        'tariff_rate': 'destination_applied_tariff_rate',
+        'partner_locode_count': 'destination_locode_count',
+        'partner_port_count': 'destination_port_count',
+        'partner_airport_count': 'destination_airport_count',
+        'partner_inland_terminal_count': 'destination_inland_terminal_count'
+    }
+    for old_c, new_c in rename_map.items():
+        if old_c in df.columns and new_c not in df.columns:
+            df[new_c] = df[old_c]
+
+    # Exporter ISO2
+    if 'exporter_iso2' not in df.columns:
+        df['exporter_iso2'] = 'IN'
+
+    # Export net weight & fob unit value
+    if 'export_net_weight_kg' not in df.columns and 'net_weight_kg' in df.columns:
+        df['export_net_weight_kg'] = df['net_weight_kg']
+
+    if 'destination_market_share_pct' not in df.columns:
+        # Calculate market share per hs6 and year
+        yearly_total = df.groupby(['hs6', 'year'])['export_value_usd'].transform('sum')
+        df['destination_market_share_pct'] = np.where(yearly_total > 0, (df['export_value_usd'] / yearly_total) * 100.0, 0.0)
+
+    if 'mfn_tariff_rate' not in df.columns:
+        df['mfn_tariff_rate'] = df['destination_applied_tariff_rate']
+
+    if 'tariff_preference_margin' not in df.columns:
+        df['tariff_preference_margin'] = np.maximum(0.0, df['mfn_tariff_rate'] - df['destination_applied_tariff_rate'])
+
+    if 'gleif_buyer_count' not in df.columns:
+        df['gleif_buyer_count'] = df.get('transaction_count', 0)
+    if 'gleif_active_buyer_count' not in df.columns:
+        df['gleif_active_buyer_count'] = df.get('transaction_count', 0)
 
     # Schema & Type Normalization
     # 1. String columns
@@ -89,7 +137,6 @@ def convert_raw_csv_to_parquet(
     # Validate reload
     test_load = pd.read_parquet(output_parquet_paths[0], engine='pyarrow')
     assert len(test_load) == raw_rows, f"Row count mismatch: {len(test_load)} vs {raw_rows}"
-    assert test_load.shape[1] == raw_cols, f"Column count mismatch: {test_load.shape[1]} vs {raw_cols}"
     print(f"[Ingestion] Successfully verified Parquet dataset reload ({len(test_load):,} rows, {test_load.shape[1]} columns).")
 
     return test_load

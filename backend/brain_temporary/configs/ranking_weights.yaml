@@ -1,0 +1,58 @@
+# Partner Opportunity Ranking Weights Configuration
+module_name: "India Export Partner Discovery & Market Opportunity Engine"
+version: "1.0.0"
+
+weights:
+  revealed_demand: 0.25      # Historical 3-year export value/weight absorption
+  forecast_demand: 0.15      # Multi-output forecast demand volume momentum
+  growth_momentum: 0.15      # 3-year value/weight CAGR and recent growth
+  trade_access: 0.15         # Applied tariffs, preference margins & active RTAs
+  economic_capacity: 0.10    # Destination GDP, GDP per capita, population
+  forecast_price: 0.05       # Expected FOB export unit value
+  logistics: 0.05            # Seaports, airports, inland container terminals
+  buyer_ecosystem: 0.05      # Active GLEIF buyer density
+  stability: 0.05            # Corridor longevity & activity ratio
+
+quantity_fit:
+  weight_in_composite: 0.10  # 90% base opportunity score + 10% quantity fit
+  threshold_small_shipment: 0.05
+  threshold_standard_shipment: 0.50
+  threshold_large_shipment: 1.00
+
+normalization:
+  method: "product_cohort_percentile"
+  score_range: [0.0, 100.0]
+  skew_transform: "log1p"
+
+strategic_regimes:
+  balanced:
+    revealed_demand: 0.25
+    forecast_demand: 0.15
+    growth_momentum: 0.15
+    trade_access: 0.15
+    economic_capacity: 0.10
+    forecast_price: 0.05
+    logistics: 0.05
+    buyer_ecosystem: 0.05
+    stability: 0.05
+  demand_heavy:
+    revealed_demand: 0.40
+    forecast_demand: 0.25
+    growth_momentum: 0.15
+    trade_access: 0.05
+    economic_capacity: 0.05
+    forecast_price: 0.04
+    logistics: 0.02
+    buyer_ecosystem: 0.02
+    stability: 0.02
+  access_heavy:
+    trade_access: 0.35
+    revealed_demand: 0.20
+    forecast_demand: 0.15
+    growth_momentum: 0.10
+    economic_capacity: 0.05
+    forecast_price: 0.05
+    logistics: 0.05
+    buyer_ecosystem: 0.025
+    stability: 0.025
+

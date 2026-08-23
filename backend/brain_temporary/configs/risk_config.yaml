@@ -1,0 +1,36 @@
+# Trade Risk & Behavioral Anomaly Integration Configuration
+module_name: "Trade Risk & Compliance Constraint Engine"
+version: "1.0.0"
+
+risk_dimensions:
+  sanctions_active:
+    weight: 0.35
+    description: "Active bilateral/multilateral trade sanctions"
+  ofac_sdn_entities:
+    weight: 0.25
+    description: "OFAC Specially Designated Nationals (SDN) presence"
+  scomet_controls:
+    weight: 0.20
+    description: "DGFT SCOMET strategic dual-use export licensing requirement"
+  tariff_barrier:
+    weight: 0.10
+    description: "High statutory applied tariff barrier (>= 20%)"
+  trade_volatility:
+    weight: 0.10
+    description: "Corridor trade volume historical coefficient of variation"
+
+penalty_formulation:
+  max_penalty_points: 40.0
+  sanctions_fixed_deduction: 30.0
+  scomet_fixed_deduction: 15.0
+  ofac_scale_per_entity: 4.0
+  max_ofac_penalty: 20.0
+  tariff_barrier_threshold: 20.0 # pct
+  tariff_penalty_points: 10.0
+
+safety_guarantees:
+  monotonicity_enforced: true # Increasing risk MUST strictly decrease final recommendation score
+  risk_cannot_exceed_penalty_cap: true
+  min_final_score: 0.0
+  max_final_score: 100.0
+

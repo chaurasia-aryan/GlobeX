@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
-import { TopBuyer } from "@/data/mockTradeData";
 import { Listing } from "@/types/trade";
-import { aiService, BuyerMatchQuery, BuyerMatchResponse } from "@/services/api/aiService";
+import { 
+  aiService, 
+  MarketOpportunityResult, 
+  DestinationCountryInsight 
+} from "@/services/api/aiService";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterBar } from "@/components/common/FilterBar";
@@ -11,10 +14,24 @@ import SpecularButton from "@/components/ui/SpecularButton";
 import ListingCard from "@/components/marketplace/ListingCard";
 import ListingDetailDrawer from "@/components/marketplace/ListingDetailDrawer";
 import CreateTradeRequestDrawer from "@/components/marketplace/CreateTradeRequestDrawer";
-import BuyerMatchingForm from "@/components/marketplace/BuyerMatchingForm";
-import BuyerMatchingResults from "@/components/marketplace/BuyerMatchingResults";
-import BuyerDetailDrawer from "@/components/marketplace/BuyerDetailDrawer";
-import { PlusCircle, Package } from "lucide-react";
+import CountryOpportunityCard from "@/components/marketplace/CountryOpportunityCard";
+import CountryDetailDrawer from "@/components/marketplace/CountryDetailDrawer";
+import { CommoditySearchDropdown, CommodityOption } from "@/components/marketplace/CommoditySearchDropdown";
+import { notifyN8nWorkflow } from "@/utils/jingle";
+import { 
+  Globe2, 
+  TrendingUp, 
+  Search, 
+  Sparkles, 
+  Package, 
+  ShieldCheck, 
+  Layers, 
+  SlidersHorizontal,
+  ChevronRight,
+  Info,
+  Cpu
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const CATEGORIES = [
   "All Commodities",
@@ -26,22 +43,81 @@ const CATEGORIES = [
   "Chemicals",
 ] as const;
 
+const QUICK_COMMODITIES = [
+  { label: "Basmati Rice", qty: 1000, desc: "HS 1006.30 · 1121 Steam" },
+  { label: "Black Pepper", qty: 500, desc: "HS 0904.11 · Tellicherry TGSEB" },
+  { label: "Cotton Yarn", qty: 5000, desc: "HS 5205.12 · 30s Ne Combed" },
+  { label: "Frozen Shrimps", qty: 2000, desc: "HS 0306.17 · Vannamei / Tiger" },
+  { label: "Roasted Coffee", qty: 1000, desc: "HS 0901.21 · Arabica AA" },
+  { label: "Cut Diamonds", qty: 100, desc: "HS 7102.39 · Polished Gem" },
+];
+
 export const MarketplacePage: React.FC = () => {
-  const { isBuyer, listings } = useWorkspace();
+  const [searchParams] = useSearchParams();
+  const { listings } = useWorkspace();
 
-  // ML Demand Matching State
-  const [matchResponse, setMatchResponse] = useState<BuyerMatchResponse | null>(null);
-  const [isMatchingLoading, setIsMatchingLoading] = useState<boolean>(false);
-  const [inspectBuyer, setInspectBuyer] = useState<TopBuyer | null>(null);
-  const [requestBuyer, setRequestBuyer] = useState<TopBuyer | null>(null);
+  // ── Country Destination Discovery State ────────────────────────────────
+  const [commodity, setCommodity] = useState<string>(
+    searchParams.get("commodity") || "Basmati Rice"
+  );
+  const [quantityKg, setQuantityKg] = useState<number>(
+    Number(searchParams.get("qty")) || 1000
+  );
+  const [regime, setRegime] = useState<string>("balanced");
+  const [isRankLoading, setIsRankLoading] = useState<boolean>(false);
+  const [marketResult, setMarketResult] = useState<MarketOpportunityResult | null>(null);
+  const [selectedCountryInsight, setSelectedCountryInsight] = useState<DestinationCountryInsight | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
-  // Product Listings State
+  // ── Product Listings State ─────────────────────────────────────────────
   const [selectedCategory, setSelectedCategory] = useState<string>("All Commodities");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [inspectListing, setInspectListing] = useState<Listing | null>(null);
   const [requestListing, setRequestListing] = useState<Listing | null>(null);
   const [isRequestDrawerOpen, setIsRequestDrawerOpen] = useState<boolean>(false);
-  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+
+  // Execute Dual-GRU Country Opportunity Ranking Pipeline
+  const handleDiscoverDestinations = async (productToQuery?: string, qtyToQuery?: number) => {
+    const qProduct = productToQuery || commodity;
+    const qQty = qtyToQuery !== undefined ? qtyToQuery : quantityKg;
+
+    setIsRankLoading(true);
+    const t0 = performance.now();
+    try {
+      const result = await aiService.rankMarketOpportunity(qProduct, qQty, regime, 6);
+      setMarketResult(result);
+      const elapsed = Math.round(performance.now() - t0);
+
+      const topDest = result.top_recommendations?.[0]?.destination.country_name || "United States";
+      const topScore = result.top_recommendations?.[0]?.scores.final_score || 85.0;
+
+      notifyN8nWorkflow({
+        workflowName: "Dual-GRU Global Destination Engine",
+        latencyMs: elapsed,
+        summary: `Dual-GRU Pipeline Evaluated ${result.total_candidates_evaluated || 52} countries for ${qProduct} (${qQty.toLocaleString()} kg) · Top: ${topDest} (${topScore.toFixed(1)}/100)`,
+        modelsTriggered: [
+          "PyTorch Demand Forecaster (GRU Head 1 + Head 2)",
+          "PyTorch Trade Risk Autoencoder (GRU Reconstruction)",
+          "Isolation Forest Anomaly Model",
+          "Multi-Criteria Opportunity Engine"
+        ],
+      });
+    } catch (err) {
+      console.error("Country destination ranking error:", err);
+    } finally {
+      setIsRankLoading(false);
+    }
+  };
+
+  // Run initial ranking on mount
+  useEffect(() => {
+    handleDiscoverDestinations();
+  }, []);
+
+  const handleSelectCountry = (data: DestinationCountryInsight) => {
+    setSelectedCountryInsight(data);
+    setIsDrawerOpen(true);
+  };
 
   // Filter listings
   const filteredListings = useMemo<Listing[]>(() => {
@@ -58,186 +134,277 @@ export const MarketplacePage: React.FC = () => {
     });
   }, [selectedCategory, searchQuery]);
 
-  // Execute ML Matching Pipeline
-  const handleRunBuyerMatch = async (query: BuyerMatchQuery) => {
-    setIsMatchingLoading(true);
-    try {
-      const response = await aiService.matchBuyers(query);
-      setMatchResponse(response);
-    } catch (err) {
-      console.error("Buyer matching error:", err);
-    } finally {
-      setIsMatchingLoading(false);
-    }
-  };
-
-  const handleOpenCreateRequest = (listing?: Listing) => {
-    setRequestBuyer(null);
-    setRequestListing(listing || listings[0]);
-    setIsRequestDrawerOpen(true);
-  };
-
-  const handleCreateRequestForBuyer = (buyer: TopBuyer) => {
-    setRequestListing(null);
-    setRequestBuyer(buyer);
-    setIsRequestDrawerOpen(true);
-  };
-
   return (
-    <AppShell maxWidth="full" className="space-y-6">
+    <AppShell maxWidth="full" className="space-y-8">
       {/* ── Page Header ────────────────────────────────────────────── */}
       <PageHeader
-        title="Global Exporters Marketplace"
-        subtitle="Discover verified export commodities, query matching importer demand across 7,420+ global organizations, and create escrow-backed trade requests."
+        title="Global Trade Destination Discovery & Marketplace"
+        subtitle="Rank all global destination countries for Indian exports using PyTorch GRU Neural Network demand forecasts, CEPA/RTA tariff schedules, and trade risk models."
         badge={
-          <span className="text-xs font-mono text-slate-400">
-            {filteredListings.length} products available
-          </span>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Country Opportunity Engine Active</span>
+          </div>
         }
         action={
           <div className="flex items-center gap-2">
-            <Link to="/my-listings">
-              <SpecularButton
-                variant="outline"
-                size="sm"
-                radius={10}
-              >
-                My Export Catalog →
+            <Link to="/trade-analysis">
+              <SpecularButton variant="outline" size="sm" radius={10}>
+                ⚡ Open Trade Analysis →
               </SpecularButton>
             </Link>
-
-            <SpecularButton
-              size="sm"
-              radius={10}
-              variant="emerald"
-              icon={<PlusCircle className="w-4 h-4" />}
-              iconPosition="left"
-              onClick={() => handleOpenCreateRequest()}
-            >
-              Create Trade Request
-            </SpecularButton>
           </div>
         }
       />
 
-      {/* ── Section 1: ML Demand Matching Layer (Input -> Candidate Pool -> Ranked Recommendations) ── */}
-      <div className="space-y-4">
-        {/* Step 1: User Input Requirement Form */}
-        <BuyerMatchingForm
-          onSearch={handleRunBuyerMatch}
-          isLoading={isMatchingLoading}
-        />
+      {/* ── SECTION 1: GLOBAL DESTINATION RADAR ────────────────────── */}
+      <div className="space-y-5 p-6 sm:p-7 rounded-3xl bg-[#080C14] border border-sky-500/20 shadow-2xl relative overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Step 2: Contextual Match Results & Ranked BarList Surface (Displayed after search) */}
-        {matchResponse && (
-          <BuyerMatchingResults
-            matchResponse={matchResponse}
-            onInspectBuyer={(buyer) => setInspectBuyer(buyer)}
-            onCreateTradeRequest={handleCreateRequestForBuyer}
-          />
-        )}
-      </div>
-
-      {/* ── Section 2: Product Marketplace Discovery (Browse Inventory, Search, & Filter) ── */}
-      <div className="space-y-4 pt-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <Package className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-display font-bold text-sm text-white uppercase tracking-wider">
-                Product Marketplace
-              </h3>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/[0.07] pb-5">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-sky-400 font-bold uppercase tracking-wider">
+              <Globe2 className="w-4 h-4 text-sky-400" />
+              <span>AI Country Destination Finder</span>
             </div>
-            <p className="text-xs text-slate-400">
-              Browse verified supplier inventory, check FOB pricing, and inspect export lots.
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-white">
+              Where Should I Export My Product?
+            </h2>
+            <p className="text-xs text-slate-400 font-sans max-w-2xl">
+              Enter what you want to export and how much. Our GRU Neural Network scans 18+ major global trade corridors, calculates bilateral demand momentum, checks tariff schedules, and ranks the highest-probability countries.
             </p>
           </div>
 
-          <span className="text-xs font-mono text-slate-500">
-            {filteredListings.length} Active Listings
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono text-slate-400 uppercase">Strategy:</span>
+            <select
+              value={regime}
+              onChange={(e) => {
+                setRegime(e.target.value);
+                handleDiscoverDestinations(commodity, quantityKg);
+              }}
+              className="bg-[#0C121D] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-sky-500/50"
+            >
+              <option value="balanced">Balanced (Recommended)</option>
+              <option value="aggressive">Aggressive (High Growth)</option>
+              <option value="conservative">Conservative (Established Ports)</option>
+              <option value="risk_averse">Risk-Averse (Zero Sanctions)</option>
+            </select>
+          </div>
         </div>
 
-        {/* Filter Bar & Search */}
-        <FilterBar
-          categories={CATEGORIES}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search commodity title, exporter name, HS code..."
-        />
-
-        {/* Product Listings Grid with Sibling Hover Dimming */}
-        {filteredListings.length > 0 ? (
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            onMouseLeave={() => setHoveredCardId(null)}
-          >
-            {filteredListings.map((listing) => {
-              const isHovered = hoveredCardId === listing.id;
-              const isDimmed = hoveredCardId !== null && !isHovered;
-
-              return (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  isHovered={isHovered}
-                  isDimmed={isDimmed}
-                  onHover={() => setHoveredCardId(listing.id)}
-                  onLeave={() => {
-                    if (hoveredCardId === listing.id) setHoveredCardId(null);
-                  }}
-                  onInspect={(item) => setInspectListing(item)}
-                  onRequest={(item) => handleOpenCreateRequest(item)}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="p-12 text-center rounded-2xl border border-dashed border-white/[0.08] bg-[#0C121D] space-y-2">
-            <p className="text-xs text-slate-400">No matching commodities found.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedCategory("All Commodities");
-                setSearchQuery("");
+        {/* ── Input Bar with Prefix/Typeahead Dropdown ───────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
+          <div className="md:col-span-6 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-mono text-slate-400">
+                Export Commodity / HS6 Product
+              </label>
+              <span className="text-[11px] font-mono text-sky-400">
+                Type prefix (e.g. &ldquo;b&rdquo; &rarr; Basmati, Pepper...)
+              </span>
+            </div>
+            <CommoditySearchDropdown
+              value={commodity}
+              onChange={(name) => setCommodity(name)}
+              onSelect={(opt: CommodityOption) => {
+                setCommodity(opt.name);
+                setQuantityKg(opt.typicalQty);
+                handleDiscoverDestinations(opt.name, opt.typicalQty);
               }}
-              className="text-xs text-emerald-400 hover:underline font-mono cursor-pointer"
+            />
+          </div>
+
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-xs font-mono text-slate-400">
+              Shipment Volume (kg)
+            </label>
+            <input
+              type="number"
+              value={quantityKg}
+              onChange={(e) => setQuantityKg(Math.max(1, Number(e.target.value)))}
+              placeholder="1000"
+              className="w-full bg-[#0C121D] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+            />
+          </div>
+
+          <div className="md:col-span-3">
+            <SpecularButton
+              size="md"
+              onClick={() => handleDiscoverDestinations()}
+              isLoading={isRankLoading}
+              className="w-full justify-center text-sm py-2.5"
             >
-              Reset filters
+              <Search className="w-4 h-4 mr-1.5" />
+              Rank Global Markets
+            </SpecularButton>
+          </div>
+        </div>
+
+        {/* ── Quick Commodity Chips ─────────────────────────────────── */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
+          <span className="text-slate-500">Quick Select:</span>
+          {QUICK_COMMODITIES.map((c) => (
+            <button
+              key={c.label}
+              onClick={() => {
+                setCommodity(c.label);
+                setQuantityKg(c.qty);
+                handleDiscoverDestinations(c.label, c.qty);
+              }}
+              className={cn(
+                "px-3 py-1 rounded-lg border transition-all text-[11px]",
+                commodity === c.label
+                  ? "bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold"
+                  : "bg-white/[0.03] text-slate-400 border-white/[0.06] hover:bg-white/[0.08] hover:text-white"
+              )}
+            >
+              {c.label} ({c.qty.toLocaleString()} kg)
             </button>
+          ))}
+        </div>
+
+        {/* ── Resolution Info Banner ───────────────────────────────── */}
+        {marketResult?.product_resolution && (
+          <div className="p-3.5 rounded-2xl bg-[#0C121D] border border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30 font-mono font-bold">
+                HS {marketResult.product_resolution.hs6}
+              </span>
+              <span className="font-sans font-medium text-slate-200">
+                {marketResult.product_resolution.product_description}
+              </span>
+            </div>
+
+            <span className="text-slate-400 font-mono text-[11px]">
+              {marketResult.total_candidates_evaluated || 18} destination countries evaluated · Ranked by Net Opportunity Score
+            </span>
           </div>
         )}
+
+        {/* ── Ranked Country Cards Grid ────────────────────────────── */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span>Ranked Destination Countries for {quantityKg.toLocaleString()} kg {commodity}</span>
+            </h3>
+            <span className="text-[11px] font-mono text-slate-500">
+              Click any country to view full forecast & pros/cons
+            </span>
+          </div>
+
+          {isRankLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <div key={n} className="h-56 rounded-2xl bg-[#0C121D] animate-pulse border border-white/[0.05]" />
+              ))}
+            </div>
+          ) : marketResult?.top_recommendations && marketResult.top_recommendations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {marketResult.top_recommendations.map((rec, index) => (
+                <CountryOpportunityCard
+                  key={rec.destination.iso3}
+                  rank={index + 1}
+                  data={rec}
+                  onSelect={handleSelectCountry}
+                  userCommodity={commodity}
+                  userQuantityKg={quantityKg}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center rounded-2xl bg-[#0C121D] border border-white/[0.06] text-slate-400 text-sm">
+              No matching destination countries found for "{commodity}". Try selecting one of the quick commodities above.
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ── Drawers & Modals ────────────────────────────────────────── */}
+      {/* ── SECTION 2: PRODUCT MARKETPLACE CATALOG ─────────────────── */}
+      <div className="space-y-5 pt-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-display font-bold text-white">
+              Export Commodities Inventory Catalog
+            </h3>
+            <p className="text-xs text-slate-400 font-sans">
+              Browse pre-verified warehouse lots and export listings available across Indian trade hubs.
+            </p>
+          </div>
 
-      {/* Slide-Over Buyer Inspection Drawer */}
-      <BuyerDetailDrawer
-        buyer={inspectBuyer}
-        isOpen={!!inspectBuyer}
-        onClose={() => setInspectBuyer(null)}
-        onCreateTradeRequest={handleCreateRequestForBuyer}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-slate-400">
+              {filteredListings.length} Active Listings
+            </span>
+          </div>
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={cn(
+                "px-3.5 py-1.5 rounded-xl text-xs font-mono transition-all",
+                selectedCategory === cat
+                  ? "bg-white text-black font-bold shadow-lg shadow-white/10"
+                  : "bg-[#0C121D] text-slate-400 border border-white/[0.07] hover:text-white hover:border-white/[0.15]"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredListings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              onInspect={(l) => {
+                setInspectListing(l);
+                setCommodity(l.title);
+                handleDiscoverDestinations(l.title, 1000);
+              }}
+              onRequest={(l) => {
+                setRequestListing(l);
+                setIsRequestDrawerOpen(true);
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Country Opportunity Detail Drawer ─────────────────────── */}
+      <CountryDetailDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        data={selectedCountryInsight}
+        userCommodity={commodity}
+        userQuantityKg={quantityKg}
       />
 
-      {/* Slide-Over Listing Detail Drawer (Inspect Trade) */}
+      {/* ── Listing Detail Drawer ─────────────────────────────────── */}
       <ListingDetailDrawer
-        listing={inspectListing}
         isOpen={!!inspectListing}
         onClose={() => setInspectListing(null)}
+        listing={inspectListing}
+        onRequestTrade={(l) => {
+          setInspectListing(null);
+          setRequestListing(l);
+          setIsRequestDrawerOpen(true);
+        }}
       />
 
-      {/* Contextual 4-Step Trade Request Creation Drawer */}
+      {/* ── Create Trade Request Drawer ───────────────────────────── */}
       <CreateTradeRequestDrawer
-        listing={requestListing}
-        buyer={requestBuyer}
         isOpen={isRequestDrawerOpen}
-        onClose={() => {
-          setIsRequestDrawerOpen(false);
-          setRequestBuyer(null);
-          setRequestListing(null);
-        }}
+        onClose={() => setIsRequestDrawerOpen(false)}
+        listing={requestListing}
       />
     </AppShell>
   );

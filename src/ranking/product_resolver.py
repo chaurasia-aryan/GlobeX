@@ -12,8 +12,10 @@ class ProductResolver:
         if parquet_path is None:
             # Default candidates
             candidates = [
+                "backend/brain/processed/01_partner_discovery_india_as_exporter.parquet",
                 "data/processed/01_partner_discovery_india_as_exporter.parquet",
                 "data_pipeline/data/processed/01_partner_discovery_india_as_exporter.parquet",
+                os.path.join(os.path.dirname(__file__), "../../backend/brain/processed/01_partner_discovery_india_as_exporter.parquet"),
                 os.path.join(os.path.dirname(__file__), "../../data/processed/01_partner_discovery_india_as_exporter.parquet")
             ]
             for p in candidates:

@@ -1,0 +1,36 @@
+feature,category,keep_drop,reason,direction,missingness,transformation
+recent_3y_avg_export_value,Demand,KEEP,Revealed dollar demand absorption over recent 3-year historical window,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+recent_3y_avg_export_weight,Demand,KEEP,Physical volume capacity absorption over recent 3-year historical window,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+recent_3y_median_export_weight,Demand,KEEP,Outlier-resistant typical annual physical volume scale for quantity fit baseline,HIGHER_BETTER,0.0%,log1p -> raw_scale
+latest_year_export_value,Demand,KEEP,Most recent export value level,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+latest_year_export_weight,Demand,KEEP,Most recent export weight level,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_market_share_latest,Demand,KEEP,Indian export market concentration share in destination,HIGHER_BETTER,0.0%,percentile_rank
+export_value_cagr_3y,Growth,KEEP,3-year compound annual growth rate of Indian export value,HIGHER_BETTER,0.0%,"clip(-0.99, 5.0) -> percentile_rank"
+export_weight_cagr_3y,Growth,KEEP,3-year compound annual growth rate of Indian physical export weight,HIGHER_BETTER,0.0%,"clip(-0.99, 5.0) -> percentile_rank"
+recent_weight_growth,Growth,KEEP,1-year recent weight growth momentum,HIGHER_BETTER,0.0%,"clip(-0.99, 5.0) -> percentile_rank"
+recent_value_growth,Growth,DROP,Redundant with export_value_cagr_3y and recent_weight_growth,HIGHER_BETTER,0.0%,none
+destination_applied_tariff_rate,Trade Access,KEEP,Statutory ad-valorem applied duty on Indian goods,LOWER_BETTER,0.0%,percentile_rank(ascending=False)
+tariff_preference_margin,Trade Access,KEEP,Tariff discount advantage enjoyed over MFN non-preferential suppliers,HIGHER_BETTER,0.0%,percentile_rank
+rta_exists,Trade Access,KEEP,Bilateral/Regional trade agreement in force with India,HIGHER_BETTER,0.0%,binary_scale(100 vs 30)
+mfn_tariff_rate,Trade Access,DROP,Captured by applied tariff and preference margin,LOWER_BETTER,0.0%,none
+destination_gdp,Economic Capacity,KEEP,Macroeconomic gross domestic product size,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_gdp_per_capita,Economic Capacity,KEEP,Per capita purchasing power and affluence,HIGHER_BETTER,0.0%,percentile_rank
+destination_gdp_growth,Economic Capacity,KEEP,Real GDP annual growth expansion rate,HIGHER_BETTER,0.0%,percentile_rank
+destination_population,Economic Capacity,KEEP,Aggregate consumer market size,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_trade_pct_gdp,Economic Capacity,DROP,Highly correlated with small trade hubs; non-informative for commodity absorption,NEUTRAL,0.0%,none
+destination_port_count,Logistics,KEEP,Maritime commercial seaport container terminals,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_airport_count,Logistics,KEEP,International air freight gateway terminals,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_inland_terminal_count,Logistics,KEEP,Inland container depots (ICDs) and dry ports,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+destination_locode_count,Logistics,KEEP,UN/LOCODE multimodal trading hub infrastructure density,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+gleif_buyer_count,Buyer Ecosystem,KEEP,Total active verified LEI-registered legal buyer entities in destination,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+gleif_active_buyer_count,Buyer Ecosystem,KEEP,Active trading legal entities engaged in cross-border commerce,HIGHER_BETTER,0.0%,log1p -> percentile_rank
+activity_ratio,Stability,KEEP,Fraction of available historical years with active bilateral trade,HIGHER_BETTER,0.0%,percentile_rank
+years_active,Stability,KEEP,Cumulative years of recorded trade corridor history,HIGHER_BETTER,0.0%,percentile_rank
+sanctions_present,Risk,KEEP,Active international or multilateral trade sanctions penalty,LOWER_BETTER,0.0%,binary_penalty(-30 pts)
+ofac_entity_count,Risk,KEEP,US OFAC Specially Designated Nationals (SDN) entities in destination,LOWER_BETTER,0.0%,"linear_penalty(-5 pts/entity, capped at 25)"
+scomet_match_flag,Risk,KEEP,"India DGFT Special Chemicals, Organisms, Materials, Equipment & Technologies dual-use restriction",LOWER_BETTER,0.0%,"scomet_penalty(-40 pts risk, -10 pts final)"
+importer_numeric,Identifier,DROP,Arbitrary UN numeric country code; non-ordinal identifier,NONE,0.0%,none
+currency_code,Identifier,DROP,Categorical currency identifier,NONE,0.0%,none
+currency_name,Identifier,DROP,Categorical string currency name,NONE,0.0%,none
+hs6,Identifier,DROP,"Product category code used as partition key, not continuous feature",NONE,0.0%,none
+product_description,Identifier,DROP,"Text description used for catalog resolution, not numeric feature",NONE,0.0%,none

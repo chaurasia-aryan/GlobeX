@@ -13,8 +13,8 @@ import pyarrow.parquet as pq
 
 # Default directory paths
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-RAW_CSV_PATH = PROJECT_ROOT / "data_pipeline" / "data" / "final_csv" / "02_trade_anomaly_dl.csv"
-PROCESSED_DIR = PROJECT_ROOT / "data" / "processed" / "trade_anomaly"
+RAW_CSV_PATH = PROJECT_ROOT / "backend" / "brain" / "data" / "final_csv" / "02_trade_anomaly_dl.csv"
+PROCESSED_DIR = PROJECT_ROOT / "backend" / "brain" / "processed" / "trade_anomaly"
 PARQUET_PATH = PROCESSED_DIR / "02_trade_anomaly.parquet"
 
 
