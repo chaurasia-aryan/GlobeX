@@ -388,3 +388,124 @@ def compliance_coverage() -> Dict[str, Any]:
         coverage["entity_screening"] = {"available": False, "reason": str(exc)}
 
     return coverage
+
+
+# ---------------------------------------------------------------------------
+# Document Verification Verdict — extracted from the n8n workflow JSON
+# ("Code — Synthesize Doc Verdict"), which duplicated this exact decision
+# tree as unversioned, untested inline JS. Same thresholds, now testable.
+# ---------------------------------------------------------------------------
+
+class DocVerdictRequest(BaseModel):
+    ocr_status: Optional[str] = None
+    ocr_data_source: Optional[str] = None
+    compliance_score: Optional[float] = None
+    compliance_flags: List[str] = Field(default_factory=list)
+
+
+class DocVerdictResponse(BaseModel):
+    status: str  # OCR_STUB_NOT_LIVE | COMPLIANCE_UNAVAILABLE | REVIEW_REQUIRED | VERIFIED
+    cleared_for_shipment: bool
+
+
+@router.post(
+    "/compliance/doc-verdict",
+    response_model=DocVerdictResponse,
+    summary="Document Verification Verdict",
+    description=(
+        "Single source of truth for the OCR/compliance verdict decision — never "
+        "claims VERIFIED unless OCR is confirmed live and the compliance score "
+        "clears the review threshold."
+    ),
+)
+def doc_verdict(req: DocVerdictRequest) -> Dict[str, Any]:
+    ocr_is_live = bool(req.ocr_data_source) and req.ocr_data_source != "stub" and req.ocr_status != "STUB"
+    blocking_flag = any(("MISSING_" in f or "PROHIBITED" in f) for f in req.compliance_flags)
+
+    if not ocr_is_live:
+        return {"status": "OCR_STUB_NOT_LIVE", "cleared_for_shipment": False}
+    if req.compliance_score is None:
+        return {"status": "COMPLIANCE_UNAVAILABLE", "cleared_for_shipment": False}
+    if blocking_flag or req.compliance_score < 70:
+        return {"status": "REVIEW_REQUIRED", "cleared_for_shipment": False}
+    return {"status": "VERIFIED", "cleared_for_shipment": True}
+
+
+# ---------------------------------------------------------------------------
+# Composite Trade Score & Recommendation — extracted from the n8n workflow
+# JSON ("Code — Synthesize All Models"), which duplicated the composite
+# weights and PROCEED/REVIEW/AVOID thresholds as unversioned inline JS.
+# ---------------------------------------------------------------------------
+
+class TradeSynthesisRequest(BaseModel):
+    hs6: Optional[int] = None
+    market_score: Optional[float] = None
+    anomaly_score: Optional[float] = None
+    risk_level: Optional[str] = None
+    counterparty_match_score: Optional[float] = None
+    counterparty_trust_score: Optional[float] = None
+    compliance_score: Optional[float] = None
+
+
+class TradeSynthesisResponse(BaseModel):
+    status: str  # SUCCESS | PARTIAL | FAILED
+    missing_dimensions: List[str]
+    composite_score: Optional[float] = None
+    recommendation: str  # PROCEED | REVIEW | AVOID | UNSUPPORTED
+
+
+@router.post(
+    "/compliance/trade-synthesis",
+    response_model=TradeSynthesisResponse,
+    summary="Composite Trade Score & Recommendation",
+    description=(
+        "Composite-scoring weights (35% market / 25% compliance / 20% anomaly / "
+        "10% counterparty match / 10% counterparty trust) and PROCEED/REVIEW/"
+        "AVOID thresholds. A dimension missing from the request is reported in "
+        "missing_dimensions and the composite is null — never silently filled in."
+    ),
+)
+def trade_synthesis(req: TradeSynthesisRequest) -> Dict[str, Any]:
+    missing: List[str] = []
+    if req.hs6 is None:
+        missing.append("hs_classification")
+    if req.market_score is None:
+        missing.append("market_opportunity")
+    if req.anomaly_score is None or req.risk_level is None:
+        missing.append("trade_anomaly")
+    if req.counterparty_match_score is None:
+        missing.append("counterparty_match")
+    if req.counterparty_trust_score is None:
+        missing.append("counterparty_risk")
+    if req.compliance_score is None:
+        missing.append("compliance")
+
+    composite_score: Optional[float] = None
+    recommendation = "UNSUPPORTED"
+    status = "FAILED"
+
+    if not missing:
+        composite_score = round(
+            0.35 * req.market_score
+            + 0.25 * req.compliance_score
+            + 0.20 * (100 - req.anomaly_score * 100)
+            + 0.10 * req.counterparty_match_score
+            + 0.10 * req.counterparty_trust_score
+        )
+        status = "SUCCESS"
+        if composite_score >= 75 and req.risk_level not in ("CRITICAL", "HIGH"):
+            recommendation = "PROCEED"
+        elif composite_score < 45 or req.risk_level == "CRITICAL":
+            recommendation = "AVOID"
+        else:
+            recommendation = "REVIEW"
+    elif len(missing) < 6:
+        status = "PARTIAL"
+        recommendation = "REVIEW"
+
+    return {
+        "status": status,
+        "missing_dimensions": missing,
+        "composite_score": composite_score,
+        "recommendation": recommendation,
+    }

@@ -10,8 +10,8 @@ export const DocumentVerificationPage: React.FC = () => {
       <div className="space-y-6">
         <PageHeader
           title="Document Cryptographic Verification"
-          subtitle="Direct SHA-256 cryptographic document hashing & on-chain integrity anchoring across Commercial Invoices, Bills of Lading, and Phytosanitary Certificates."
-          badge={<StatusBadge status="verified" label="On-Chain Hash Anchoring Active" size="md" />}
+          subtitle="SHA-256 cryptographic document hashing across Commercial Invoices, Bills of Lading, and Phytosanitary Certificates. On-chain anchoring is built but disabled by default."
+          badge={<StatusBadge status="muted" label="On-Chain Anchoring Disabled" size="md" />}
         />
 
         <DocumentVerificationStudio />

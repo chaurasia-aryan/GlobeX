@@ -1,6 +1,8 @@
 /**
- * EVM Smart Contract Escrow & Cryptographic Document Anchoring Service
- * Handles SHA-256 generation, smart contract condition checking, and USDC payment release
+ * DEMO escrow simulation service. No real chain, contract, or funds involved —
+ * anchorDocumentHash/releaseEscrowPayment/executeArbitrationVerdict return
+ * randomly-generated fake receipts for UI demo purposes only (issue #8 defers
+ * real financial escrow). computeFileHash is the one real operation (SHA-256).
  */
 
 export interface TransactionReceipt {
@@ -20,7 +22,7 @@ class BlockchainEscrowService {
   private defaultContractAddress: string;
 
   constructor() {
-    this.networkName = "Ethereum Sepolia (EVM Testnet)";
+    this.networkName = "Simulated (no live chain)";
     this.defaultContractAddress = "0x789b91c491209bAcB28Da0a7C9d0F8372658A409";
   }
 
@@ -95,9 +97,9 @@ class BlockchainEscrowService {
     return {
       network: this.networkName,
       contractAddress: this.defaultContractAddress,
-      tokenAsset: "USDC (Testnet Contract: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238)",
-      consensus: "Proof-of-Stake (Sepolia)",
-      status: "OPERATIONAL",
+      tokenAsset: "USDC (no real token — simulation only)",
+      consensus: "N/A (simulated)",
+      status: "SIMULATED",
     };
   }
 }

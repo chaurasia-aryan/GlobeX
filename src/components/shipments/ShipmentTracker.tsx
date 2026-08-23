@@ -18,10 +18,10 @@ export const ShipmentTracker = ({ shipment = DEMO_SHIPMENT_EVENT }: ShipmentTrac
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-white">
-                Live Cargo & IoT Telemetry
+                Cargo & IoT Telemetry
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/70 text-sky-400 border border-sky-800/60">
-                AIS LIVE
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60">
+                DEMO DATA
               </span>
             </div>
             <p className="text-xs text-slate-400 font-sans">
@@ -111,7 +111,7 @@ export const ShipmentTracker = ({ shipment = DEMO_SHIPMENT_EVENT }: ShipmentTrac
                       {ms.timestamp ? new Date(ms.timestamp).toLocaleDateString() : "Completed"}
                     </span>
                   ) : ms.current ? (
-                    <span className="text-sky-300">Live (ETA 2 Days)</span>
+                    <span className="text-sky-300">In Transit (ETA 2 Days)</span>
                   ) : (
                     <span className="text-slate-500">{ms.timestamp ? new Date(ms.timestamp).toLocaleDateString() : "Pending"}</span>
                   )}

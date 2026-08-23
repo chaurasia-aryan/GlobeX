@@ -3,9 +3,9 @@ GlobeXAI Trade OS — Trade, Document & Blockchain-Anchoring Router.
 
 This is the persistence layer the platform never had: the 7 pre-existing
 routers are all stateless ML predictors with no DB client anywhere. This
-router owns `public.trades` / `public.trade_documents` / `public.blockchain_records`
-(all pre-existing, orphaned tables — no new tables added) and is the only
-thing that calls the chain-adapter service.
+router owns `public.listings` / `public.trades` / `public.trade_documents` /
+`public.blockchain_records` (all pre-existing, orphaned tables — no new
+tables added) and is the only thing that calls the chain-adapter service.
 
 Fail-closed throughout: if the DB or the chain-adapter is unreachable, this
 returns a structured error and writes nothing — it never fabricates success.
@@ -84,6 +84,28 @@ class VerifyResponse(BaseModel):
     anchored_on_chain: bool  # true only if a CONFIRMED blockchain_records row exists for this document
 
 
+class ListingCreateRequest(BaseModel):
+    organization_id: str = Field(..., description="organizations.id UUID")
+    created_by: Optional[str] = Field(None, description="users.id UUID")
+    product_name: str
+    product_category: Optional[str] = None
+    hs_code: Optional[str] = None
+    description: Optional[str] = None
+    quantity_available: Optional[float] = None
+    unit: Optional[str] = None
+    price: Optional[float] = None
+    currency: Optional[str] = "USD"
+    incoterms: Optional[str] = None
+
+
+class ListingResponse(BaseModel):
+    id: str
+    organization_id: str
+    product_name: str
+    status: str
+    created_at: str
+
+
 def _dberror() -> HTTPException:
     return HTTPException(status_code=503, detail={"code": "DB_UNAVAILABLE", "message": "Database is not configured or unreachable"})
 
@@ -91,6 +113,56 @@ def _dberror() -> HTTPException:
 def _require_db():
     if not is_configured():
         raise HTTPException(status_code=503, detail={"code": "DB_NOT_CONFIGURED", "message": "SUPABASE_DB_URL/DATABASE_URL not set"})
+
+
+# ---------------------------------------------------------------------------
+# Listings
+#
+# Writes to public.listings — the table CreateListingPage.tsx used to bypass
+# entirely (localStorage-only, with fabricated trustScore/riskScore). No
+# trust/risk computation happens here: a listing with no trade history has no
+# earned score, so none is fabricated. GET /listings (marketplace read wiring)
+# is deliberately not added here — out of scope for this endpoint.
+# ---------------------------------------------------------------------------
+
+@router.post("/listings", response_model=ListingResponse)
+async def create_listing(req: ListingCreateRequest) -> Dict[str, Any]:
+    _require_db()
+    listing_id = str(uuid.uuid4())
+    try:
+        async with transaction() as conn:
+            row = await conn.fetchrow(
+                """
+                insert into public.listings
+                    (id, organization_id, created_by, product_name, product_category, hs_code,
+                     description, quantity_available, unit, price, currency, incoterms, status,
+                     created_at, updated_at)
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'ACTIVE', now(), now())
+                returning id, organization_id, product_name, status, created_at
+                """,
+                uuid.UUID(listing_id),
+                uuid.UUID(req.organization_id),
+                uuid.UUID(req.created_by) if req.created_by else None,
+                req.product_name,
+                req.product_category,
+                req.hs_code,
+                req.description,
+                req.quantity_available,
+                req.unit,
+                req.price,
+                req.currency,
+                req.incoterms,
+            )
+    except DatabaseUnavailable:
+        raise _dberror()
+
+    return {
+        "id": str(row["id"]),
+        "organization_id": str(row["organization_id"]),
+        "product_name": row["product_name"],
+        "status": row["status"],
+        "created_at": row["created_at"].isoformat(),
+    }
 
 
 # ---------------------------------------------------------------------------

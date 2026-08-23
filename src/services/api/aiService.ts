@@ -241,6 +241,28 @@ export interface UnifiedRAGAnalysisResult {
   executedAt: string;
 }
 
+export interface ListingCreatePayload {
+  organizationId: string; // organizations.id UUID — must be a real org, not a demo user id
+  createdBy?: string;
+  productName: string;
+  productCategory?: string;
+  hsCode?: string;
+  description?: string;
+  quantityAvailable?: number;
+  unit?: string;
+  price?: number;
+  currency?: string;
+  incoterms?: string;
+}
+
+export interface ListingCreateResult {
+  id: string;
+  organizationId: string;
+  productName: string;
+  status: string;
+  createdAt: string;
+}
+
 class AIService {
   private baseUrl: string;
 
@@ -902,6 +924,43 @@ class AIService {
     };
   }
 
+  /**
+   * Persist a new marketplace listing to public.listings. No fallback: a
+   * write either really happens or it throws. Callers must not treat a
+   * caught error as success (this is what CreateListingPage did before).
+   */
+  public async createListing(payload: ListingCreatePayload): Promise<ListingCreateResult> {
+    const res = await fetch(`${this.baseUrl}/api/v1/listings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        organization_id: payload.organizationId,
+        created_by: payload.createdBy,
+        product_name: payload.productName,
+        product_category: payload.productCategory,
+        hs_code: payload.hsCode,
+        description: payload.description,
+        quantity_available: payload.quantityAvailable,
+        unit: payload.unit,
+        price: payload.price,
+        currency: payload.currency,
+        incoterms: payload.incoterms,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Listing creation failed (${res.status}): ${body || res.statusText}`);
+    }
+    const data = await res.json();
+    return {
+      id: data.id,
+      organizationId: data.organization_id,
+      productName: data.product_name,
+      status: data.status,
+      createdAt: data.created_at,
+    };
+  }
+
   public getStatus() {
     return {
       baseUrl: this.baseUrl,
@@ -910,6 +969,7 @@ class AIService {
       endpoints: [
         "/api/v1/trade/intake-analyze",
         "/api/v1/marketplace/match-buyers",
+        "/api/v1/listings",
         "/predict/hs-code",
         "/predict/counterparty-match",
         "/predict/trade-risk",

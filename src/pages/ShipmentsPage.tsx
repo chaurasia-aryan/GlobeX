@@ -9,9 +9,9 @@ export const ShipmentsPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-6">
         <PageHeader
-          title="Live Shipment & Vessel Telemetry"
-          subtitle="AIS satellite tracking for ocean freighters, live speed, heading, and container temperature monitoring across active trade corridors."
-          badge={<StatusBadge status="in_transit" label="AIS Live Satellite Connected" size="md" />}
+          title="Shipment & Vessel Telemetry"
+          subtitle="Shipment milestone tracking for ocean freighters. No live AIS satellite integration exists yet — demo data below."
+          badge={<StatusBadge status="muted" label="No Live Carrier Feed (Demo)" size="md" />}
         />
 
         <ShipmentTracker />

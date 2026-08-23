@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import SpecularButton from "@/components/ui/SpecularButton";
 import { Listing } from "@/types/trade";
+import { aiService } from "@/services/api/aiService";
 import { toast } from "sonner";
 import {
   PlusCircle,
@@ -16,7 +17,6 @@ import {
   Calendar,
   Layers,
   ArrowLeft,
-  CheckCircle,
 } from "lucide-react";
 
 export const CreateListingPage: React.FC = () => {
@@ -35,6 +35,7 @@ export const CreateListingPage: React.FC = () => {
   const [certifications, setCertifications] = useState("ISO 22000, FSSAI, FDA");
   const [leadTimeDays, setLeadTimeDays] = useState<number>(15);
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Spec pairs state
   const [specs, setSpecs] = useState<Array<{ key: string; value: string }>>([
@@ -59,7 +60,7 @@ export const CreateListingPage: React.FC = () => {
     setSpecs((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !hsCode.trim() || !originPort.trim()) {
@@ -75,33 +76,59 @@ export const CreateListingPage: React.FC = () => {
       }
     });
 
-    const newListing: Listing = {
-      id: `list_${Date.now()}`,
-      exporterId: user.id || "comp_01",
-      exporterName: user.companyName || "Acme Exports Ltd",
-      exporterCountry: user.country || "India",
-      exporterCity: user.city || "Mumbai",
-      title: title.trim(),
-      category,
-      hsCode: hsCode.trim(),
-      unitPriceUSD,
-      unit: unit.trim(),
-      minimumOrderQuantity,
-      availableQuantity,
-      originPort: originPort.trim(),
-      certifications: certifications.split(",").map((c) => c.trim()).filter(Boolean),
-      leadTimeDays,
-      trustScore: 95,
-      riskScore: 12,
-      aiMatchScore: 94,
-      description: description.trim() || "Premium export grade commodity verified for international maritime trade.",
-      specs: specRecord,
-      isTopTrusted: true,
-    };
+    setIsSubmitting(true);
+    try {
+      const persisted = await aiService.createListing({
+        organizationId: user.userId,
+        productName: title.trim(),
+        productCategory: category,
+        hsCode: hsCode.trim(),
+        description: description.trim() || undefined,
+        quantityAvailable: availableQuantity,
+        unit: unit.trim(),
+        price: unitPriceUSD,
+        incoterms: undefined,
+      });
 
-    addListing(newListing);
-    toast.success("Product listing published successfully!");
-    navigate("/marketplace");
+      // Trust/risk are not fabricated: a listing with no trade history has
+      // no earned score yet. They stay 0/unrated until a real compliance
+      // pass computes them (public.trust_scores).
+      const newListing: Listing = {
+        id: persisted.id,
+        exporterId: user.userId || "comp_01",
+        exporterName: user.companyName || "Acme Exports Ltd",
+        exporterCountry: user.country || "India",
+        exporterCity: "Mumbai",
+        title: title.trim(),
+        category,
+        hsCode: hsCode.trim(),
+        unitPriceUSD,
+        unit: unit.trim(),
+        minimumOrderQuantity,
+        availableQuantity,
+        originPort: originPort.trim(),
+        certifications: certifications.split(",").map((c) => c.trim()).filter(Boolean),
+        leadTimeDays,
+        trustScore: 0,
+        riskScore: 0,
+        aiMatchScore: 0,
+        description: description.trim() || "Premium export grade commodity verified for international maritime trade.",
+        specs: specRecord,
+        isTopTrusted: false,
+      };
+
+      addListing(newListing);
+      toast.success("Listing published to the marketplace.");
+      navigate("/marketplace");
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? `Could not publish listing: ${err.message}`
+          : "Could not publish listing — backend unreachable."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -385,11 +412,7 @@ export const CreateListingPage: React.FC = () => {
             <div className="p-4 rounded-xl bg-[#101726]/50 border border-white/[0.04] text-[11px] text-slate-400 space-y-1 font-mono">
               <div className="text-[10px] text-slate-500 font-bold uppercase">Exporter Entity Context</div>
               <div>Org: <span className="text-slate-200">{user.companyName}</span></div>
-              <div>Location: <span className="text-slate-200">{user.city}, {user.country}</span></div>
-              <div className="flex items-center gap-1 mt-1 text-emerald-400">
-                <CheckCircle className="w-3 h-3" />
-                <span>On-chain KYC Verified</span>
-              </div>
+              <div>Location: <span className="text-slate-200">{user.country}</span></div>
             </div>
 
             {/* Submit Button */}
@@ -401,8 +424,9 @@ export const CreateListingPage: React.FC = () => {
               className="w-full justify-center py-3"
               icon={<PlusCircle className="w-4.5 h-4.5" />}
               iconPosition="left"
+              disabled={isSubmitting}
             >
-              Publish Marketplace Listing
+              {isSubmitting ? "Publishing..." : "Publish Marketplace Listing"}
             </SpecularButton>
           </div>
         </div>

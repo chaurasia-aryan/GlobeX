@@ -10,8 +10,8 @@ export const BlockchainLedgerPage: React.FC = () => {
       <div className="space-y-6">
         <PageHeader
           title="On-Chain Evidence & Audit Ledger"
-          subtitle="Cryptographic SHA-256 verification of registered trade documents, escrow locks, vessel dispatch timestamps, and smart contract executions."
-          badge={<StatusBadge status="verified" label="Ethereum Sepolia Live" size="md" />}
+          subtitle="Cryptographic SHA-256 verification of registered trade documents, anchored to a local Hardhat testnet. Not deployed to a public network."
+          badge={<StatusBadge status="muted" label="Local Testnet (Not Public)" size="md" />}
         />
 
         <PublicTradeLedgerTable />
