@@ -1,54 +1,46 @@
-# GlobeXAI Trade OS — App Run & Setup Guide
+# GlobeXAI Trade OS — Complete App Run, Environment & n8n Setup Guide
 
-This guide describes how to set up and run the complete GlobeXAI Trade OS application (Frontend, FastAPI Backend, PostgreSQL Database, and n8n Master Workflow) on your local machine.
-
----
-
-## 1. System Requirements & Prerequisites
-
-Make sure you have the following installed:
-- **Node.js** (v18.x or higher) & **npm** (v9.x or higher)
-- **Python** (v3.10.x to v3.12.x) & **pip**
-- **PostgreSQL** (v14+ locally) OR a free [Supabase](https://supabase.com) project
-- **n8n** (v1.x+ via `npx n8n` or Docker)
+This guide gives you the definitive setup instructions for GlobeXAI Trade OS: environment variables, backend startup, frontend configuration, database migrations, and n8n workflow engine setup.
 
 ---
 
-## 2. PostgreSQL Database Setup
+## 1. Environment Variables Reference Guide
 
-The database stores organizations, trust scores, AI trade analysis logs, contracts, escrow accounts, blockchain anchors, and maritime shipments.
+### File Locations
+- **`.env`** *(Project root)*: Your active local configuration file. **Never committed to git** (protected by `.gitignore`).
+- **`.env.local.example`** *(Project root)*: Template file containing all available variables and placeholder descriptions. Safe for git.
 
-### Step 1: Initialize Database Schema
-1. Open your PostgreSQL client (pgAdmin, DBeaver, `psql`) or Supabase SQL Editor.
-2. Open and execute the SQL migration script located at:
-   ```
-   n8n/supabase_schema_setup.sql
-   ```
-3. This creates all 8 required tables:
-   - `public.organizations`
-   - `public.trust_scores`
-   - `public.trade_analysis`
-   - `public.trades`
-   - `public.escrow_accounts`
-   - `public.blockchain_records`
-   - `public.trade_documents`
-   - `public.shipments`
-4. The script also automatically seeds verified default organizations (e.g., *Acme Exports Ltd*, *Al-Hamad Global Foods Trading LLC*).
+### Environment Variable Matrix
+
+| Variable Name | Required | Default Value | Used By | Description |
+|---|---|---|---|---|
+| `PORT` | Optional | `8000` | Backend | Port on which the FastAPI server listens. |
+| `FRONTEND_URL` | Optional | `http://localhost:5173` | Backend | Allowed CORS origin for the React frontend. |
+| `VITE_FASTAPI_AI_URL` | Required | `http://localhost:8000` | Frontend | Base URL of the FastAPI backend microservices. |
+| `VITE_N8N_WEBHOOK_URL` | Optional | `http://localhost:5678/webhook` | Frontend | Base URL for triggering active n8n automation webhooks. |
+| `SUPABASE_URL` | Optional | *Supabase Project URL* | Backend & n8n | PostgreSQL/Supabase database endpoint. |
+| `SUPABASE_ANON_KEY` / `SUPABASE_KEY` | Optional | *Anon JWT Key* | Backend | Client key for Supabase API data access. |
+| `SUPABASE_SECRET_KEY` | Optional | *Secret Key* | Backend | Admin service role key for bypassing RLS rules during data loading. |
+| `VITE_SUPABASE_URL` | Optional | *Supabase Project URL* | Frontend | Client-side database endpoint. |
+| `VITE_SUPABASE_ANON_KEY` | Optional | *Anon JWT Key* | Frontend | Client-side database anon key. |
+| `OPENSANCTIONS_API_KEY` | Optional | *API Key* | Backend | Key for live OpenSanctions compliance screening. |
+| `VITE_OCR_SERVICE_URL` | Optional | `http://localhost:8000/documents/ocr-extract` | Frontend | Document OCR extraction service endpoint. |
+
+> [!NOTE]
+> **Zero-Dependency Fallback**: If `SUPABASE_URL` or `SUPABASE_KEY` are not set, both the backend and frontend automatically switch to in-memory seed models and deterministic mock data.
 
 ---
 
-## 3. Backend Setup (FastAPI Gateway)
+## 2. Running the FastAPI Backend
 
-The FastAPI server hosts all ML models (GRU Forecaster, XGBoost Anomaly, Isolation Forest Risk, CEPA Tariff Engine).
-
-### Step 1: Create and Activate Virtual Environment
-From the project root directory:
+### Step 1: Initialize Virtual Environment
+Navigate to the root directory (`globex_match`):
 ```bash
 # Windows (PowerShell)
 python -m venv .venv
 .venv\Scripts\activate
 
-# Mac / Linux
+# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -58,90 +50,88 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 3: Configure Environment Variables
-Create or verify `.env` in the root directory:
-```env
-PORT=8000
-SUPABASE_URL=https://your-supabase-project.supabase.co
-SUPABASE_KEY=your-supabase-anon-key
-```
-*(Note: If Supabase keys are omitted, the backend will gracefully use in-memory seed models).*
-
-### Step 4: Start FastAPI Server
+### Step 3: Launch FastAPI Server
 ```bash
-# Direct startup via Uvicorn
+# Standard launch on Port 8000
 uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
-*If port 8000 is occupied, use port 8001:*
+*If Port 8000 is occupied by another process on your machine, launch on Port 8001:*
 ```bash
 uvicorn main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
-### Step 5: Verify Backend Health
-- Health Check: [http://localhost:8000/health](http://localhost:8000/health)
-- Swagger Interactive Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+### Step 4: Verify Backend Status
+- **Swagger Interactive API Documentation**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **System Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
 ---
 
-## 4. Frontend Setup (React / Vite)
+## 3. Running the React Frontend
 
 ### Step 1: Install Node Dependencies
-From the project root directory:
+From the root directory:
 ```bash
 npm install
 ```
 
 ### Step 2: Configure Environment (If Backend port changed)
-If the backend is running on port `8001`, update your `.env` or set:
+If your backend is running on port `8001`, update `.env`:
 ```env
 VITE_FASTAPI_AI_URL=http://localhost:8001
 ```
 
-### Step 3: Start Development Server
+### Step 3: Launch Frontend Server
 ```bash
 npm run dev
 ```
-
-### Step 4: Access the Application
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ---
 
-## 5. n8n Automation Engine & PostgreSQL Integration
+## 4. PostgreSQL Database Setup
 
-The n8n workflow connects the frontend actions to FastAPI models and writes results directly to PostgreSQL.
+1. Open your PostgreSQL client (pgAdmin, DBeaver, `psql`) or Supabase SQL Editor.
+2. Run the SQL setup script located at:
+   ```
+   n8n/supabase_schema_setup.sql
+   ```
+3. This creates all 8 core tables:
+   `public.organizations`, `public.trust_scores`, `public.trade_analysis`, `public.trades`, `public.escrow_accounts`, `public.blockchain_records`, `public.trade_documents`, `public.shipments`.
 
-### Step 1: Start n8n
+---
+
+## 5. Setting Up n8n Automation Engine
+
+### Step 1: Install and Launch n8n
 ```bash
 npx n8n start
 ```
-Open n8n in your browser at [http://localhost:5678](http://localhost:5678).
+n8n will start at **[http://localhost:5678](http://localhost:5678)**.
 
-### Step 2: Set Up PostgreSQL Credentials in n8n
-1. In n8n, navigate to **Credentials** -> **New Credential** -> **Postgres**.
-2. Name the credential: `GlobeX PostgreSQL / Supabase`.
-3. Fill in your database connection parameters:
-   - **Host**: `localhost` (or `db.xxxx.supabase.co` for Supabase)
+### Step 2: Add Postgres Credentials in n8n
+1. Open n8n -> **Credentials** -> **New Credential** -> search for **Postgres**.
+2. Set the Credential Name to: `GlobeX PostgreSQL / Supabase`.
+3. Input connection details:
+   - **Host**: `localhost` (or `db.xxxx.supabase.co`)
    - **Database**: `postgres`
-   - **User**: `postgres` (or `postgres.xxxx`)
+   - **User**: `postgres`
    - **Password**: Your database password
    - **Port**: `5432` (or `6543` for connection pooling)
-   - **SSL**: `allow` or `require` (for Supabase)
+   - **SSL**: `allow` or `require`
 
 ### Step 3: Import the Master Workflow
-1. In n8n, go to **Workflows** -> **Add Workflow** -> **Import from File...**
-2. Select the workflow file:
+1. In n8n, go to **Workflows** -> **Import from File...**
+2. Select the master workflow file:
    ```
    n8n/globex_complete_postgres_master_workflow.json
    ```
-3. Toggle the workflow to **Active** (in the top-right corner).
+3. Toggle the workflow status to **Active** (top-right corner).
 
 ---
 
-## 6. Testing the End-to-End Pipeline
+## 6. Testing the Complete Pipeline via cURL
 
-### Test 1: AI Trade Analysis Pipeline (Webhook + ML + PostgreSQL)
-Run the following cURL command in your terminal:
+### Test 1: AI Trade Analysis Pipeline
 ```bash
 curl -X POST "http://localhost:5678/webhook/test-trade-analysis" \
   -H "Content-Type: application/json" \
@@ -156,9 +146,6 @@ curl -X POST "http://localhost:5678/webhook/test-trade-analysis" \
     "top_n": 5
   }'
 ```
-**Expected Output:**
-- Returns complete JSON with HS Code (`1006.30`), Market Opportunity Score, XGBoost Anomaly Score, Counterparty Matches, and CEPA Tariff Savings.
-- Writes a new record directly into `public.trade_analysis` in PostgreSQL.
 
 ### Test 2: Document Verification & Blockchain Anchor
 ```bash
@@ -173,11 +160,3 @@ curl -X POST "http://localhost:5678/webhook/document-uploaded" \
     "destination_country": "ARE"
   }'
 ```
-**Expected Output:**
-- Returns verification status (`VERIFIED`).
-- Inserts document hash into `public.trade_documents` and `public.blockchain_records`.
-
-### Test 3: Frontend Live Execution
-1. Navigate to **Trade Analysis Page** (`http://localhost:5173/analysis`).
-2. Click the **Run AI Trade Intelligence** button.
-3. The UI will trigger n8n, play the notification jingle, and display results from all 5 ML models and PostgreSQL database.
