@@ -1,0 +1,163 @@
+{
+ "generated_at": "2026-08-23T10:17:40+00:00",
+ "schema": "_schema.json",
+ "phase": "Phase 7 — Current Facts",
+ "warning": "Perishable data. Every record carries retrieved_at and a freshness_policy. A record whose freshness_policy has lapsed must be re-verified against source_url before it is used in any decision. status=UNSUPPORTED means NO FACT IS ON FILE — it must never be rendered as 'no restriction'.",
+ "category_file": "sources",
+ "sources_fetched_successfully": [
+  {
+   "source_id": "WTO_RTA_DB",
+   "authority": "World Trade Organization (WTO)",
+   "jurisdiction": "WLD",
+   "category": "rta",
+   "dataset": "WTO Regional Trade Agreements Database - AllRTAs full export (XLSX)",
+   "official_url": "https://rtais.wto.org/UI/ExportAllRTAList.aspx",
+   "access_method": "HTTP GET (XLSX), no authentication",
+   "update_frequency": "ad hoc, on notification",
+   "last_retrieved": "2026-08-23T09:39:31+00:00",
+   "version": "AllRTAs export retrieved 2026-08-23",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_MONTHLY"
+  },
+  {
+   "source_id": "WITS_TRAINS",
+   "authority": "World Bank WITS / UNCTAD TRAINS",
+   "jurisdiction": "WLD",
+   "category": "tariff",
+   "dataset": "WITS SDMX v2.1 TRAINS reported tariff (simple average ad valorem, HS6)",
+   "official_url": "https://wits.worldbank.org/API/V1/SDMX/V21/datasource/TRN/",
+   "access_method": "HTTP GET SDMX-ML, no authentication (User-Agent header required)",
+   "update_frequency": "annual, with multi-year reporting lag",
+   "last_retrieved": "2026-08-23T09:53:07+00:00",
+   "version": "TRAINS reported, latest available observation year 2023",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_QUARTERLY; NOT VALID AS A LEGAL CURRENT RATE"
+  },
+  {
+   "source_id": "UK_TRADE_TARIFF_API",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "jurisdiction": "GBR",
+   "category": "tariff",
+   "dataset": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN)",
+   "official_url": "https://www.trade-tariff.service.gov.uk/api/v2/",
+   "access_method": "HTTP GET JSON:API, no authentication",
+   "update_frequency": "daily",
+   "last_retrieved": "2026-08-23T09:56:41+00:00",
+   "version": "live query 2026-08-23",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION"
+  },
+  {
+   "source_id": "UK_TARIFF_ROO_SCHEMES",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "jurisdiction": "GBR",
+   "category": "rules_of_origin",
+   "dataset": "UK Trade Tariff API v2 rules_of_origin_schemes",
+   "official_url": "https://www.trade-tariff.service.gov.uk/api/v2/rules_of_origin_schemes",
+   "access_method": "HTTP GET JSON:API, no authentication",
+   "update_frequency": "on agreement change",
+   "last_retrieved": "2026-08-23T10:00:52+00:00",
+   "version": "India ORD v1.0 (13 January 2026)",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_MONTHLY"
+  },
+  {
+   "source_id": "UAE_MOET_INDIA_CEPA_TEXT",
+   "authority": "Ministry of Economy and Tourism, United Arab Emirates (depositary publication of the treaty text)",
+   "jurisdiction": "ARE",
+   "category": "rules_of_origin",
+   "dataset": "India-UAE Comprehensive Economic Partnership Agreement, final agreement text (Chapter 3 Rules of Origin, Annex 3B Product Specific Rules)",
+   "official_url": "https://www.moet.gov.ae/documents/20121/1347101/Final+Agreement_UAE+India+CEPA.pdf",
+   "access_method": "HTTP GET PDF, no authentication",
+   "update_frequency": "on amendment (treaty text)",
+   "last_retrieved": "2026-08-23T10:03:50+00:00",
+   "version": "Final agreement text as published by UAE MoET; CEPA in force 2022-05-01",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_SEMIANNUALLY"
+  },
+  {
+   "source_id": "DGFT_SCOMET_APPENDIX3",
+   "authority": "Directorate General of Foreign Trade (DGFT), Ministry of Commerce and Industry, India",
+   "jurisdiction": "IND",
+   "category": "export_control",
+   "dataset": "Appendix 3 to Schedule 2 of ITC(HS) — List of SCOMET Items",
+   "official_url": "https://content.dgft.gov.in/Website/append3_0.pdf",
+   "access_method": "HTTP GET PDF, no authentication",
+   "update_frequency": "on DGFT notification",
+   "last_retrieved": "2026-08-23T09:37:19+00:00",
+   "version": "Appendix 3 as published at content.dgft.gov.in/Website/append3_0.pdf on 2026-08-23 (227 pages)",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION"
+  },
+  {
+   "source_id": "DGFT_ITCHS_SCHEDULE2",
+   "authority": "Directorate General of Foreign Trade (DGFT), Ministry of Commerce and Industry, India",
+   "jurisdiction": "IND",
+   "category": "export_control",
+   "dataset": "ITC(HS) Schedule 2 — Chapter-wise Export Policy",
+   "official_url": "https://content.dgft.gov.in/Website/dgftprod/1702ad48-120b-446e-a044-1b66e0ff8c51/Schedule%202%20-%20Export%20Policy%20New%20(1)%20(1).pdf",
+   "access_method": "HTTP GET PDF, no authentication (link discovered from https://www.dgft.gov.in/CP/?opt=itchs-import-export)",
+   "update_frequency": "amended continuously by DGFT notification",
+   "last_retrieved": "2026-08-23T10:08:22+00:00",
+   "version": "Document self-identifies as 'ITC (HS), 2018 SCHEDULE 2 - EXPORT POLICY'",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION"
+  },
+  {
+   "source_id": "UN_SC_CONSOLIDATED_LIST",
+   "authority": "United Nations Security Council",
+   "jurisdiction": "UN",
+   "category": "sanctions",
+   "dataset": "UN Security Council Consolidated List (XML)",
+   "official_url": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+   "access_method": "HTTP GET XML, no authentication",
+   "update_frequency": "on committee decision",
+   "last_retrieved": "2026-08-23T09:59:45+00:00",
+   "version": "dateGenerated=2026-08-22T23:00:03.221Z",
+   "status": "ACTIVE",
+   "freshness_policy": "REVERIFY_DAILY"
+  }
+ ],
+ "sources_attempted_and_failed": [
+  {
+   "source_id": "INDIA_COMMERCE_TRADE_AGREEMENTS",
+   "authority": "Department of Commerce, Ministry of Commerce and Industry, India",
+   "official_url": "https://commerce.gov.in/international-trade/trade-agreements/",
+   "attempted_at": "2026-08-23T09:36:00+00:00",
+   "result": "HTTP 403 via WebFetch, HTTP 404 via direct GET",
+   "impact": "India's own consolidated FTA list not obtained; WTO RTA Database used as the substitute authority."
+  },
+  {
+   "source_id": "CBIC_CUSTOMS_NOTIFICATIONS",
+   "authority": "Central Board of Indirect Taxes and Customs (CBIC), India",
+   "official_url": "https://www.cbic.gov.in/htdocs-cbec/customs/cs-act/notifications/notfns-2022/cs-nt2022/csnt39-2022.pdf",
+   "attempted_at": "2026-08-23T10:05:00+00:00",
+   "result": "HTTP 404; taxinformation.cbic.gov.in returns an HTML shell, not the notification PDF",
+   "impact": "India-side CEPA/CETA origin rules (Customs Tariff Determination of Origin Rules) not obtained from the primary Indian instrument. Treaty text and UK ORD used instead."
+  },
+  {
+   "source_id": "DFAT_AUS_INDIA_ECTA",
+   "authority": "Department of Foreign Affairs and Trade, Australia",
+   "official_url": "https://www.dfat.gov.au/trade/agreements/in-force/australia-india-ecta/australia-india-ecta-official-text",
+   "attempted_at": "2026-08-23T10:02:00+00:00",
+   "result": "WebFetch timeout (60s); direct GET connection reset",
+   "impact": "AI-ECTA rules of origin not obtained. IND-AUS rules_of_origin recorded UNSUPPORTED."
+  },
+  {
+   "source_id": "UN_SC_SANCTIONS_INFO_PAGE",
+   "authority": "United Nations Security Council",
+   "official_url": "https://main.un.org/securitycouncil/en/sanctions/information",
+   "attempted_at": "2026-08-23T09:58:00+00:00",
+   "result": "HTTP 403 Forbidden",
+   "impact": "None material; the machine-readable Consolidated List XML was retrieved instead and carries the regime identifiers."
+  },
+  {
+   "source_id": "WTO_RTAIS_MEMBER_SEARCH",
+   "authority": "World Trade Organization",
+   "official_url": "https://rtais.wto.org/UI/PublicSearchByMemberResult.aspx?MemberCode=356",
+   "attempted_at": "2026-08-23T09:38:00+00:00",
+   "result": "Application error page (ASP.NET session-dependent)",
+   "impact": "None; the AllRTAs XLSX export was retrieved instead and is the same underlying dataset."
+  }
+ ]
+}

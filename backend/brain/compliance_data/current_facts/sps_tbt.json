@@ -1,0 +1,1974 @@
+{
+ "generated_at": "2026-08-23T10:17:40+00:00",
+ "schema": "_schema.json",
+ "phase": "Phase 7 — Current Facts",
+ "warning": "Perishable data. Every record carries retrieved_at and a freshness_policy. A record whose freshness_policy has lapsed must be re-verified against source_url before it is used in any decision. status=UNSUPPORTED means NO FACT IS ON FILE — it must never be rendered as 'no restriction'.",
+ "category_file": "sps_tbt",
+ "record_count": 60,
+ "status_counts": {
+  "CURRENT": 46,
+  "UNSUPPORTED": 14
+ },
+ "facts": [
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:030617:Veterinary_control:1008",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Veterinary control",
+    "geographical_area": "All third countries"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0306179100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0306179100)",
+   "retrieved_at": "2026-08-23T09:56:31+00:00",
+   "effective_period": {
+    "start": "2024-02-06",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "030617",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0306179100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1008",
+    "geo": "All third countries",
+    "measure_type": "Veterinary control",
+    "duty": "",
+    "eff_start": "2024-02-06T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:030617:Control_on_illegal_unreported_and_unregulated_fi:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Control on illegal, unreported and unregulated fishing",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0306179100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0306179100)",
+   "retrieved_at": "2026-08-23T09:56:31+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "030617",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0306179100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Control on illegal, unreported and unregulated fishing",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:030617:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0306179100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0306179100)",
+   "retrieved_at": "2026-08-23T09:56:31+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "030617",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0306179100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:090121:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0901210000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0901210000)",
+   "retrieved_at": "2026-08-23T09:56:33+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "090121",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0901210000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:090240:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0902400000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0902400000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "090240",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0902400000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:090411:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/0904110010?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 0904110010)",
+   "retrieved_at": "2026-08-23T09:56:39+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "090411",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 0904110010. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:100630:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1006302110?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1006302110)",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "100630",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1006302110. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:100630:Restriction_on_entry_into_free_circulation:IN",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Restriction on entry into free circulation",
+    "geographical_area": "India"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1006302110?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1006302110)",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "effective_period": {
+    "start": "2024-03-07",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "100630",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1006302110. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "IN",
+    "geo": "India",
+    "measure_type": "Restriction on entry into free circulation",
+    "duty": "",
+    "eff_start": "2024-03-07T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:120999:Import_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1209991000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1209991000)",
+   "retrieved_at": "2026-08-23T09:56:43+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "120999",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1209991000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - CITES",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:120999:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1209991000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1209991000)",
+   "retrieved_at": "2026-08-23T09:56:43+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "120999",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1209991000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:120999:Phytosanitary_Certificate_import_:4020",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Phytosanitary Certificate (import)",
+    "geographical_area": "Phytosanitary Group 00"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1209991000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1209991000)",
+   "retrieved_at": "2026-08-23T09:56:43+00:00",
+   "effective_period": {
+    "start": "2026-02-02",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "120999",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1209991000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "4020",
+    "geo": "Phytosanitary Group 00",
+    "measure_type": "Phytosanitary Certificate (import)",
+    "duty": "",
+    "eff_start": "2026-02-02T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:120999:Export_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1209991000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1209991000)",
+   "retrieved_at": "2026-08-23T09:56:43+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "120999",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1209991000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - CITES",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:151190:Import_control_of_organic_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of organic products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1511901100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1511901100)",
+   "retrieved_at": "2026-08-23T09:56:45+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "151190",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1511901100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of organic products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:151190:Import_control_waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1511901100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1511901100)",
+   "retrieved_at": "2026-08-23T09:56:45+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "151190",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1511901100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - waste",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:151190:Export_control_Waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - Waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/1511901100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 1511901100)",
+   "retrieved_at": "2026-08-23T09:56:45+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "151190",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 1511901100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - Waste",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:271019:Import_control_on_restricted_goods_and_technolog:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control on restricted goods and technologies",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/2710191110?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 2710191110)",
+   "retrieved_at": "2026-08-23T09:56:49+00:00",
+   "effective_period": {
+    "start": "2026-06-05",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "271019",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 2710191110. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control on restricted goods and technologies",
+    "duty": "",
+    "eff_start": "2026-06-05T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:280461:Import_control_waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/2804610000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 2804610000)",
+   "retrieved_at": "2026-08-23T09:56:51+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "280461",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 2804610000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - waste",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:280461:Export_control_Waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - Waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/2804610000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 2804610000)",
+   "retrieved_at": "2026-08-23T09:56:51+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "280461",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 2804610000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - Waste",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:293339:Export_control_Waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - Waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/2933391000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 2933391000)",
+   "retrieved_at": "2026-08-23T09:56:53+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "293339",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 2933391000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - Waste",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Home_Office_Controlled_Drugs_import_:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Home Office Controlled Drugs (import)",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Home Office Controlled Drugs (import)",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Restriction_on_entry_into_free_circulation:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Restriction on entry into free circulation",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-06-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Restriction on entry into free circulation",
+    "duty": "",
+    "eff_start": "2025-06-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Import_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - CITES",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Import_control_on_seal_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control on seal products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control on seal products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Home_Office_Controlled_Drugs_export_:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Home Office Controlled Drugs (export)",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Home Office Controlled Drugs (export)",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Goods_for_torture_and_repression_export_restrict:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Goods for torture and repression, export restriction",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Goods for torture and repression, export restriction",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Export_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - CITES",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Export_control_on_ozone_depleting_substances:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control on ozone-depleting substances",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-28",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control on ozone-depleting substances",
+    "duty": "",
+    "eff_start": "2025-02-28T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:300490:Export_control_of_mercury:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control of mercury",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3004900000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3004900000)",
+   "retrieved_at": "2026-08-23T09:58:46+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "300490",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3004900000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control of mercury",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:390110:Import_control_waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3901101020?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3901101020)",
+   "retrieved_at": "2026-08-23T09:57:01+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "390110",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3901101020. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - waste",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:390110:Export_control_Waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - Waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/3901101020?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 3901101020)",
+   "retrieved_at": "2026-08-23T09:57:01+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "390110",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 3901101020. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - Waste",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:620342:Import_control_on_cat_and_dog_fur:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control on cat and dog fur",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/6203421100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 6203421100)",
+   "retrieved_at": "2026-08-23T09:57:10+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "620342",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 6203421100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control on cat and dog fur",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:620342:Import_control_on_seal_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control on seal products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/6203421100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 6203421100)",
+   "retrieved_at": "2026-08-23T09:57:10+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "620342",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 6203421100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control on seal products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:620342:Export_control_on_cat_and_dog_fur:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control on cat and dog fur",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/6203421100?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 6203421100)",
+   "retrieved_at": "2026-08-23T09:57:10+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "620342",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 6203421100. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control on cat and dog fur",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:690721:Import_control_waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/6907210000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 6907210000)",
+   "retrieved_at": "2026-08-23T09:57:12+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "690721",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 6907210000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - waste",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:690721:Export_control_Waste:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - Waste",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/6907210000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 6907210000)",
+   "retrieved_at": "2026-08-23T09:57:12+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "690721",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 6907210000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - Waste",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:710239:Restriction_on_entry_into_free_circulation:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Restriction on entry into free circulation",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7102390000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7102390000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2024-03-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "710239",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7102390000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Restriction on entry into free circulation",
+    "duty": "",
+    "eff_start": "2024-03-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:711319:Restriction_on_entry_into_free_circulation:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Restriction on entry into free circulation",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7113190000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7113190000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2024-01-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "711319",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7113190000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Restriction on entry into free circulation",
+    "duty": "",
+    "eff_start": "2024-01-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:711319:Import_control:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7113190000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7113190000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "711319",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7113190000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:711319:Import_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7113190000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7113190000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "711319",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7113190000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control - CITES",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:711319:Import_control_on_seal_products:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control on seal products",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7113190000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7113190000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "711319",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7113190000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control on seal products",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:711319:Export_control_CITES:1011",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control - CITES",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/7113190000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 7113190000)",
+   "retrieved_at": "2026-08-23T09:58:50+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "711319",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 7113190000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control - CITES",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:851712:UNSUPPORTED",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/8517120000?filter[geographical_area_id]=IN",
+   "retrieved_at": "2026-08-23T09:58:48+00:00",
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "851712",
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "HS6 not present in the current UK tariff nomenclature; no measures retrievable.",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:870322:Import_control_of_fluorinated_greenhouse_gases:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of fluorinated greenhouse gases",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/8703221000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 8703221000)",
+   "retrieved_at": "2026-08-23T09:57:55+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "870322",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 8703221000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of fluorinated greenhouse gases",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:870829:Restriction_on_entry_into_free_circulation:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Restriction on entry into free circulation",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/8708291011?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 8708291011)",
+   "retrieved_at": "2026-08-23T09:57:57+00:00",
+   "effective_period": {
+    "start": "2025-02-28",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "870829",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 8708291011. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Restriction on entry into free circulation",
+    "duty": "",
+    "eff_start": "2025-02-28T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:870829:Export_control_on_ozone_depleting_substances:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control on ozone-depleting substances",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/8708291011?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 8708291011)",
+   "retrieved_at": "2026-08-23T09:57:57+00:00",
+   "effective_period": {
+    "start": "2025-02-28",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "870829",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 8708291011. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control on ozone-depleting substances",
+    "duty": "",
+    "eff_start": "2025-02-28T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:901890:Import_control_of_mercury:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Import control of mercury",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/9018901000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 9018901000)",
+   "retrieved_at": "2026-08-23T09:57:59+00:00",
+   "effective_period": {
+    "start": "2024-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "901890",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 9018901000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Import control of mercury",
+    "duty": "",
+    "eff_start": "2024-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:GBR:IND-GBR:901890:Export_control_of_mercury:1011",
+   "category": "tbt",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": {
+    "measure_type": "Export control of mercury",
+    "geographical_area": "ERGA OMNES"
+   },
+   "unit": "text",
+   "authority": "HM Revenue & Customs — UK Integrated Online Tariff",
+   "source_url": "https://www.trade-tariff.service.gov.uk/api/v2/commodities/9018901000?filter[geographical_area_id]=IN",
+   "source_document": "UK Trade Tariff API v2 commodity measures (filtered geographical_area_id=IN) (commodity 9018901000)",
+   "retrieved_at": "2026-08-23T09:57:59+00:00",
+   "effective_period": {
+    "start": "2025-02-01",
+    "end": null
+   },
+   "jurisdiction": "GBR",
+   "origin": "IND",
+   "destination": "GBR",
+   "hs6": "901890",
+   "version": "UK Trade Tariff live query",
+   "status": "CURRENT",
+   "freshness_policy": "REVERIFY_BEFORE_EVERY_DECISION",
+   "verification_note": "Measure attached to the representative declarable commodity 9018901000. Other lines under this HS6 may carry different controls. Document/certificate requirements sit behind the measure and were not expanded.",
+   "raw": {
+    "geo_id": "1011",
+    "geo": "ERGA OMNES",
+    "measure_type": "Export control of mercury",
+    "duty": "",
+    "eff_start": "2025-02-01T00:00:00.000Z",
+    "eff_end": null
+   },
+   "unsupported_reason": null
+  },
+  {
+   "fact_id": "spstbt:ARE:IND-ARE:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "ARE",
+   "origin": "IND",
+   "destination": "ARE",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:AUS:IND-AUS:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "AUS",
+   "origin": "IND",
+   "destination": "AUS",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:BRA:IND-BRA:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "BRA",
+   "origin": "IND",
+   "destination": "BRA",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:CHN:IND-CHN:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "CHN",
+   "origin": "IND",
+   "destination": "CHN",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:DEU:IND-DEU:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "DEU",
+   "origin": "IND",
+   "destination": "DEU",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:IDN:IND-IDN:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "IDN",
+   "origin": "IND",
+   "destination": "IDN",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:JPN:IND-JPN:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "JPN",
+   "origin": "IND",
+   "destination": "JPN",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:KOR:IND-KOR:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "KOR",
+   "origin": "IND",
+   "destination": "KOR",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:NLD:IND-NLD:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "NLD",
+   "origin": "IND",
+   "destination": "NLD",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:SAU:IND-SAU:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "SAU",
+   "origin": "IND",
+   "destination": "SAU",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:SGP:IND-SGP:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "SGP",
+   "origin": "IND",
+   "destination": "SGP",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:USA:IND-USA:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "USA",
+   "origin": "IND",
+   "destination": "USA",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  },
+  {
+   "fact_id": "spstbt:ZAF:IND-ZAF:ALL:DESTINATION_SPS_TBT_MEASURE",
+   "category": "sps",
+   "fact_type": "DESTINATION_SPS_TBT_MEASURE",
+   "value": null,
+   "authority": "UNKNOWN",
+   "source_url": "NONE_FOUND",
+   "retrieved_at": "2026-08-23T09:56:41+00:00",
+   "jurisdiction": "ZAF",
+   "origin": "IND",
+   "destination": "ZAF",
+   "hs6": null,
+   "status": "UNSUPPORTED",
+   "unsupported_reason": "No free, machine-readable, official SPS/TBT measure feed was located for this destination in this environment. The UK Trade Tariff API is the only destination customs authority in scope that publishes an open, per-commodity measure API. WTO ePing / I-TIP were not harvested. Do not treat the absence of a record as the absence of SPS/TBT requirements.",
+   "freshness_policy": "REVERIFY_QUARTERLY",
+   "unit": null,
+   "source_document": null,
+   "effective_period": {
+    "start": null,
+    "end": null
+   },
+   "version": null,
+   "verification_note": null,
+   "raw": null
+  }
+ ]
+}

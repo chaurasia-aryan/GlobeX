@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://globexai.internal/schemas/current_fact/v1.json",
+  "title": "GlobeXAI Current Fact Record (Phase 7)",
+  "description": "A single current regulatory/trade fact. Every record MUST carry a live-fetched source URL and a real retrieval timestamp. A fact with no verifiable official source is recorded with status=UNSUPPORTED and a reason, never with a guessed value.",
+  "type": "object",
+  "required": [
+    "fact_id",
+    "category",
+    "fact_type",
+    "authority",
+    "source_url",
+    "retrieved_at",
+    "jurisdiction",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "fact_id": {
+      "type": "string",
+      "description": "Stable identifier. Convention: <category>:<jurisdiction>:<origin>-<destination>:<hs6|ALL>:<fact_type>",
+      "minLength": 3
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tariff",
+        "preferential_tariff",
+        "rta",
+        "rules_of_origin",
+        "import_control",
+        "export_control",
+        "sanctions",
+        "licence",
+        "sps",
+        "tbt",
+        "customs",
+        "product_restriction",
+        "entity_status"
+      ]
+    },
+    "fact_type": {
+      "type": "string",
+      "description": "Narrow machine-readable label within the category, e.g. MFN_APPLIED_AD_VALOREM, THIRD_COUNTRY_DUTY, TARIFF_PREFERENCE, RTA_IN_FORCE, PRODUCT_SPECIFIC_RULE, SCOMET_CONTROLLED, UN_COUNTRY_REGIME, EXPORT_POLICY_STATUS."
+    },
+    "value": {
+      "description": "The fact's value. null when status is UNSUPPORTED or UNVERIFIED.",
+      "type": ["string", "number", "boolean", "object", "array", "null"]
+    },
+    "unit": {
+      "type": ["string", "null"],
+      "description": "e.g. 'percent_ad_valorem', 'GBP/1000 kg', 'boolean', 'text'."
+    },
+    "authority": {
+      "type": "string",
+      "description": "The legal or statistical authority that publishes the fact (e.g. 'HM Revenue & Customs / UK Trade Tariff', 'DGFT, Ministry of Commerce and Industry, India', 'World Trade Organization', 'UN Security Council')."
+    },
+    "source_url": {
+      "type": "string",
+      "description": "The exact URL fetched. UNSUPPORTED records may carry the URL that was attempted, or the string 'NONE_FOUND'."
+    },
+    "source_document": {
+      "type": ["string", "null"],
+      "description": "Citable document/dataset title, e.g. 'Appendix 3 - List of SCOMET Items', 'WTO RTA Database - AllRTAs export'."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the actual fetch that produced this record."
+    },
+    "effective_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start"],
+      "properties": {
+        "start": {
+          "type": ["string", "null"],
+          "description": "ISO 8601 date the measure took/takes legal effect. null = not published by the source."
+        },
+        "end": {
+          "type": ["string", "null"],
+          "description": "ISO 8601 date the measure ceases. null = open-ended / not published."
+        }
+      }
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "ISO3 code of the jurisdiction whose law/measure this is, or a bloc code (EUN, WLD) or 'UN'."
+    },
+    "origin": {
+      "type": ["string", "null"],
+      "description": "ISO3 origin country of the goods, or null when the fact is not corridor-specific."
+    },
+    "destination": {
+      "type": ["string", "null"],
+      "description": "ISO3 destination country, or null when not corridor-specific."
+    },
+    "hs6": {
+      "type": ["string", "null"],
+      "description": "6-digit HS code as a zero-padded string, or null when the fact is product-agnostic."
+    },
+    "version": {
+      "type": ["string", "null"],
+      "description": "Source-declared version/edition/notification number, e.g. 'ORD v1.0 (13 January 2026)', 'ITC(HS) 2018 Schedule 2', 'AllRTAs export 2026-08-23'."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "CURRENT",
+        "STALE",
+        "SUPERSEDED",
+        "UNVERIFIED",
+        "CONFLICT",
+        "UNSUPPORTED"
+      ],
+      "description": "CURRENT = live-fetched from the authority and in force at retrieval_time. STALE = official but the source's newest available observation predates today's freshness policy. SUPERSEDED = replaced by a newer instrument. UNVERIFIED = obtained but not corroborated against the primary legal source. CONFLICT = two official sources disagree. UNSUPPORTED = no authoritative free source found; value is null and unsupported_reason is required."
+    },
+    "unsupported_reason": {
+      "type": ["string", "null"],
+      "description": "REQUIRED when status=UNSUPPORTED. Plain-language reason, e.g. 'no free public source found', 'source requires subscription', 'HS6 not present in destination nomenclature'."
+    },
+    "freshness_policy": {
+      "type": ["string", "null"],
+      "description": "How often this fact must be re-verified before reuse, e.g. 'REVERIFY_BEFORE_EVERY_DECISION', 'REVERIFY_DAILY', 'REVERIFY_QUARTERLY'."
+    },
+    "verification_note": {
+      "type": ["string", "null"],
+      "description": "Caveats a downstream consumer must see: known amendment risk, aggregation caveats, scope limits."
+    },
+    "raw": {
+      "type": ["object", "null"],
+      "description": "Verbatim fields as returned by the source, for audit."
+    }
+  }
+}
