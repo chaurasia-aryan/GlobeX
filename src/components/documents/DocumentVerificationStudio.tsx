@@ -45,7 +45,7 @@ export const DocumentVerificationStudio: React.FC<DocumentVerificationStudioProp
       notifyN8nWorkflow({
         workflowName: "Document Cryptographic Hashing (SHA-256)",
         latencyMs: 120,
-        summary: `Document SHA-256 hash computed & verified against smart contract root.`,
+        summary: `Document SHA-256 hash computed locally. On-chain anchoring disabled.`,
       });
     } catch {
       notifyN8nWorkflow({
@@ -278,15 +278,15 @@ export const DocumentVerificationStudio: React.FC<DocumentVerificationStudioProp
                   <Hash className="w-3.5 h-3.5 text-sky-400" />
                   <span>SHA-256 Hash Integrity</span>
                 </span>
-                <span className="text-emerald-400 font-mono text-[10px] flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Anchored
+                <span className="text-slate-400 font-mono text-[10px] flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Hash Computed (Not Anchored)
                 </span>
               </div>
               <div className="p-2 rounded-lg bg-black/40 font-mono text-[11px] text-slate-300 break-all select-all border border-white/[0.04]">
                 {selectedDoc.sha256Hash}
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-1">
-                <span>Block: #{selectedDoc.blockNumber || 19482710}</span>
+                <span>Block: {selectedDoc.blockNumber ? `#${selectedDoc.blockNumber}` : "N/A"}</span>
                 <span>Tx: {selectedDoc.blockchainTxHash || "0x3f7a...6f7a"}</span>
               </div>
             </div>

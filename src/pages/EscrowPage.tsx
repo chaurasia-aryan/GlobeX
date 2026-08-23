@@ -10,8 +10,8 @@ export const EscrowPage: React.FC = () => {
       <div className="space-y-6">
         <PageHeader
           title="Programmable Smart Escrow"
-          subtitle="Multi-sig EVM smart contracts enforce conditional payment releases upon document verification and GPS port geofence entry."
-          badge={<StatusBadge status="verified" label="USDC Smart Vault Active" size="md" />}
+          subtitle="Demo of a planned multi-sig EVM escrow flow. No financial escrow exists in the deployed contract yet — see roadmap."
+          badge={<StatusBadge status="muted" label="Not Implemented (Demo)" size="md" />}
         />
 
         <CryptoEscrowCard />

@@ -89,8 +89,8 @@ export const CryptoEscrowCard = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-white text-base">Programmable USDC Escrow</h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-bold">
-                EVM TESTNET
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60 font-bold">
+                SIMULATION — NOT REAL FUNDS
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -154,7 +154,7 @@ export const CryptoEscrowCard = ({
         <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold font-mono">
             <CheckCircle2 className="w-4 h-4" />
-            <span>Escrow Payment Executed On-Chain</span>
+            <span>Escrow Release Simulated — No Real Funds Moved</span>
           </div>
           <div className="text-[11px] font-mono text-slate-300 break-all">
             TxHash: {releaseTx}

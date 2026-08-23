@@ -126,7 +126,7 @@ if os.getenv("FRONTEND_URL"):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permissive for local dev + containerized n8n
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -20,8 +20,8 @@ export const PublicTradeLedgerTable = ({ logs = DEMO_AUDIT_LOGS }: PublicTradeLe
               <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-white">
                 Public Immutable Evidence Ledger
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-800/60">
-                EVM PROOF-OF-STAKE
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60">
+                DEMO DATA
               </span>
             </div>
             <p className="text-xs text-slate-400 font-sans">
@@ -31,7 +31,7 @@ export const PublicTradeLedgerTable = ({ logs = DEMO_AUDIT_LOGS }: PublicTradeLe
         </div>
 
         <div className="text-right text-xs font-mono text-slate-400">
-          Live Network: <strong className="text-white">Ethereum Sepolia</strong> · Gas: <span className="text-sky-400">12 Gwei</span>
+          Network: <strong className="text-white">Local Hardhat Testnet</strong> (demo rows, not live)
         </div>
       </div>
 
