@@ -184,12 +184,12 @@ export default function LandingPage() {
             {/* Pulsing Scroll Cue with Click-to-Scroll Trigger */}
             <div
               onClick={scrollToAuth}
-              className="pt-2 inline-flex items-center gap-3 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto cursor-pointer hover:text-white transition-colors"
+              className="pt-2 inline-flex items-center gap-3 text-xs sm:text-sm font-mono text-[var(--text-secondary)] pointer-events-auto cursor-pointer hover:text-[var(--text-primary)] transition-colors"
             >
-              <div className="w-8 h-8 rounded-full border border-white/[0.15] bg-[#111824]/90 flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
+              <div className="w-8 h-8 rounded-full border border-[var(--hairline-strong)] bg-[var(--surface-1)] flex items-center justify-center animate-bounce shadow-lg text-[var(--emerald)]">
                 <ChevronDown className="w-4 h-4" />
               </div>
-              <span className="text-slate-300">Scroll to sign in & access enterprise workspace</span>
+              <span className="text-[var(--text-secondary)]">Scroll to sign in & access enterprise workspace</span>
             </div>
           </motion.div>
         )}

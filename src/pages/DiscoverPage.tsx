@@ -171,77 +171,72 @@ export const DiscoverPage: React.FC = () => {
         }
         badge={
           isExporterView ? (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-600 text-xs font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Country Opportunity Engine Active</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Import View · {activeDirection}</span>
             </div>
           )
         }
         action={
-          <Link to="/assess">
-            <SpecularButton variant="outline" size="sm" radius={10}>
-              ⚡ Open Assess →
-            </SpecularButton>
-          </Link>
+          <div className="flex items-center gap-3">
+            {n8nOnline === false && (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--status-review-bg)] border border-[var(--status-review)]/30 text-[var(--status-review)] text-[11px] font-mono font-bold cursor-help"
+                title={`Could not reach the n8n webhook listener at ${n8nUrl}. Background automation is paused; the ranking engine above still works directly.`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>Automation Offline</span>
+              </div>
+            )}
+            {n8nOnline === true && (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--status-verified-bg)] border border-[var(--status-verified)]/30 text-[var(--status-verified)] text-[11px] font-mono font-bold cursor-help"
+                title={`n8n webhook listener connected at ${n8nUrl}.`}
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>Automation Active</span>
+              </div>
+            )}
+            <Link to="/assess">
+              <SpecularButton variant="outline" size="sm" radius={10}>
+                ⚡ Open Assess →
+              </SpecularButton>
+            </Link>
+          </div>
         }
       />
 
-      {n8nOnline === false && (
-        <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-start gap-3 text-xs shadow-lg">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <strong className="text-amber-200 block font-semibold text-sm">
-              n8n Automation Engine Offline / Webhook Unreachable
-            </strong>
-            <p className="text-slate-300 font-sans leading-relaxed">
-              Could not establish connection to the n8n webhook listener at <code className="font-mono text-amber-300 font-bold">{n8nUrl}</code>.
-              Background automation is currently paused.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {n8nOnline === true && (
-        <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-emerald-300">
-            <Zap className="w-4 h-4 text-emerald-400" />
-            <span className="font-mono font-bold">n8n Workflow Engine Active</span>
-            <span className="text-slate-400">· Webhook listener connected at {n8nUrl}</span>
-          </div>
-        </div>
-      )}
-
       {isExporterView ? (
-        <div className="space-y-5 p-6 sm:p-7 rounded-3xl bg-[#080C14] border border-sky-500/20 shadow-2xl relative overflow-hidden">
+        <div className="space-y-5 p-6 sm:p-7 rounded-3xl bg-[var(--surface-1)] border border-sky-500/20 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/[0.07] pb-5">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--hairline)] pb-5">
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-mono text-sky-400 font-bold uppercase tracking-wider">
-                <Globe2 className="w-4 h-4 text-sky-400" />
+              <div className="flex items-center gap-2 text-xs font-mono text-sky-600 font-bold uppercase tracking-wider">
+                <Globe2 className="w-4 h-4 text-sky-600" />
                 <span>AI Country Destination Finder (XGBoost + TreeSHAP)</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-white">Where Should I Export My Product?</h2>
-              <p className="text-xs text-slate-400 font-sans max-w-2xl">
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-[var(--text-primary)]">Where Should I Export My Product?</h2>
+              <p className="text-xs text-[var(--text-secondary)] font-sans max-w-2xl">
                 Enter what you want to export and how much. Our ranking engine scans major global trade corridors, calculates
                 bilateral demand momentum from historical trade data, checks tariff schedules, and ranks the highest-probability countries.
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-slate-400 uppercase">Strategy:</span>
+              <span className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Strategy:</span>
               <select
                 value={regime}
                 onChange={(e) => {
                   setRegime(e.target.value);
                   handleDiscoverDestinations(commodity, quantityKg);
                 }}
-                className="bg-[#0C121D] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-sky-500/50"
+                className="bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-xl px-3 py-1.5 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-sky-500/50"
               >
                 <option value="balanced">Balanced (Recommended)</option>
                 <option value="aggressive">Aggressive (High Growth)</option>
@@ -254,7 +249,7 @@ export const DiscoverPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
             <div className="md:col-span-6 space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-mono text-slate-400">Export Commodity / HS6 Product</label>
+                <label className="text-xs font-mono text-[var(--text-secondary)]">Export Commodity / HS6 Product</label>
               </div>
               <CommoditySearchDropdown
                 value={commodity}
@@ -268,13 +263,13 @@ export const DiscoverPage: React.FC = () => {
             </div>
 
             <div className="md:col-span-3 space-y-1.5">
-              <label className="text-xs font-mono text-slate-400">Quantity (kg)</label>
+              <label className="text-xs font-mono text-[var(--text-secondary)]">Quantity (kg)</label>
               <input
                 type="number"
                 value={quantityKg}
                 onChange={(e) => setQuantityKg(Math.max(1, Number(e.target.value)))}
                 placeholder="1000"
-                className="w-full bg-[#0C121D] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                className="w-full bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-xl px-4 py-2.5 text-sm font-mono text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-sky-500"
               />
             </div>
 
@@ -292,25 +287,25 @@ export const DiscoverPage: React.FC = () => {
           </div>
 
           {marketResult?.product_resolution && (
-            <div className="p-3.5 rounded-2xl bg-[#0C121D] border border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30 font-mono font-bold">
+            <div className="p-3.5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+                <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-600 border border-sky-500/30 font-mono font-bold">
                   HS {marketResult.product_resolution.hs6}
                 </span>
-                <span className="font-sans font-medium text-slate-200">{marketResult.product_resolution.product_description}</span>
+                <span className="font-sans font-medium text-[var(--text-primary)]">{marketResult.product_resolution.product_description}</span>
               </div>
-              <span className="text-slate-400 font-mono text-[11px]">
+              <span className="text-[var(--text-secondary)] font-mono text-[11px]">
                 {marketResult.total_candidates_evaluated || 18} destination countries evaluated · Ranked by Net Opportunity Score
               </span>
             </div>
           )}
 
           {rankingError && (
-            <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[var(--status-blocked-bg)] border border-[var(--status-blocked)]/30 text-[var(--status-blocked)] text-xs flex items-center justify-between">
               <span>{rankingError}</span>
               <button
                 onClick={() => handleDiscoverDestinations()}
-                className="px-3 py-1 bg-rose-900/60 hover:bg-rose-800/80 rounded-lg text-rose-200 font-mono font-bold text-xs"
+                className="px-3 py-1 bg-[var(--status-blocked)]/10 hover:bg-[var(--status-blocked)]/20 rounded-lg text-[var(--status-blocked)] font-mono font-bold text-xs"
               >
                 Retry
               </button>
@@ -319,17 +314,17 @@ export const DiscoverPage: React.FC = () => {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
                 <span>Ranked Destination Countries for {quantityKg.toLocaleString()} kg {commodity}</span>
               </h3>
-              <span className="text-[11px] font-mono text-slate-500">Click any country to view full forecast & pros/cons</span>
+              <span className="text-[11px] font-mono text-[var(--text-tertiary)]">Click any country to view full forecast & pros/cons</span>
             </div>
 
             {isRankLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <div key={n} className="h-56 rounded-2xl bg-[#0C121D] animate-pulse border border-white/[0.05]" />
+                  <div key={n} className="h-56 rounded-2xl bg-[var(--surface-1)] animate-pulse border border-[var(--hairline)]" />
                 ))}
               </div>
             ) : marketResult?.top_recommendations && marketResult.top_recommendations.length > 0 ? (
@@ -346,14 +341,14 @@ export const DiscoverPage: React.FC = () => {
                 ))}
               </div>
             ) : !rankingError ? (
-              <div className="p-8 text-center rounded-2xl bg-[#0C121D] border border-white/[0.06] text-slate-400 text-sm">
+              <div className="p-8 text-center rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-secondary)] text-sm">
                 No matching destination countries found for "{commodity}". Enter another commodity or select from the dropdown above.
               </div>
             ) : null}
           </div>
         </div>
       ) : (
-        <div className="space-y-5 p-6 sm:p-7 rounded-3xl bg-[#080C14] border border-amber-500/20 shadow-2xl relative overflow-hidden">
+        <div className="space-y-5 p-6 sm:p-7 rounded-3xl bg-[var(--surface-1)] border border-amber-500/20 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
           <NotModelledState
@@ -361,17 +356,17 @@ export const DiscoverPage: React.FC = () => {
             whatWouldClose="an importer-side demand dataset — today's XGBoost forecaster (partner_discovery_xgb_v1) only ranks export destinations, not import sourcing regions"
           />
 
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/[0.07] pb-5 pt-2">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--hairline)] pb-5 pt-2">
             <div className="space-y-1 w-full">
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">
-                <Building2 className="w-4 h-4 text-amber-400" />
+              <div className="flex items-center gap-2 text-xs font-mono text-amber-600 font-bold uppercase tracking-wider">
+                <Building2 className="w-4 h-4 text-amber-600" />
                 <span>Verified Supplier Discovery &amp; Counterparty Matching</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-white">Find &amp; Match Verified Global Suppliers</h2>
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-[var(--text-primary)]">Find &amp; Match Verified Global Suppliers</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end pt-3">
                 <div className="md:col-span-5 space-y-1.5">
-                  <label className="text-xs font-mono text-slate-400">Commodity to Procure</label>
+                  <label className="text-xs font-mono text-[var(--text-secondary)]">Commodity to Procure</label>
                   <CommoditySearchDropdown
                     value={commodity}
                     onChange={(name) => setCommodity(name)}
@@ -384,25 +379,25 @@ export const DiscoverPage: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-xs font-mono text-slate-400">Quantity (kg)</label>
+                  <label className="text-xs font-mono text-[var(--text-secondary)]">Quantity (kg)</label>
                   <input
                     type="number"
                     value={quantityKg}
                     onChange={(e) => setQuantityKg(Math.max(1, Number(e.target.value)))}
                     placeholder="1000"
-                    className="w-full bg-[#0C121D] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-xl px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
                 <div className="md:col-span-3 space-y-1.5">
-                  <label className="text-xs font-mono text-slate-400">Sourcing Origin Country</label>
+                  <label className="text-xs font-mono text-[var(--text-secondary)]">Sourcing Origin Country</label>
                   <select
                     value={sourcingCountry}
                     onChange={(e) => {
                       setSourcingCountry(e.target.value);
                       handleDiscoverSuppliers(commodity, quantityKg, e.target.value);
                     }}
-                    className="w-full bg-[#0C121D] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-xl px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-amber-500"
                   >
                     <option value="IND">India (IND) — Domestic Mills</option>
                     <option value="ARE">United Arab Emirates (ARE)</option>
@@ -436,11 +431,11 @@ export const DiscoverPage: React.FC = () => {
           </div>
 
           {supplierError && (
-            <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[var(--status-blocked-bg)] border border-[var(--status-blocked)]/30 text-[var(--status-blocked)] text-xs flex items-center justify-between">
               <span>{supplierError}</span>
               <button
                 onClick={() => handleDiscoverSuppliers(commodity, quantityKg, sourcingCountry)}
-                className="px-3 py-1 bg-rose-900/60 hover:bg-rose-800/80 rounded-lg text-rose-200 font-mono font-bold text-xs"
+                className="px-3 py-1 bg-[var(--status-blocked)]/10 hover:bg-[var(--status-blocked)]/20 rounded-lg text-[var(--status-blocked)] font-mono font-bold text-xs"
               >
                 Retry
               </button>
@@ -449,17 +444,17 @@ export const DiscoverPage: React.FC = () => {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>Verified Exporters in {sourcingCountry} Matching {commodity} ({quantityKg.toLocaleString()} kg)</span>
               </h3>
-              <span className="text-[11px] font-mono text-slate-500">Ranked by ML Trust Score &amp; OFAC Sanctions Clearance</span>
+              <span className="text-[11px] font-mono text-[var(--text-tertiary)]">Ranked by ML Trust Score &amp; OFAC Sanctions Clearance</span>
             </div>
 
             {isSupplierLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className="h-48 rounded-2xl bg-[#0C121D] animate-pulse border border-white/[0.05]" />
+                  <div key={n} className="h-48 rounded-2xl bg-[var(--surface-1)] animate-pulse border border-[var(--hairline)]" />
                 ))}
               </div>
             ) : matchingSuppliers.length > 0 ? (
@@ -467,37 +462,37 @@ export const DiscoverPage: React.FC = () => {
                 {matchingSuppliers.map((sup) => (
                   <div
                     key={sup.exporterId}
-                    className="p-5 rounded-2xl bg-[#0C121D] border border-white/[0.08] hover:border-amber-500/40 transition-all space-y-3 relative group"
+                    className="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] hover:border-amber-500/40 transition-all space-y-3 relative group"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-bold">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--status-verified-bg)] text-[var(--status-verified)] border border-[var(--status-verified)]/30 font-bold">
                           {sup.matchScore}% MATCH
                         </span>
-                        <h4 className="text-sm font-display font-bold text-white mt-1.5">{sup.companyName}</h4>
-                        <p className="text-xs text-slate-400 font-mono mt-0.5">
+                        <h4 className="text-sm font-display font-bold text-[var(--text-primary)] mt-1.5">{sup.companyName}</h4>
+                        <p className="text-xs text-[var(--text-secondary)] font-mono mt-0.5">
                           {sup.originCountry} · {sup.port}
                         </p>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-mono font-bold text-amber-400">Trust: {sup.trustScore}/100</span>
+                        <span className="text-xs font-mono font-bold text-amber-600">Trust: {sup.trustScore}/100</span>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {sup.certifications?.slice(0, 3).map((cert) => (
-                        <span key={cert} className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-slate-300">
+                        <span key={cert} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--surface-3)] border border-[var(--hairline)] text-[var(--text-secondary)]">
                           {cert}
                         </span>
                       ))}
                     </div>
 
-                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                      <span className="text-slate-400 font-mono text-[11px]">Available for {quantityKg.toLocaleString()} kg CIF</span>
+                    <div className="pt-2 border-t border-[var(--hairline)] flex items-center justify-between text-xs">
+                      <span className="text-[var(--text-secondary)] font-mono text-[11px]">Available for {quantityKg.toLocaleString()} kg CIF</span>
                       <Link
                         to={`/requests?commodity=${encodeURIComponent(commodity)}&qty=${quantityKg}&supplier=${encodeURIComponent(sup.companyName)}&origin=${encodeURIComponent(sup.originCountry)}&port=${encodeURIComponent(sup.port)}`}
                       >
-                        <button className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 rounded-lg text-xs font-mono font-bold transition-all">
+                        <button className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 hover:text-amber-800 border border-amber-500/30 rounded-lg text-xs font-mono font-bold transition-all">
                           Issue RFQ →
                         </button>
                       </Link>
@@ -506,7 +501,7 @@ export const DiscoverPage: React.FC = () => {
                 ))}
               </div>
             ) : !supplierError ? (
-              <div className="p-8 text-center rounded-2xl bg-[#0C121D] border border-white/[0.06] text-slate-400 text-sm">
+              <div className="p-8 text-center rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-secondary)] text-sm">
                 No matching suppliers found for '{commodity}'. Search for another commodity above.
               </div>
             ) : null}
@@ -517,16 +512,16 @@ export const DiscoverPage: React.FC = () => {
       <div className="space-y-5 pt-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl font-display font-bold text-white">
+            <h3 className="text-xl font-display font-bold text-[var(--text-primary)]">
               {isExporterView ? "Export Commodities Inventory Catalog" : "Verified Supplier Listings"}
             </h3>
-            <p className="text-xs text-slate-400 font-sans">
+            <p className="text-xs text-[var(--text-secondary)] font-sans">
               {isExporterView
                 ? "Browse pre-verified warehouse lots and export listings available across Indian trade hubs."
                 : "Browse pre-verified lots you can purchase. Listing data is direction-agnostic and shared with the export flow."}
             </p>
           </div>
-          <span className="text-xs font-mono text-slate-400">{filteredListings.length} Active Listings</span>
+          <span className="text-xs font-mono text-[var(--text-secondary)]">{filteredListings.length} Active Listings</span>
         </div>
 
         <FilterBar
@@ -541,15 +536,15 @@ export const DiscoverPage: React.FC = () => {
         {listingsLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="h-64 rounded-2xl bg-[#0C121D] animate-pulse border border-white/[0.05]" />
+              <div key={n} className="h-64 rounded-2xl bg-[var(--surface-1)] animate-pulse border border-[var(--hairline)]" />
             ))}
           </div>
         ) : listingsError ? (
-          <div className="p-8 text-center rounded-2xl bg-[#0C121D] border border-rose-500/20 text-rose-300 text-sm">
+          <div className="p-8 text-center rounded-2xl bg-[var(--surface-1)] border border-[var(--status-blocked)]/20 text-[var(--status-blocked)] text-sm">
             Could not load catalog — backend unreachable. ({listingsError})
           </div>
         ) : filteredListings.length === 0 ? (
-          <div className="p-8 text-center rounded-2xl bg-[#0C121D] border border-white/[0.06] text-slate-400 text-sm">
+          <div className="p-8 text-center rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-secondary)] text-sm">
             No active listings yet. Be the first to publish one.
           </div>
         ) : (

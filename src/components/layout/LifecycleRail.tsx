@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { cn } from "@/lib/utils";
-import { Compass, Gauge, ShieldCheck, Handshake, Landmark } from "lucide-react";
+import { Compass, Gauge, ShieldCheck, Handshake, Landmark, LayoutDashboard } from "lucide-react";
 
 interface RailStep {
   key: string;
@@ -15,7 +15,9 @@ interface RailStep {
 /**
  * Direction-aware lifecycle rail. Same five stages for every org — only the
  * label text forks on `activeDirection`. Route targets follow the Phase-4
- * route table (App.tsx).
+ * route table (App.tsx). Numbered as a stepper because this genuinely is an
+ * ordered process — Discover -> Assess -> Verify -> Deal -> Settle is the
+ * real sequence a trade moves through, not a decorative list.
  */
 interface LifecycleRailProps {
   /** Renders as an always-visible block instead of the desktop-only rail (used inside the mobile drawer). */
@@ -64,33 +66,77 @@ export const LifecycleRail: React.FC<LifecycleRailProps> = ({ mobile = false }) 
     },
   ];
 
+  const activeIndex = steps.findIndex((step) => step.matchPrefixes.some((p) => location.pathname.startsWith(p)));
+  const isDashboard = location.pathname === "/home";
+
   return (
     <nav
       aria-label="Trade lifecycle"
       className={cn(
-        "flex-col gap-1 py-4 pr-3",
-        mobile ? "flex w-full" : "hidden lg:flex w-56 shrink-0 border-r border-[var(--hairline)]"
+        "flex-col gap-0.5 py-4 pr-3",
+        mobile ? "flex w-full" : "hidden lg:flex w-60 shrink-0 border-r border-[var(--hairline)] pl-3 sm:pl-6"
       )}
     >
-      {steps.map((step) => {
-        const isActive = step.matchPrefixes.some((p) => location.pathname.startsWith(p));
-        const Icon = step.icon;
-        return (
-          <Link
-            key={step.key}
-            to={step.href}
-            className={cn(
-              "flex items-center gap-2.5 px-3 py-2.5 rounded-[var(--radius-md)] text-sm transition-colors",
-              isActive
-                ? "bg-[var(--brand-subtle)] text-[var(--brand)] font-semibold"
-                : "text-[var(--text-secondary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]"
-            )}
-          >
-            <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-[var(--brand)]" : "text-[var(--text-tertiary)]")} />
-            <span className="truncate">{step.label}</span>
-          </Link>
-        );
-      })}
+      {/* Dashboard — always reachable from the rail, set apart from the lifecycle steps below */}
+      <Link
+        to="/home"
+        className={cn(
+          "flex items-center gap-2.5 px-3 py-2.5 rounded-[var(--radius-md)] text-sm transition-colors mb-2",
+          isDashboard
+            ? "bg-[var(--brand-subtle)] text-[var(--brand)] font-semibold"
+            : "text-[var(--text-secondary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]"
+        )}
+      >
+        <LayoutDashboard className={cn("w-4 h-4 shrink-0", isDashboard ? "text-[var(--brand)]" : "text-[var(--text-tertiary)]")} />
+        <span className="truncate">Dashboard</span>
+      </Link>
+
+      <div className="h-px bg-[var(--hairline)] mx-3 mb-2" />
+
+      {/* Numbered stepper — the connecting line makes the sequence explicit */}
+      <div className="relative">
+        {steps.map((step, idx) => {
+          const isActive = idx === activeIndex;
+          const isPast = activeIndex >= 0 && idx < activeIndex;
+          const isLast = idx === steps.length - 1;
+          const Icon = step.icon;
+          return (
+            <div key={step.key} className="relative flex items-stretch">
+              {!isLast && (
+                <div
+                  className={cn(
+                    "absolute left-[26px] top-9 w-px h-[calc(100%-4px)]",
+                    isPast ? "bg-[var(--brand)]/40" : "bg-[var(--hairline)]"
+                  )}
+                />
+              )}
+              <Link
+                to={step.href}
+                className={cn(
+                  "flex items-center gap-2.5 px-2 py-2 rounded-[var(--radius-md)] text-sm transition-colors w-full",
+                  isActive
+                    ? "text-[var(--brand)] font-semibold"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <span
+                  className={cn(
+                    "relative z-10 w-7 h-7 rounded-full border flex items-center justify-center shrink-0 transition-colors",
+                    isActive
+                      ? "bg-[var(--brand)] border-[var(--brand)] text-white"
+                      : isPast
+                        ? "bg-[var(--brand-subtle)] border-[var(--brand)]/40 text-[var(--brand)]"
+                        : "bg-[var(--surface-1)] border-[var(--hairline-strong)] text-[var(--text-tertiary)]"
+                  )}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </span>
+                <span className="truncate py-0.5">{step.label}</span>
+              </Link>
+            </div>
+          );
+        })}
+      </div>
     </nav>
   );
 };

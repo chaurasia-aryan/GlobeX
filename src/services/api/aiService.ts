@@ -339,6 +339,42 @@ export interface ListingCreateResult {
   createdAt: string;
 }
 
+/**
+ * Raw shape of public.trades (src/api/trades_api.py::list_trades / get_trade).
+ * The table has no title/org-name/port/HS-code columns — only IDs, amount,
+ * status and timestamps. Do not fabricate the missing fields; render what's
+ * really there.
+ */
+export interface TradeRecord {
+  id: string;
+  listingId: string | null;
+  exporterId: string;
+  importerId: string;
+  status: string;
+  totalAmount: number | null;
+  currency: string | null;
+  quantity: number | null;
+  agreedPrice: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function toTradeRecord(d: any): TradeRecord {
+  return {
+    id: d.id,
+    listingId: d.listing_id ?? null,
+    exporterId: d.exporter_id,
+    importerId: d.importer_id,
+    status: d.status,
+    totalAmount: d.total_amount != null ? Number(d.total_amount) : null,
+    currency: d.currency ?? null,
+    quantity: d.quantity != null ? Number(d.quantity) : null,
+    agreedPrice: d.agreed_price != null ? Number(d.agreed_price) : null,
+    createdAt: d.created_at,
+    updatedAt: d.updated_at,
+  };
+}
+
 export interface ListingRecord {
   id: string;
   organizationId: string;
@@ -795,6 +831,35 @@ class AIService {
       createdAt: d.created_at,
       updatedAt: d.updated_at,
     }));
+  }
+
+  /**
+   * GET /api/v1/trades — no org/status scoping is applied server-side, so
+   * this returns every trade in the system, not just the caller's org.
+   * Callers must filter client-side against exporterId/importerId.
+   */
+  public async getTrades(params?: { status?: string; limit?: number; offset?: number }): Promise<TradeRecord[]> {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.limit != null) qs.set("limit", String(params.limit));
+    if (params?.offset != null) qs.set("offset", String(params.offset));
+
+    const res = await fetch(`${this.baseUrl}/api/v1/trades?${qs.toString()}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Fetching trades failed (${res.status}): ${body || res.statusText}`);
+    }
+    const data = await res.json();
+    return (data.trades || []).map(toTradeRecord);
+  }
+
+  public async getTrade(tradeId: string): Promise<TradeRecord> {
+    const res = await fetch(`${this.baseUrl}/api/v1/trades/${tradeId}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Fetching trade failed (${res.status}): ${body || res.statusText}`);
+    }
+    return toTradeRecord(await res.json());
   }
 
   /**

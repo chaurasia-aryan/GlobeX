@@ -11,7 +11,7 @@ export const DisputesPage: React.FC = () => {
         <PageHeader
           title="Dispute Resolution & Arbitrator Portal"
           subtitle="AI synthesizes weighbridge discrepancy proofs, OCR variances, and contract clauses to provide settlement recommendations for certified Human Arbitrators."
-          badge={<StatusBadge status="warning" label="Human-in-the-Loop Protocol" size="md" />}
+          badge={<StatusBadge status="review" label="Human-in-the-Loop Protocol" size="md" />}
         />
 
         <DisputeResolutionSuite />

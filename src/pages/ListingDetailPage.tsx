@@ -62,11 +62,11 @@ export const ListingDetailPage: React.FC = () => {
           breadcrumbs={[{ label: "Discover", href: "/discover" }, { label: listing.title }]}
           title={listing.title}
           subtitle={
-            <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-slate-400">
-              <span className="text-white font-medium">{listing.exporterName}</span>
+            <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-[var(--text-secondary)]">
+              <span className="text-[var(--text-primary)] font-medium">{listing.exporterName}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
                 {listing.exporterCity}, {listing.exporterCountry}
               </span>
               <span>•</span>
@@ -83,27 +83,27 @@ export const ListingDetailPage: React.FC = () => {
           }
         />
 
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono">
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">FOB Unit Price</span>
-            <strong className="text-white text-base">${listing.unitPriceUSD.toLocaleString()} / {listing.unit}</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">FOB Unit Price</span>
+            <strong className="text-[var(--text-primary)] text-base">${listing.unitPriceUSD.toLocaleString()} / {listing.unit}</strong>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Min Order Qty (MOQ)</span>
-            <strong className="text-white text-base">{listing.minimumOrderQuantity.toLocaleString()} {listing.unit}</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Min Order Qty (MOQ)</span>
+            <strong className="text-[var(--text-primary)] text-base">{listing.minimumOrderQuantity.toLocaleString()} {listing.unit}</strong>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Origin Port</span>
-            <strong className="text-emerald-400 text-base truncate block">{listing.originPort}</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Origin Port</span>
+            <strong className="text-emerald-600 text-base truncate block">{listing.originPort}</strong>
           </div>
         </div>
 
         <Section title="Commodity Specifications & Lab Parameters">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
             {Object.entries(listing.specs).map(([key, val]) => (
-              <div key={key} className="p-3 rounded-xl bg-[#0C121D] border border-white/[0.06]">
-                <span className="text-slate-400 text-[10px] uppercase block">{key}</span>
-                <span className="font-bold text-white text-xs">{val}</span>
+              <div key={key} className="p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)]">
+                <span className="text-[var(--text-secondary)] text-[10px] uppercase block">{key}</span>
+                <span className="font-bold text-[var(--text-primary)] text-xs">{val}</span>
               </div>
             ))}
           </div>
@@ -114,9 +114,9 @@ export const ListingDetailPage: React.FC = () => {
             {listing.certifications.map((c) => (
               <span
                 key={c}
-                className="px-3 py-1.5 rounded-xl bg-[#0C121D] border border-white/[0.07] text-xs font-mono text-slate-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-xs font-mono text-[var(--text-secondary)] flex items-center gap-1.5"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>{c}</span>
               </span>
             ))}

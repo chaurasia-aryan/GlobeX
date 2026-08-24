@@ -118,7 +118,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
         <div
           onMouseEnter={() => onInspect && onInspect(listing)}
-          className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-emerald-500/40 text-slate-400 hover:text-emerald-400 transition-all cursor-help shrink-0"
+          className="w-9 h-9 flex items-center justify-center rounded-xl bg-[var(--surface-3)] border border-[var(--hairline)] hover:bg-[var(--surface-3)] hover:border-emerald-500/40 text-[var(--text-secondary)] hover:text-emerald-600 transition-all cursor-help shrink-0"
           title="Inspect trade information"
         >
           <HelpCircle className="w-4 h-4" />

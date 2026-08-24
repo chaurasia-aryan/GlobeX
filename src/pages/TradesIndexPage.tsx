@@ -1,24 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
+import { aiService, TradeRecord } from "@/services/api/aiService";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { LoadingSkeleton } from "@/components/common/LoadingSkeleton";
+import { ErrorState } from "@/components/common/ErrorState";
+import { EmptyState } from "@/components/common/EmptyState";
 import { ArrowUpRight, Workflow } from "lucide-react";
 
 /**
  * Active Trades index (lifecycle step 3).
  *
- * There is no trades API consumed by the frontend yet (see
- * docs/product/user_flow.md §4a — a real, live-tested `trades_api.py`
- * exists, but no route calls it). Until that integration lands, this page
- * honestly lists the single demo trade the rest of the app already uses
- * (`FLAGSHIP_DEMO_TRADE`) rather than fabricating additional fake rows, so
- * every user has somewhere real to browse into instead of being sent
- * straight to a hardcoded trade ID.
+ * `GET /api/v1/trades` (src/api/trades_api.py::list_trades) is real but is
+ * NOT scoped to the caller's org server-side — it returns every trade in the
+ * system. This page filters client-side against the workspace's
+ * organizationId. The table itself has no title/port/HS-code columns, so
+ * rows show only what's really there (id, counterpart id, amount, status,
+ * date) rather than fabricating a trade "title".
  */
 export const TradesIndexPage: React.FC = () => {
-  const trade = FLAGSHIP_DEMO_TRADE;
+  const { user } = useWorkspace();
+  const [trades, setTrades] = useState<TradeRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    aiService
+      .getTrades({ limit: 100 })
+      .then((records) => {
+        const mine = user.organizationId
+          ? records.filter(
+              (t) => t.exporterId === user.organizationId || t.importerId === user.organizationId
+            )
+          : records;
+        setTrades(mine);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Could not load trades."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.organizationId]);
 
   return (
     <AppShell maxWidth="lg">
@@ -29,38 +57,54 @@ export const TradesIndexPage: React.FC = () => {
           subtitle="Trades your organization currently has in progress."
         />
 
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-2">
-          <Link
-            to={`/trades/${trade.id}`}
-            className="flex items-center justify-between gap-4 p-4 rounded-xl hover:bg-white/[0.04] transition-colors group"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <Workflow className="w-4.5 h-4.5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-white truncate">{trade.title}</div>
-                <div className="text-xs text-slate-400 font-mono truncate">
-                  {trade.id} · {trade.exporterName} &rarr; {trade.importerName}
-                </div>
-              </div>
-            </div>
+        {loading ? (
+          <LoadingSkeleton variant="row" count={4} />
+        ) : error ? (
+          <ErrorState message={error} onRetry={load} />
+        ) : trades.length === 0 ? (
+          <EmptyState
+            icon={Workflow}
+            title="No active trades"
+            description="Trades your organization is party to will appear here once created."
+          />
+        ) : (
+          <div className="rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--surface-1)] p-2">
+            {trades.map((trade) => {
+              const direction = trade.exporterId === user.organizationId ? "Export" : "Import";
+              return (
+                <Link
+                  key={trade.id}
+                  to={`/trades/${trade.id}`}
+                  className="flex items-center justify-between gap-4 p-4 rounded-[var(--radius-md)] hover:bg-[var(--surface-2)] transition-colors group"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--status-verified-bg)] flex items-center justify-center shrink-0" style={{ color: "var(--status-verified)" }}>
+                      <Workflow className="w-4.5 h-4.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-[var(--text-primary)] truncate">
+                        {direction} · Trade {trade.id.slice(0, 8)}
+                      </div>
+                      <div className="text-xs text-[var(--text-tertiary)] font-mono truncate">
+                        {new Date(trade.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <StatusBadge status="active" label={trade.status} />
-              <span className="text-xs font-mono text-slate-400">
-                {trade.currency} {trade.contractValueUSD.toLocaleString()}
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
-            </div>
-          </Link>
-        </div>
-
-        <p className="text-xs text-slate-500 px-1">
-          This list currently shows one demonstration trade. Once the trade workspace is
-          wired to the backend persistence API, this page will list every trade your
-          organization is party to.
-        </p>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <StatusBadge status={trade.status} label={trade.status} />
+                    {trade.totalAmount != null && (
+                      <span className="text-xs font-mono text-[var(--text-secondary)]">
+                        {trade.currency || "USD"} {trade.totalAmount.toLocaleString()}
+                      </span>
+                    )}
+                    <ArrowUpRight className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--brand)] transition-colors" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </AppShell>
   );

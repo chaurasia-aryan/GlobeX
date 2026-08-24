@@ -214,58 +214,58 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                 {step === 1 && (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase">Product Commodity Title</label>
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Product Commodity Title</label>
                       <input
                         type="text"
                         required
                         value={form.productName}
                         onChange={(e) => setForm({ ...form, productName: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                        className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">HS Code</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">HS Code</label>
                         <input
                           type="text"
                           required
                           value={form.hsCode}
                           onChange={(e) => setForm({ ...form, hsCode: e.target.value })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none font-mono"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none font-mono"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">Target FOB Price (USD)</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Target FOB Price (USD)</label>
                         <input
                           type="number"
                           required
                           value={form.targetPriceUSD}
                           onChange={(e) => setForm({ ...form, targetPriceUSD: Number(e.target.value) })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none font-mono"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none font-mono"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">Requested Quantity</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Requested Quantity</label>
                         <input
                           type="number"
                           required
                           value={form.quantity}
                           onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none font-mono"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none font-mono"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">Unit of Measure</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Unit of Measure</label>
                         <select
                           value={form.unit}
                           onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                         >
                           <option value="tonne">Tonnes (MT)</option>
                           <option value="kg">Kilograms (kg)</option>
@@ -282,56 +282,56 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                   <div className="space-y-3.5">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">Origin Country</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Origin Country</label>
                         <input
                           type="text"
                           required
                           value={form.originCountry}
                           onChange={(e) => setForm({ ...form, originCountry: e.target.value })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-slate-400 uppercase">Destination Country</label>
+                        <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Destination Country</label>
                         <input
                           type="text"
                           required
                           value={form.destinationCountry}
                           onChange={(e) => setForm({ ...form, destinationCountry: e.target.value })}
-                          className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                          className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase">Origin Port of Loading</label>
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Origin Port of Loading</label>
                       <input
                         type="text"
                         required
                         value={form.originPort}
                         onChange={(e) => setForm({ ...form, originPort: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                        className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase">Destination Port of Discharge</label>
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Destination Port of Discharge</label>
                       <input
                         type="text"
                         required
                         value={form.destinationPort}
                         onChange={(e) => setForm({ ...form, destinationPort: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                        className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase">Incoterm Agreement</label>
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Incoterm Agreement</label>
                       <select
                         value={form.incoterm}
                         onChange={(e) => setForm({ ...form, incoterm: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                        className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                       >
                         <option value="CIF">CIF — Cost, Insurance and Freight</option>
                         <option value="FOB">FOB — Free on Board</option>
@@ -346,7 +346,7 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                 {step === 3 && (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase block">
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase block">
                         Required Compliance Certifications
                       </label>
                       <div className="grid grid-cols-2 gap-2 pt-1">
@@ -360,24 +360,24 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                               className={cn(
                                 "p-2 rounded-xl border text-left flex items-center justify-between text-xs transition-colors cursor-pointer",
                                 isChecked
-                                  ? "bg-emerald-950/40 border-emerald-500/50 text-emerald-300 font-semibold"
-                                  : "bg-[#0F1724] border-white/[0.06] text-slate-400 hover:text-white"
+                                  ? "bg-[var(--status-verified-bg)] border-emerald-500/50 text-emerald-300 font-semibold"
+                                  : "bg-[var(--surface-1)] border-[var(--hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                               )}
                             >
                               <span>{cert}</span>
-                              {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                              {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
                             </button>
                           );
                         })}
                       </div>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[var(--status-verified-bg)] border border-emerald-500/30 space-y-1">
                       <div className="flex items-center gap-1.5 text-emerald-300 font-bold text-xs">
                         <ShieldCheck className="w-4 h-4" />
                         <span>CEPA Schedule Rules Fast-Track</span>
                       </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                      <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
                         0% Preferential duty automatically applied for bilateral trade route under India-UAE CEPA.
                       </p>
                     </div>
@@ -387,25 +387,25 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                 {/* ── STEP 4: PAYMENT & ESCROW SETTLEMENT ───────────────── */}
                 {step === 4 && (
                   <div className="space-y-3.5">
-                    <div className="p-4 rounded-2xl bg-[#0F1724] border border-white/[0.08] space-y-2">
+                    <div className="p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase text-slate-400">Total Contract Value</span>
-                        <span className="text-emerald-400 font-mono text-xl font-bold">
+                        <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)]">Total Contract Value</span>
+                        <span className="text-emerald-600 font-mono text-xl font-bold">
                           ${estimatedTotalUSD.toLocaleString()} USD
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 border-t border-white/[0.06] pt-2 flex items-center justify-between">
+                      <div className="text-[11px] text-[var(--text-secondary)] border-t border-[var(--hairline)] pt-2 flex items-center justify-between">
                         <span>Settlement Currency</span>
-                        <strong className="text-white font-mono">USDC (Arbitrum / Sepolia L2)</strong>
+                        <strong className="text-[var(--text-primary)] font-mono">USDC (Arbitrum / Sepolia L2)</strong>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-slate-400 uppercase">Independent Joint Inspection Surveyor</label>
+                      <label className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Independent Joint Inspection Surveyor</label>
                       <select
                         value={form.inspectionAgent}
                         onChange={(e) => setForm({ ...form, inspectionAgent: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-[#0F1724] border border-white/[0.08] text-white outline-none"
+                        className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none"
                       >
                         <option value="SGS International">SGS International (Certified Maritime Inspection)</option>
                         <option value="Bureau Veritas">Bureau Veritas Global</option>
@@ -413,7 +413,7 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
                       </select>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#0F1724] border border-white/[0.06] text-[11px] text-slate-400 leading-relaxed">
+                    <div className="p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[11px] text-[var(--text-secondary)] leading-relaxed">
                       Escrow collateral is locked in non-custodial smart contracts until AIS berth sensors and SGS joint inspection verify discharge.
                     </div>
                   </div>
@@ -422,7 +422,7 @@ export const CreateTradeRequestDrawer: React.FC<CreateTradeRequestDrawerProps> =
             </div>
 
             {/* Bottom Actions */}
-            <div className="p-5 border-t border-white/[0.08] bg-[#070A0E] flex items-center justify-between gap-3">
+            <div className="p-5 border-t border-[var(--hairline)] bg-[var(--surface-1)] flex items-center justify-between gap-3">
               {step > 1 ? (
                 <SpecularButton
                   type="button"

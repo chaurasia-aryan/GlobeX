@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -45,8 +45,15 @@ type TabId = (typeof TABS)[number]["id"];
 
 export const TradeWorkspacePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const trade = FLAGSHIP_DEMO_TRADE;
+  // The overview/summary content below (vessel, addresses, trust score, ports)
+  // is illustrative demo content tied to FLAGSHIP_DEMO_TRADE — the trades API
+  // (public.trades) has no title/address/port/HS-code columns to back a real
+  // rewrite of this narrative, and a prior session explicitly scoped that
+  // rewrite out. Documents and Escrow are NOT demo data: they take the real
+  // `:id` from the URL and hit the real trades/escrow APIs regardless of
+  // which trade's overview is shown above them.
+  const realTradeId = id || trade.id;
 
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     const hash = window.location.hash.replace("#", "") as TabId;
@@ -55,12 +62,6 @@ export const TradeWorkspacePage: React.FC = () => {
 
   const [chatOpen, setChatOpen] = useState(false);
   const [trustDrawerOpen, setTrustDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    if (id && id !== trade.id) {
-      navigate(`/trades/${trade.id}`, { replace: true });
-    }
-  }, [id, navigate, trade.id]);
 
   // AI Copilot state
   const [messages, setMessages] = useState<Message[]>([
@@ -113,8 +114,8 @@ export const TradeWorkspacePage: React.FC = () => {
           <PageHeader
             title={`Trade #${trade.id}`}
             subtitle={
-              <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-slate-400">
-                <span className="text-white font-medium">{trade.title}</span>
+              <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-[var(--text-secondary)]">
+                <span className="text-[var(--text-primary)] font-medium">{trade.title}</span>
                 <span>•</span>
                 <span>{trade.originCountry} → {trade.destinationCountry}</span>
                 <span>•</span>
@@ -133,19 +134,13 @@ export const TradeWorkspacePage: React.FC = () => {
                 Track Shipment →
               </SpecularButton>
             }
-            secondaryActions={
-              <SpecularButton
-                type="button"
-                variant="outline"
-                size="sm"
-                radius={10}
-                icon={<Bot className="w-3.5 h-3.5 text-emerald-400" />}
-                iconPosition="left"
-                onClick={() => setChatOpen(true)}
-              >
-                AI Copilot
-              </SpecularButton>
-            }
+            secondaryActions={[
+              {
+                label: "AI Copilot",
+                icon: <Bot className="w-3.5 h-3.5 text-emerald-600" />,
+                onClick: () => setChatOpen(true),
+              },
+            ]}
           />
 
           {/* ── Trade Progress Stepper ──────────────────────────────────────── */}
@@ -178,12 +173,12 @@ export const TradeWorkspacePage: React.FC = () => {
               className="w-full space-y-5"
             >
               {/* Tab Switcher Bar */}
-              <TabsList className="grid grid-cols-3 sm:grid-cols-6 h-auto p-1 rounded-2xl bg-[#0C121D] border border-white/[0.07] gap-1">
+              <TabsList className="grid grid-cols-3 sm:grid-cols-6 h-auto p-1 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] gap-1">
                 {TABS.map(({ id: tabId, label, icon: Icon }) => (
                   <TabsTrigger
                     key={tabId}
                     value={tabId}
-                    className="flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-3 rounded-xl transition-all data-[state=active]:bg-white/[0.1] data-[state=active]:text-white data-[state=active]:font-semibold text-slate-400 hover:text-white cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-3 rounded-xl transition-all data-[state=active]:bg-[var(--surface-3)] data-[state=active]:text-[var(--text-primary)] data-[state=active]:font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">{label}</span>
@@ -193,18 +188,24 @@ export const TradeWorkspacePage: React.FC = () => {
 
               {/* TAB 1: OVERVIEW */}
               <TabsContent value="overview" className="mt-0 focus-visible:outline-none space-y-5">
-                
+
+                <p className="text-[11px] text-[var(--text-tertiary)] -mt-1">
+                  Illustrative overview (vessel, counterparties, ports) — not yet backed by the
+                  trades API's real columns. The Documents and Escrow tabs above reflect this
+                  trade's real, live backend state for trade <span className="font-mono">{realTradeId}</span>.
+                </p>
+
                 {/* Primary Action Banner */}
-                <div className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-600 shrink-0">
                       <Ship className="w-5 h-5" />
                     </div>
                     <div className="space-y-0.5">
-                      <h4 className="text-sm font-display font-bold text-white">
+                      <h4 className="text-sm font-display font-bold text-[var(--text-primary)]">
                         Vessel MSC ANNA in Transit (Arabian Sea)
                       </h4>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--text-secondary)]">
                         ETA Jebel Ali: in 2 days. Cargo papers 100% verified. Next action: Monitor port arrival.
                       </p>
                     </div>
@@ -225,76 +226,76 @@ export const TradeWorkspacePage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   
                   {/* Exporter Detail */}
-                  <div className="p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] space-y-3">
-                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-                      <span className="text-[11px] font-mono uppercase text-slate-400 font-medium">
+                  <div className="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-2.5">
+                      <span className="text-[11px] font-mono uppercase text-[var(--text-secondary)] font-medium">
                         Exporter (Seller)
                       </span>
                       <button
                         type="button"
                         onClick={() => setTrustDrawerOpen(true)}
-                        className="text-[11px] font-mono text-emerald-400 hover:underline cursor-pointer"
+                        className="text-[11px] font-mono text-emerald-600 hover:underline cursor-pointer"
                       >
                         Trust Score 94/100 →
                       </button>
                     </div>
 
                     <div>
-                      <h3 className="font-display font-bold text-base text-white">{trade.exporterName}</h3>
-                      <p className="text-xs text-slate-400 flex items-center gap-1 pt-0.5">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <h3 className="font-display font-bold text-base text-[var(--text-primary)]">{trade.exporterName}</h3>
+                      <p className="text-xs text-[var(--text-secondary)] flex items-center gap-1 pt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         <span>{trade.exporterAddress}</span>
                       </p>
                     </div>
 
-                    <div className="pt-2 text-xs text-slate-400 font-mono flex items-center justify-between">
-                      <span>Origin Port: <strong className="text-slate-200">{trade.exporterPort}</strong></span>
-                      <span className="text-emerald-400 font-semibold">Tier-1 Verified</span>
+                    <div className="pt-2 text-xs text-[var(--text-secondary)] font-mono flex items-center justify-between">
+                      <span>Origin Port: <strong className="text-[var(--text-primary)]">{trade.exporterPort}</strong></span>
+                      <span className="text-emerald-600 font-semibold">Tier-1 Verified</span>
                     </div>
                   </div>
 
                   {/* Importer Detail */}
-                  <div className="p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] space-y-3">
-                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-                      <span className="text-[11px] font-mono uppercase text-slate-400 font-medium">
+                  <div className="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-2.5">
+                      <span className="text-[11px] font-mono uppercase text-[var(--text-secondary)] font-medium">
                         Importer (Buyer)
                       </span>
                       <StatusBadge status="verified" label="KYC Verified" />
                     </div>
 
                     <div>
-                      <h3 className="font-display font-bold text-base text-white">{trade.importerName}</h3>
-                      <p className="text-xs text-slate-400 flex items-center gap-1 pt-0.5">
-                        <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                      <h3 className="font-display font-bold text-base text-[var(--text-primary)]">{trade.importerName}</h3>
+                      <p className="text-xs text-[var(--text-secondary)] flex items-center gap-1 pt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                         <span>{trade.importerAddress}</span>
                       </p>
                     </div>
 
-                    <div className="pt-2 text-xs text-slate-400 font-mono flex items-center justify-between">
-                      <span>Destination Port: <strong className="text-slate-200">{trade.importerPort}</strong></span>
-                      <span className="text-sky-400 font-semibold">42 Trades · 0 Disputes</span>
+                    <div className="pt-2 text-xs text-[var(--text-secondary)] font-mono flex items-center justify-between">
+                      <span>Destination Port: <strong className="text-[var(--text-primary)]">{trade.importerPort}</strong></span>
+                      <span className="text-sky-600 font-semibold">42 Trades · 0 Disputes</span>
                     </div>
                   </div>
 
                 </div>
 
                 {/* Trade Details Quick Spec */}
-                <div className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+                <div className="p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase block">Commodity Code</span>
-                    <strong className="text-emerald-400 text-sm">{trade.hsCode}</strong>
+                    <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Commodity Code</span>
+                    <strong className="text-emerald-600 text-sm">{trade.hsCode}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase block">Tariff Schedule</span>
-                    <strong className="text-sky-400 text-sm">0.0% (CEPA Free)</strong>
+                    <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Tariff Schedule</span>
+                    <strong className="text-sky-600 text-sm">0.0% (CEPA Free)</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase block">Delivery Terms</span>
-                    <strong className="text-white text-sm">{trade.incoterm} Jebel Ali</strong>
+                    <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Delivery Terms</span>
+                    <strong className="text-[var(--text-primary)] text-sm">{trade.incoterm} Jebel Ali</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase block">Quality Inspector</span>
-                    <strong className="text-emerald-400 text-sm">SGS International</strong>
+                    <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Quality Inspector</span>
+                    <strong className="text-emerald-600 text-sm">SGS International</strong>
                   </div>
                 </div>
 
@@ -302,12 +303,12 @@ export const TradeWorkspacePage: React.FC = () => {
 
               {/* TAB 2: DOCUMENTS */}
               <TabsContent value="documents" className="mt-0 focus-visible:outline-none">
-                <DocumentVerificationStudio tradeId={trade.id} />
+                <DocumentVerificationStudio tradeId={realTradeId} />
               </TabsContent>
 
               {/* TAB 3: PAYMENT & ESCROW */}
               <TabsContent value="payment" className="mt-0 focus-visible:outline-none">
-                <CryptoEscrowCard tradeId={trade.id} />
+                <CryptoEscrowCard tradeId={realTradeId} />
               </TabsContent>
 
               {/* TAB 4: SHIPMENT */}
@@ -340,7 +341,7 @@ export const TradeWorkspacePage: React.FC = () => {
         <div className="h-[520px]">
           <Suspense
             fallback={
-              <div className="h-full flex items-center justify-center text-xs font-mono text-slate-500 animate-pulse">
+              <div className="h-full flex items-center justify-center text-xs font-mono text-[var(--text-tertiary)] animate-pulse">
                 Initializing AI Copilot...
               </div>
             }

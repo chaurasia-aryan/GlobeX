@@ -62,36 +62,36 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
 
   // Score color tiers
   const getScoreBadge = (score: number) => {
-    if (score >= 85) return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
-    if (score >= 70) return "bg-sky-500/10 text-sky-400 border-sky-500/30";
-    if (score >= 50) return "bg-amber-500/10 text-amber-400 border-amber-500/30";
-    return "bg-rose-500/10 text-rose-400 border-rose-500/30";
+    if (score >= 85) return "bg-emerald-500/10 text-emerald-600 border-emerald-500/30";
+    if (score >= 70) return "bg-sky-500/10 text-sky-600 border-sky-500/30";
+    if (score >= 50) return "bg-amber-500/10 text-amber-600 border-amber-500/30";
+    return "bg-rose-500/10 text-rose-600 border-rose-500/30";
   };
 
   return (
     <div
       onClick={() => onSelect(data)}
-      className="group relative rounded-2xl bg-[#0C121D] border border-white/[0.08] hover:border-sky-500/40 p-5 transition-all duration-200 hover:shadow-xl hover:shadow-sky-500/5 cursor-pointer flex flex-col justify-between space-y-4"
+      className="group relative rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] hover:border-sky-500/40 p-5 transition-all duration-200 hover:shadow-xl hover:shadow-sky-500/5 cursor-pointer flex flex-col justify-between space-y-4"
     >
       {/* ── Top Header Strip ────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           {/* Rank Badge */}
-          <div className="w-8 h-8 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center font-mono font-bold text-xs text-slate-300">
+          <div className="w-8 h-8 rounded-xl bg-[var(--surface-3)] border border-[var(--hairline)] flex items-center justify-center font-mono font-bold text-xs text-[var(--text-secondary)]">
             #{String(rank).padStart(2, "0")}
           </div>
 
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">{flag}</span>
-              <h4 className="font-display font-bold text-base text-white group-hover:text-sky-300 transition-colors">
+              <h4 className="font-display font-bold text-base text-[var(--text-primary)] group-hover:text-sky-300 transition-colors">
                 {destination.country_name}
               </h4>
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-[10px] font-mono text-slate-400 border border-white/[0.08]">
+              <span className="px-1.5 py-0.5 rounded bg-[var(--surface-3)] text-[10px] font-mono text-[var(--text-secondary)] border border-[var(--hairline)]">
                 {destination.iso3}
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-sans mt-0.5">
+            <p className="text-xs text-[var(--text-secondary)] font-sans mt-0.5">
               {destination.region || "Global Corridor"} · {destination.currency || "USD"} Settlement
             </p>
           </div>
@@ -103,76 +103,63 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
             <TrendingUp className="w-3.5 h-3.5" />
             <span>{finalScore.toFixed(1)} / 100</span>
           </div>
-          <span className="text-[10px] text-slate-500 font-mono mt-1">Opportunity Score</span>
+          <span className="text-[10px] text-[var(--text-tertiary)] font-mono mt-1">Opportunity Score</span>
         </div>
       </div>
 
-      {/* ── Key Forecast Metrics Grid ───────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-2.5 py-2 border-y border-white/[0.06] text-xs">
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
-          <span className="text-[10px] uppercase text-slate-500 font-mono block">Annual Demand</span>
-          <span className="font-mono font-bold text-white text-sm">{annualDemandMT} MT</span>
-          {forecast.demand_interval_80_lower_kg !== undefined && forecast.demand_interval_80_upper_kg !== undefined && (
-            <span className="text-[9px] font-mono text-slate-400 block">
-              80% P10–P90: {Math.round(forecast.demand_interval_80_lower_kg / 1000).toLocaleString()}–{Math.round(forecast.demand_interval_80_upper_kg / 1000).toLocaleString()} MT
-            </span>
-          )}
+      {/* ── Key Forecast Metrics — three scannable numbers, no sub-captions ── */}
+      <div className="grid grid-cols-3 gap-2.5 py-2 border-y border-[var(--hairline)] text-xs">
+        <div className="space-y-0.5">
+          <span className="text-[10px] uppercase text-[var(--text-tertiary)] font-mono block">Demand</span>
+          <span className="font-mono font-bold text-[var(--text-primary)] text-sm">{annualDemandMT} MT</span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
-          <span className="text-[10px] uppercase text-slate-500 font-mono block">Expected FOB</span>
-          <span className="font-mono font-bold text-sky-400 text-sm">${fobPrice} / kg</span>
-          <span className="text-[9px] font-mono text-slate-400 block">3-yr median anchor</span>
+        <div className="space-y-0.5">
+          <span className="text-[10px] uppercase text-[var(--text-tertiary)] font-mono block">FOB</span>
+          <span className="font-mono font-bold text-sky-600 text-sm">${fobPrice}/kg</span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
-          <span className="text-[10px] uppercase text-slate-500 font-mono block">Est. Revenue ({userQuantityKg.toLocaleString()} kg)</span>
-          <span className="font-mono font-bold text-emerald-400 text-sm">${estRevenue}</span>
-          <span className="text-[9px] font-mono text-emerald-400/80 block">Spot volume fit</span>
+        <div className="space-y-0.5">
+          <span className="text-[10px] uppercase text-[var(--text-tertiary)] font-mono block">Revenue</span>
+          <span className="font-mono font-bold text-emerald-600 text-sm">${estRevenue}</span>
         </div>
       </div>
 
-      {/* ── Pros & Cons Snapshot / TreeSHAP Attribution ─────────────── */}
-      <div className="space-y-1.5 text-xs">
-        {/* Top Pro / SHAP Driver */}
-        {pros && pros.length > 0 && (
-          <div className="flex items-start gap-2 text-emerald-300/90 font-sans">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-            <span className="line-clamp-1">{pros[0]}</span>
-          </div>
-        )}
-
-        {/* Top Con / Caution */}
-        {cons && cons.length > 0 && (
-          <div className="flex items-start gap-2 text-amber-300/90 font-sans">
-            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-            <span className="line-clamp-1">{cons[0]}</span>
-          </div>
-        )}
-      </div>
-
-      {/* ── Card Footer CTA ─────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between pt-2 border-t border-white/[0.04] text-xs font-mono text-slate-400 group-hover:text-sky-300 transition-colors">
-        <span className="flex items-center gap-1.5 text-[11px]">
-          {scores.risk_penalty > 0 ? (
+      {/* ── Single top signal — whichever matters more, not both ─────── */}
+      {(pros?.length || cons?.length) && (
+        <div className="flex items-start gap-2 text-xs font-sans text-[var(--text-secondary)]">
+          {cons && cons.length > 0 ? (
             <>
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-amber-300 font-bold">
-                Risk Penalty: -{scores.risk_penalty} pts [{risk.risk_level || "MEDIUM"}]
-              </span>
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <span className="line-clamp-1">{cons[0]}</span>
             </>
           ) : (
             <>
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400 font-bold">
-                Risk Cleared · 0 Penalty [{risk.risk_level || "LOW"}]
-              </span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <span className="line-clamp-1">{pros![0]}</span>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Card Footer CTA ─────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between pt-2 border-t border-[var(--hairline)] text-xs font-mono text-[var(--text-secondary)] group-hover:text-sky-600 transition-colors">
+        <span className="flex items-center gap-1.5 text-[11px]">
+          {scores.risk_penalty > 0 ? (
+            <>
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-amber-700 font-bold">{risk.risk_level || "MEDIUM"} risk</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-emerald-600 font-bold">{risk.risk_level || "LOW"} risk</span>
             </>
           )}
         </span>
 
-        <span className="flex items-center gap-1 font-bold text-sky-400">
-          <span>View Country Dossier</span>
+        <span className="flex items-center gap-1 font-bold text-sky-600">
+          <span>Details</span>
           <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </span>
       </div>

@@ -124,18 +124,18 @@ const ExporterListingForm: React.FC = () => {
         {/* Main Details Panel */}
         <div className="lg:col-span-2 space-y-6">
           {/* General Information Card */}
-          <div className="p-6 rounded-2xl bg-[#0C121D] border border-white/[0.08] space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
-              <FileText className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+          <div className="p-6 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-4">
+            <div className="flex items-center gap-2 border-b border-[var(--hairline)] pb-3">
+              <FileText className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-display font-bold text-[var(--text-primary)] uppercase tracking-wider">
                 Product Overview
               </h3>
             </div>
 
             <div className="space-y-3.5">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Product Title <span className="text-rose-400">*</span>
+                <label className="text-xs font-medium text-[var(--text-secondary)]">
+                  Product Title <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -143,17 +143,17 @@ const ExporterListingForm: React.FC = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. 1121 Steam Extra Long Grain Aged Basmati Rice"
-                  className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs transition-colors"
+                  className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Category</label>
+                  <label className="text-xs font-medium text-[var(--text-secondary)]">Category</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as Listing["category"])}
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs transition-colors cursor-pointer"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs transition-colors cursor-pointer"
                   >
                     <option value="Agriculture">Agriculture</option>
                     <option value="Spices">Spices</option>
@@ -165,8 +165,8 @@ const ExporterListingForm: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">
-                    HS Code <span className="text-rose-400">*</span>
+                  <label className="text-xs font-medium text-[var(--text-secondary)]">
+                    HS Code <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -174,44 +174,44 @@ const ExporterListingForm: React.FC = () => {
                     value={hsCode}
                     onChange={(e) => setHsCode(e.target.value)}
                     placeholder="e.g. 1006.30.20"
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs font-mono transition-colors"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs font-mono transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Product Description</label>
+                <label className="text-xs font-medium text-[var(--text-secondary)]">Product Description</label>
                 <textarea
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide details about quality parameters, processing methods, packaging types, and storage conditions..."
-                  className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs leading-relaxed transition-colors resize-none"
+                  className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs leading-relaxed transition-colors resize-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Product Specifications */}
-          <div className="p-6 rounded-2xl bg-[#0C121D] border border-white/[0.08] space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div className="p-6 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+                <Layers className="w-4 h-4 text-emerald-600" />
+                <h3 className="text-sm font-display font-bold text-[var(--text-primary)] uppercase tracking-wider">
                   Specifications & Analysis Parameters
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={handleAddSpecRow}
-                className="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+                className="text-xs text-emerald-600 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
               >
                 + Add Parameter
               </button>
             </div>
 
             <div className="space-y-3">
-              <div className="grid grid-cols-7 gap-3 text-[10px] font-mono uppercase text-slate-500 font-bold px-1">
+              <div className="grid grid-cols-7 gap-3 text-[10px] font-mono uppercase text-[var(--text-tertiary)] font-bold px-1">
                 <div className="col-span-3">Spec Parameter</div>
                 <div className="col-span-3">Required Value / Threshold</div>
                 <div className="col-span-1"></div>
@@ -225,7 +225,7 @@ const ExporterListingForm: React.FC = () => {
                       value={spec.key}
                       onChange={(e) => handleSpecChange(idx, "key", e.target.value)}
                       placeholder="e.g. Moisture"
-                      className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs transition-colors font-mono"
+                      className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs transition-colors font-mono"
                     />
                   </div>
                   <div className="col-span-3">
@@ -234,14 +234,14 @@ const ExporterListingForm: React.FC = () => {
                       value={spec.value}
                       onChange={(e) => handleSpecChange(idx, "value", e.target.value)}
                       placeholder="e.g. Max 12%"
-                      className="w-full p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 text-xs transition-colors font-mono"
+                      className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 text-xs transition-colors font-mono"
                     />
                   </div>
                   <div className="col-span-1 text-center">
                     <button
                       type="button"
                       onClick={() => handleRemoveSpecRow(idx)}
-                      className="text-xs text-rose-400 hover:text-rose-300 transition-colors p-1 cursor-pointer"
+                      className="text-xs text-rose-600 hover:text-rose-300 transition-colors p-1 cursor-pointer"
                       title="Remove row"
                     >
                       Remove
@@ -255,10 +255,10 @@ const ExporterListingForm: React.FC = () => {
 
         {/* Pricing, Logistics & Verification Side Panel */}
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-[#0C121D] border border-white/[0.08] space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
-              <DollarSign className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+          <div className="p-6 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-4">
+            <div className="flex items-center gap-2 border-b border-[var(--hairline)] pb-3">
+              <DollarSign className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-display font-bold text-[var(--text-primary)] uppercase tracking-wider">
                 Pricing & Volume
               </h3>
             </div>
@@ -266,67 +266,67 @@ const ExporterListingForm: React.FC = () => {
             <div className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-slate-300">FOB Price ($ USD)</label>
+                  <label className="text-[var(--text-secondary)]">FOB Price ($ USD)</label>
                   <input
                     type="number"
                     required
                     value={unitPriceUSD}
                     onChange={(e) => setUnitPriceUSD(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 font-mono transition-colors"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 font-mono transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-slate-300">Trading Unit</label>
+                  <label className="text-[var(--text-secondary)]">Trading Unit</label>
                   <input
                     type="text"
                     required
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     placeholder="e.g. MT"
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 font-mono transition-colors"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 font-mono transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-slate-300">Min Order Qty</label>
+                  <label className="text-[var(--text-secondary)]">Min Order Qty</label>
                   <input
                     type="number"
                     required
                     value={minimumOrderQuantity}
                     onChange={(e) => setMinimumOrderQuantity(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 font-mono transition-colors"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 font-mono transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-slate-300">Available Stock</label>
+                  <label className="text-[var(--text-secondary)]">Available Stock</label>
                   <input
                     type="number"
                     required
                     value={availableQuantity}
                     onChange={(e) => setAvailableQuantity(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 font-mono transition-colors"
+                    className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 font-mono transition-colors"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#0C121D] border border-white/[0.08] space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
-              <Anchor className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+          <div className="p-6 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] space-y-4">
+            <div className="flex items-center gap-2 border-b border-[var(--hairline)] pb-3">
+              <Anchor className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-display font-bold text-[var(--text-primary)] uppercase tracking-wider">
                 Logistics & Compliance
               </h3>
             </div>
 
             <div className="space-y-4 text-xs">
               <div className="space-y-1.5">
-                <label className="text-slate-300">
-                  Origin Sea/Air Port <span className="text-rose-400">*</span>
+                <label className="text-[var(--text-secondary)]">
+                  Origin Sea/Air Port <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -334,44 +334,44 @@ const ExporterListingForm: React.FC = () => {
                   value={originPort}
                   onChange={(e) => setOriginPort(e.target.value)}
                   placeholder="e.g. Mundra Port (INMUN)"
-                  className="w-full p-3 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-full p-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-[var(--text-primary)] outline-none focus:border-emerald-500/50 transition-colors"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-slate-300">Lead Time (Days)</label>
+                <label className="text-[var(--text-secondary)]">Lead Time (Days)</label>
                 <div className="relative">
-                  <Calendar className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                  <Calendar className="w-4 h-4 text-[var(--text-tertiary)] absolute left-3 top-3.5" />
                   <input
                     type="number"
                     required
                     value={leadTimeDays}
                     onChange={(e) => setLeadTimeDays(Number(e.target.value))}
-                    className="w-full h-11 pl-9 pr-3 rounded-xl bg-[#070A0E] border border-white/[0.08] focus:border-emerald-500/50 text-white outline-none font-mono transition-colors"
+                    className="w-full h-11 pl-9 pr-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] focus:border-emerald-500/50 text-[var(--text-primary)] outline-none font-mono transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-slate-300">Certifications (comma separated)</label>
+                <label className="text-[var(--text-secondary)]">Certifications (comma separated)</label>
                 <div className="relative">
-                  <ShieldCheck className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                  <ShieldCheck className="w-4 h-4 text-[var(--text-tertiary)] absolute left-3 top-3.5" />
                   <input
                     type="text"
                     value={certifications}
                     onChange={(e) => setCertifications(e.target.value)}
                     placeholder="e.g. ISO 22000, FSSAI, Halal"
-                    className="w-full h-11 pl-9 pr-3 rounded-xl bg-[#070A0E] border border-white/[0.08] focus:border-emerald-500/50 text-white outline-none transition-colors"
+                    className="w-full h-11 pl-9 pr-3 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] focus:border-emerald-500/50 text-[var(--text-primary)] outline-none transition-colors"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#101726]/50 border border-white/[0.04] text-[11px] text-slate-400 space-y-1 font-mono">
-            <div className="text-[10px] text-slate-500 font-bold uppercase">Exporter Entity Context</div>
-            <div>Org: <span className="text-slate-200">{user.companyName}</span></div>
-            <div>Location: <span className="text-slate-200">{user.country}</span></div>
+          <div className="p-4 rounded-xl bg-[var(--surface-1)]/50 border border-[var(--hairline)] text-[11px] text-[var(--text-secondary)] space-y-1 font-mono">
+            <div className="text-[10px] text-[var(--text-tertiary)] font-bold uppercase">Exporter Entity Context</div>
+            <div>Org: <span className="text-[var(--text-primary)]">{user.companyName}</span></div>
+            <div>Location: <span className="text-[var(--text-primary)]">{user.country}</span></div>
           </div>
 
           <SpecularButton
@@ -409,7 +409,7 @@ export const CatalogEditorPage: React.FC = () => {
           }
           badge={
             isExporterView ? (
-              <span className="text-xs font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded bg-emerald-950/40">
+              <span className="text-xs font-mono text-emerald-600 border border-emerald-500/30 px-2 py-0.5 rounded bg-[var(--status-verified-bg)]">
                 Publish Catalog Item
               </span>
             ) : undefined

@@ -27,9 +27,9 @@ export const CounterpartyDetailPage: React.FC = () => {
           ]}
           title={partner.name}
           subtitle={
-            <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-slate-400">
+            <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-[var(--text-secondary)]">
               <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
                 {partner.city}, {partner.country}
               </span>
               <span>•</span>
@@ -49,30 +49,30 @@ export const CounterpartyDetailPage: React.FC = () => {
         />
 
         {/* Overview Spec Row */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0C121D] border border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Historical Trade Volume</span>
-            <strong className="text-emerald-400 text-base">
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Historical Trade Volume</span>
+            <strong className="text-emerald-600 text-base">
               ${(partner.totalTradeVolumeUSD / 1000000).toFixed(1)}M USD
             </strong>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Completed Trades</span>
-            <strong className="text-white text-base">{partner.tradeHistoryCount} Shipments</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Completed Trades</span>
+            <strong className="text-[var(--text-primary)] text-base">{partner.tradeHistoryCount} Shipments</strong>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Arbitrated Disputes</span>
-            <strong className="text-emerald-400 text-base">{partner.disputeCount} Disputes</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Arbitrated Disputes</span>
+            <strong className="text-emerald-600 text-base">{partner.disputeCount} Disputes</strong>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Years in Operation</span>
-            <strong className="text-white text-base">{partner.yearsActive} Years</strong>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Years in Operation</span>
+            <strong className="text-[var(--text-primary)] text-base">{partner.yearsActive} Years</strong>
           </div>
         </div>
 
         {/* Entity Narrative Description */}
         <Section title="Institutional Profile">
-          <div className="p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+          <div className="p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed font-sans">
             {partner.description}
           </div>
         </Section>
@@ -83,9 +83,9 @@ export const CounterpartyDetailPage: React.FC = () => {
             {partner.certifications.map((c) => (
               <span
                 key={c}
-                className="px-3 py-1.5 rounded-xl bg-[#0C121D] border border-white/[0.07] text-xs font-mono text-slate-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-xs font-mono text-[var(--text-secondary)] flex items-center gap-1.5"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>{c}</span>
               </span>
             ))}

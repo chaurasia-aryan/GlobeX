@@ -34,26 +34,26 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 16 }}
             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-            className="relative w-full max-w-xl max-h-[85vh] bg-[#0A0F18] border border-white/[0.12] rounded-3xl p-6 sm:p-7 shadow-2xl z-50 overflow-y-auto flex flex-col justify-between font-sans select-none"
+            className="relative w-full max-w-xl max-h-[85vh] bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-3xl p-6 sm:p-7 shadow-2xl z-50 overflow-y-auto flex flex-col justify-between font-sans select-none"
           >
             <div className="space-y-6">
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-white/[0.08] pb-4">
+              <div className="flex items-start justify-between border-b border-[var(--hairline)] pb-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-800/60">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--status-verified-bg)] text-emerald-600 border border-emerald-800/60">
                       VERIFIED EXPORT READY
                     </span>
                     <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
                       HS {listing.hsCode}
                     </span>
                   </div>
-                  <h2 className="text-xl font-display font-bold text-white leading-snug">{listing.title}</h2>
+                  <h2 className="text-xl font-display font-bold text-[var(--text-primary)] leading-snug">{listing.title}</h2>
                   <p className="text-xs text-[var(--text-secondary)] flex items-center gap-1.5 pt-0.5">
-                    <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <Building2 className="w-3.5 h-3.5 text-emerald-600" />
                     <span>{listing.exporterName}</span>
                     <span>•</span>
-                    <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
                     <span>{listing.exporterCity}, {listing.exporterCountry}</span>
                   </p>
                 </div>
@@ -61,36 +61,36 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition-colors shrink-0 cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-[var(--surface-3)] hover:bg-[var(--surface-3)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Pricing & Order Specifications */}
-              <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[#0F1724] border border-white/[0.08]">
+              <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)]">
                 <div className="space-y-0.5">
                   <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)]">FOB Unit Price</span>
-                  <div className="text-2xl font-display font-bold text-white">
+                  <div className="text-2xl font-display font-bold text-[var(--text-primary)]">
                     $<NumberFlow value={listing.unitPriceUSD} /> <span className="text-xs font-sans font-normal text-[var(--text-tertiary)]">/ {listing.unit}</span>
                   </div>
                 </div>
 
                 <div className="space-y-0.5 text-right">
                   <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)]">Minimum Order (MOQ)</span>
-                  <div className="text-xl font-display font-bold text-white font-mono">
+                  <div className="text-xl font-display font-bold text-[var(--text-primary)] font-mono">
                     {listing.minimumOrderQuantity.toLocaleString()} {listing.unit}s
                   </div>
                 </div>
 
-                <div className="col-span-2 pt-2 mt-2 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-[var(--text-secondary)]">
+                <div className="col-span-2 pt-2 mt-2 border-t border-[var(--hairline)] flex items-center justify-between text-xs font-mono text-[var(--text-secondary)]">
                   <span>Origin Port:</span>
-                  <strong className="text-white">{listing.originPort}</strong>
+                  <strong className="text-[var(--text-primary)]">{listing.originPort}</strong>
                 </div>
               </div>
 
               {/* AI Match Fit (Using Collapsible) */}
-              <div className="p-4 rounded-2xl bg-[#0E1520] border border-white/[0.06]">
+              <div className="p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)]">
                 <MatchExplanation
                   matchScore={listing.aiMatchScore || 94}
                   productSimilarity={96}
@@ -104,7 +104,7 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                 <h3 className="text-xs font-mono font-semibold uppercase text-[var(--text-secondary)] tracking-wider">
                   Product Description
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed bg-[#0E1520] p-4 rounded-2xl border border-white/[0.04]">
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed bg-[var(--surface-1)] p-4 rounded-2xl border border-[var(--hairline)]">
                   {listing.description || "Premium export grade commodity verified for international maritime trade with complete phytosanitary and laboratory certifications."}
                 </p>
               </div>
@@ -119,7 +119,7 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                     {listing.certifications.map((cert) => (
                       <span
                         key={cert}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-mono flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg bg-[var(--status-verified-bg)] border border-emerald-500/30 text-emerald-300 text-xs font-mono flex items-center gap-1"
                       >
                         <ShieldCheck className="w-3 h-3" />
                         {cert}
@@ -131,7 +131,7 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
             </div>
 
             {/* Bottom Dominant CTA with SpecularButton */}
-            <div className="pt-6 border-t border-white/[0.08] mt-6">
+            <div className="pt-6 border-t border-[var(--hairline)] mt-6">
               <Link to={`/requests?listingId=${listing.id}`} onClick={onClose} className="block w-full">
                 <SpecularButton
                   size="md"

@@ -32,29 +32,29 @@ const ListingRow: React.FC<{
   listing: ListingRecord;
   action: React.ReactNode;
 }> = ({ listing, action }) => (
-  <div className="p-3.5 sm:p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+  <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] hover:border-[var(--hairline-strong)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group">
     <div className="space-y-1 min-w-0 flex-1">
-      <Link to={`/discover/${listing.id}`} className="text-sm font-display font-bold text-white group-hover:text-emerald-400 transition-colors truncate block">
+      <Link to={`/discover/${listing.id}`} className="text-sm font-display font-bold text-[var(--text-primary)] group-hover:text-emerald-600 transition-colors truncate block">
         {listing.productName}
       </Link>
-      <div className="text-xs text-slate-400 font-sans flex items-center gap-1.5">
+      <div className="text-xs text-[var(--text-secondary)] font-sans flex items-center gap-1.5">
         <span>{listing.productCategory || "Uncategorized"}</span>
         {listing.hsCode && (
           <>
             <span>·</span>
-            <span className="text-slate-500 font-mono">HS {listing.hsCode}</span>
+            <span className="text-[var(--text-tertiary)] font-mono">HS {listing.hsCode}</span>
           </>
         )}
       </div>
     </div>
 
-    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.04]">
+    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[var(--hairline)]">
       <div className="text-left md:text-right">
-        <div className="text-sm sm:text-base font-mono font-bold text-white">
+        <div className="text-sm sm:text-base font-mono font-bold text-[var(--text-primary)]">
           {listing.price != null ? `$${listing.price.toLocaleString()}` : "—"}{" "}
-          <span className="text-xs font-sans text-slate-400 font-normal">/ {listing.unit || "unit"}</span>
+          <span className="text-xs font-sans text-[var(--text-secondary)] font-normal">/ {listing.unit || "unit"}</span>
         </div>
-        <div className="text-[11px] font-mono text-slate-500">
+        <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
           Stock: {listing.quantityAvailable != null ? listing.quantityAvailable.toLocaleString() : "—"} {listing.unit}
           {listing.minimumOrderQuantity != null && ` (MOQ: ${listing.minimumOrderQuantity})`}
         </div>
@@ -113,7 +113,7 @@ const ExporterCatalog: React.FC = () => {
       <PageHeader
         title="My Listings"
         subtitle={`Your organization's export catalog — ${user.companyName || "no organization yet"}.`}
-        badge={<span className="text-xs font-mono text-slate-400">{listings.length} active listings</span>}
+        badge={<span className="text-xs font-mono text-[var(--text-secondary)]">{listings.length} active listings</span>}
         action={
           <Link to="/catalog/new">
             <SpecularButton icon={<PlusCircle className="w-4 h-4" />} iconPosition="left" size="sm" radius={10}>
@@ -168,7 +168,7 @@ const ExporterCatalog: React.FC = () => {
                 action={
                   <Link
                     to={`/discover/${listing.id}`}
-                    className="flex items-center gap-1 text-xs font-sans text-sky-400 hover:text-sky-300 bg-sky-950/40 border border-sky-500/30 px-2.5 py-1.5 rounded-xl transition-colors font-medium"
+                    className="flex items-center gap-1 text-xs font-sans text-sky-700 hover:text-sky-800 bg-sky-500/10 border border-sky-500/30 px-2.5 py-1.5 rounded-xl transition-colors font-medium"
                   >
                     <span>View</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -215,7 +215,7 @@ const ImporterWatchlist: React.FC = () => {
       <PageHeader
         title="Watchlist"
         subtitle="Listings you've bookmarked, pulled live from the current catalog. Saved to this browser only — not synced across devices."
-        badge={<span className="text-xs font-mono text-slate-400">{watched.length} bookmarked</span>}
+        badge={<span className="text-xs font-mono text-[var(--text-secondary)]">{watched.length} bookmarked</span>}
       />
 
       {listingsLoading ? (
@@ -238,24 +238,24 @@ const ImporterWatchlist: React.FC = () => {
           {watched.map((l) => (
             <div
               key={l.id}
-              className="p-3.5 sm:p-4 rounded-2xl bg-[#0C121D] border border-white/[0.07] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group"
+              className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--hairline)] hover:border-[var(--hairline-strong)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group"
             >
               <div className="space-y-1 min-w-0 flex-1">
-                <Link to={`/discover/${l.id}`} className="text-sm font-display font-bold text-white group-hover:text-emerald-400 transition-colors truncate block">
+                <Link to={`/discover/${l.id}`} className="text-sm font-display font-bold text-[var(--text-primary)] group-hover:text-emerald-600 transition-colors truncate block">
                   {l.title}
                 </Link>
-                <div className="text-xs text-slate-400 font-sans">
+                <div className="text-xs text-[var(--text-secondary)] font-sans">
                   {l.exporterName} · {l.exporterCountry}
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <div className="text-sm font-mono font-bold text-white">
-                  ${l.unitPriceUSD.toLocaleString()} <span className="text-xs font-sans text-slate-400 font-normal">/ {l.unit}</span>
+                <div className="text-sm font-mono font-bold text-[var(--text-primary)]">
+                  ${l.unitPriceUSD.toLocaleString()} <span className="text-xs font-sans text-[var(--text-secondary)] font-normal">/ {l.unit}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => toggle(l.id)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-white/[0.04] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-[var(--text-tertiary)] hover:text-rose-600 hover:bg-[var(--surface-3)] transition-colors cursor-pointer"
                   title="Remove from watchlist"
                 >
                   <BookmarkX className="w-4 h-4" />

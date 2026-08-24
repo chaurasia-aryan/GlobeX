@@ -12,13 +12,6 @@ const pageVariants = {
       ease: [0.22, 1, 0.36, 1], // Smooth cubic-bezier without abrupt steps
     },
   },
-  exit: {
-    opacity: 0,
-    transition: {
-      duration: 0.14,
-      ease: "easeOut",
-    },
-  },
 };
 
 export const PageTransition = ({ children, className = "" }: { children: ReactNode; className?: string }) => {
@@ -27,7 +20,6 @@ export const PageTransition = ({ children, className = "" }: { children: ReactNo
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      exit="exit"
       className={`w-full min-h-[calc(100vh-3.5rem)] ${className}`}
     >
       {children}

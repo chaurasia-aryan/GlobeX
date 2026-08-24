@@ -61,30 +61,30 @@ export const DisputeResolutionSuite = ({
   };
 
   return (
-    <div className="p-5 bg-[#0C121D] border border-white/[0.07] rounded-2xl space-y-5 select-none">
+    <div className="p-5 bg-[var(--surface-1)] border border-[var(--hairline)] rounded-2xl space-y-5 select-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--hairline)] pb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
             <Scale className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
                 Human-in-the-Loop Dispute & Arbitration Engine
               </h3>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/70 text-amber-300 border border-amber-800/60">
                 CASE: #{dispute.id}
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-sans">
-              Trade: <strong className="text-white">{dispute.tradeTitle}</strong> · Claim: ${dispute.claimAmountUSD.toLocaleString()} USD
+            <p className="text-xs text-[var(--text-secondary)] font-sans">
+              Trade: <strong className="text-[var(--text-primary)]">{dispute.tradeTitle}</strong> · Claim: ${dispute.claimAmountUSD.toLocaleString()} USD
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-3 py-1 rounded-xl bg-[#070A0E] border border-white/[0.08] text-white font-semibold">
+          <span className="text-xs font-mono px-3 py-1 rounded-xl bg-[var(--surface-3)] border border-[var(--hairline)] text-[var(--text-primary)] font-semibold">
             Status: <span className="text-amber-400">{dispute.status}</span>
           </span>
         </div>
@@ -92,28 +92,28 @@ export const DisputeResolutionSuite = ({
 
       {/* Claim Summary & Evidence Files */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.05] space-y-2">
-          <div className="text-xs font-mono font-semibold uppercase text-slate-400">
+        <div className="p-4 rounded-xl bg-[var(--surface-3)] border border-[var(--hairline)] space-y-2">
+          <div className="text-xs font-mono font-semibold uppercase text-[var(--text-secondary)]">
             Filed Claim Statement (Buyer)
           </div>
-          <div className="text-xs text-slate-200 leading-relaxed font-sans">
+          <div className="text-xs text-[var(--text-primary)] leading-relaxed font-sans">
             {dispute.evidenceSummary}
           </div>
-          <div className="text-[11px] font-mono text-slate-500 pt-1">
-            Filed By: <span className="text-white font-medium">{dispute.filerName}</span> ({dispute.filedBy})
+          <div className="text-[11px] font-mono text-[var(--text-tertiary)] pt-1">
+            Filed By: <span className="text-[var(--text-primary)] font-medium">{dispute.filerName}</span> ({dispute.filedBy})
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.05] space-y-2">
-          <div className="text-xs font-mono font-semibold uppercase text-slate-400">
+        <div className="p-4 rounded-xl bg-[var(--surface-3)] border border-[var(--hairline)] space-y-2">
+          <div className="text-xs font-mono font-semibold uppercase text-[var(--text-secondary)]">
             Registered Cryptographic Evidence
           </div>
           <div className="space-y-1.5 font-mono text-xs">
             {dispute.evidenceFiles?.map((file) => {
               const hash = file.sha256 || (file as any).sha256Hash || "";
               return (
-                <div key={file.name} className="flex items-center justify-between p-2 rounded-lg bg-[#0C121D] border border-white/[0.04]">
-                  <div className="flex items-center gap-2 text-slate-300">
+                <div key={file.name} className="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-1)] border border-[var(--hairline)]">
+                  <div className="flex items-center gap-2 text-[var(--text-secondary)]">
                     <FileText className="w-3.5 h-3.5 text-sky-400" />
                     <span className="truncate max-w-[180px]">{file.name}</span>
                   </div>
@@ -128,23 +128,23 @@ export const DisputeResolutionSuite = ({
       </div>
 
       {/* AI Co-Pilot Recommendation */}
-      <div className="p-4 rounded-xl bg-[#070A0E] border border-sky-500/30 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono font-bold text-sky-400">
+      <div className="p-4 rounded-xl bg-[var(--surface-3)] border border-sky-500/30 space-y-2">
+        <div className="flex items-center gap-2 text-xs font-mono font-bold text-sky-600">
           <Bot className="w-4 h-4" />
           <span>Autonomous AI Synthesis Recommendation</span>
         </div>
-        <div className="text-xs text-slate-300 leading-relaxed font-sans">
+        <div className="text-xs text-[var(--text-secondary)] leading-relaxed font-sans">
           {dispute.aiAnalysis?.reasoning || dispute.aiAnalysis?.recommendedVerdict || (dispute as any).aiRecommendation?.suggestedRuling || "AI synthesis underway based on weighbridge and cargo manifest data."}
         </div>
-        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1">
-          <span>Confidence: <strong className="text-emerald-400">{dispute.aiAnalysis?.confidenceScore ?? 92}%</strong></span>
-          <span>Clause: <strong className="text-white">{dispute.aiAnalysis?.contractReference || (dispute as any).aiRecommendation?.applicableClause || "Clause 7.2"}</strong></span>
+        <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] pt-1">
+          <span>Confidence: <strong className="text-emerald-600">{dispute.aiAnalysis?.confidenceScore ?? 92}%</strong></span>
+          <span>Clause: <strong className="text-[var(--text-primary)]">{dispute.aiAnalysis?.contractReference || (dispute as any).aiRecommendation?.applicableClause || "Clause 7.2"}</strong></span>
         </div>
       </div>
 
       {/* Arbitrator Decision Action Area */}
       {isArbitrator && dispute.status !== "Arbitrated" && (
-        <div className="p-4 rounded-xl bg-[#070A0E] border border-amber-500/40 space-y-4">
+        <div className="p-4 rounded-xl bg-[var(--surface-3)] border border-amber-500/40 space-y-4">
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-300">
             <Gavel className="w-4 h-4" />
             <span>Certified Arbitrator Verdict Form</span>
@@ -159,7 +159,7 @@ export const DisputeResolutionSuite = ({
                 className={`py-2 px-3 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
                   arbitratorRuling === r
                     ? "bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold"
-                    : "bg-[#0C121D] border-white/[0.06] text-slate-400 hover:text-white"
+                    : "bg-[var(--surface-1)] border-[var(--hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {r}
@@ -171,7 +171,7 @@ export const DisputeResolutionSuite = ({
             rows={2}
             value={arbitratorNotes}
             onChange={(e) => setArbitratorNotes(e.target.value)}
-            className="w-full p-2.5 rounded-xl bg-[#0C121D] border border-white/[0.08] text-xs text-white outline-none font-sans resize-none"
+            className="w-full p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--hairline)] text-xs text-[var(--text-primary)] outline-none font-sans resize-none"
             placeholder="Enter formal legal reasoning..."
           />
 
@@ -205,7 +205,7 @@ export const DisputeResolutionSuite = ({
             <CheckCircle2 className="w-4 h-4" />
             <span>Binding Verdict Executed on Smart Escrow Contract</span>
           </div>
-          <p className="text-xs text-slate-200 font-sans">
+          <p className="text-xs text-[var(--text-primary)] font-sans">
             {dispute.arbitratorVerdict?.arbitratorNotes || arbitratorNotes}
           </p>
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import AppNav from "@/components/layout/AppNav";
 import LifecycleRail from "@/components/layout/LifecycleRail";
 import { useWorkspace } from "@/context/WorkspaceContext";
@@ -32,43 +32,51 @@ export const AppShell: React.FC<AppShellProps> = ({
     <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] font-sans flex flex-col antialiased selection:bg-[var(--brand-subtle)] selection:text-[var(--brand)]">
       {showHeader && (
         <div className="relative h-[3px] w-full overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeDirection}
-              initial={{ x: "-100%" }}
-              animate={{ x: "0%" }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              className={cn(
-                "absolute inset-0",
-                activeDirection === "Export" ? "bg-[var(--brand)]" : "bg-[var(--brand-cyan)]"
-              )}
-            />
-          </AnimatePresence>
+          <motion.div
+            key={activeDirection}
+            initial={{ x: "-100%" }}
+            animate={{ x: "0%" }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className={cn(
+              "absolute inset-0",
+              activeDirection === "Export" ? "bg-[var(--brand)]" : "bg-[var(--brand-cyan)]"
+            )}
+          />
         </div>
       )}
       {showHeader && <AppNav />}
 
-      <div className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 relative flex items-start gap-6">
+      {/* Sidebar pinned to the real viewport edge (only its own internal
+          padding, not a shared max-width container) so it never floats in a
+          dead gap on wide screens. The content column alone is capped and
+          centered within whatever width remains to its right. */}
+      <div className="flex-1 w-full flex items-start">
         {showHeader && <LifecycleRail />}
 
-        {/* Full-width Main Operations Surface */}
-        <AnimatePresence mode="wait">
+        {/* Full-width Main Operations Surface.
+            No AnimatePresence/exit animation here: the outer route-level
+            AnimatePresence in App.tsx's AnimatedRoutes already owns the
+            enter/exit transition for this entire subtree (keyed on
+            location.pathname). A second AnimatePresence in here, keyed on
+            activeDirection, created two independent mode="wait" boundaries
+            racing each other on every route change and caused a real,
+            reproduced bug: navigating between two pages under the same
+            direction (e.g. /assess -> /escrow) updated the URL but left the
+            old page's DOM stuck on screen, because the outer boundary tried
+            to unmount this subtree while the inner one — whose key hadn't
+            changed — never fired its own exit-complete signal. Simple
+            per-mount fade only; no exit, no nested AnimatePresence. */}
+        <div className="flex-1 min-w-0 px-3 sm:px-6">
           <motion.main
             key={activeDirection}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={cn(
-              "w-full min-w-0 space-y-6 py-4",
-              maxWidthClasses,
-              className
-            )}
+            className={cn("w-full min-w-0 space-y-6 py-4 mx-auto", maxWidthClasses, className)}
           >
             {children}
           </motion.main>
-        </AnimatePresence>
+        </div>
       </div>
 
       {/* Clean minimal footer */}

@@ -455,13 +455,13 @@ export const CommoditySearchDropdown: React.FC<CommoditySearchDropdownProps> = (
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full bg-[#0C121D] border border-white/[0.1] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors shadow-inner"
+          className="w-full bg-[var(--surface-1)] border border-[var(--hairline-strong)] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-sky-500 transition-colors shadow-inner"
         />
-        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+        <Search className="w-4 h-4 text-[var(--text-secondary)] absolute left-3.5 top-3.5 pointer-events-none" />
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="absolute right-3 top-3 text-slate-400 hover:text-white transition-colors"
+          className="absolute right-3 top-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           tabIndex={-1}
         >
           <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")} />
@@ -470,19 +470,19 @@ export const CommoditySearchDropdown: React.FC<CommoditySearchDropdownProps> = (
 
       {/* ── Dropdown Suggestions ─────────────────────────────────────── */}
       {isOpen && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-[#080C14] border border-sky-500/30 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
-          <div className="px-3.5 py-2 border-b border-white/[0.08] flex items-center justify-between bg-sky-500/5">
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-sky-400 uppercase tracking-wider font-semibold">
+        <div className="absolute z-50 left-0 right-0 mt-2 bg-[var(--surface-1)] border border-sky-500/30 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="px-3.5 py-2 border-b border-[var(--hairline)] flex items-center justify-between bg-sky-500/5">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-sky-600 uppercase tracking-wider font-semibold">
               <Sparkles className="w-3 h-3" />
               <span>{query ? `Suggestions for "${query}"` : "Popular Export Commodities"}</span>
             </div>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-[10px] font-mono text-[var(--text-secondary)]">
               {filteredOptions.length} matched
             </span>
           </div>
 
           {filteredOptions.length === 0 ? (
-            <div className="p-4 text-center text-xs text-slate-400 font-sans">
+            <div className="p-4 text-center text-xs text-[var(--text-secondary)] font-sans">
               No matching commodity found for &ldquo;{value}&rdquo;. Press Enter to search custom query.
             </div>
           ) : (
@@ -498,33 +498,33 @@ export const CommoditySearchDropdown: React.FC<CommoditySearchDropdownProps> = (
                     onMouseEnter={() => setHighlightedIndex(idx)}
                     className={cn(
                       "px-4 py-2.5 cursor-pointer flex items-center justify-between transition-colors",
-                      isHighlighted ? "bg-sky-500/15 text-white" : "hover:bg-white/[0.04] text-slate-200",
+                      isHighlighted ? "bg-sky-500/15 text-[var(--text-primary)]" : "hover:bg-[var(--surface-3)] text-[var(--text-primary)]",
                       isSelected && "bg-sky-500/20 font-medium"
                     )}
                   >
                     <div className="space-y-0.5 min-w-0 pr-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-white truncate">
+                        <span className="font-semibold text-sm text-[var(--text-primary)] truncate">
                           {opt.name}
                         </span>
                         <span className="px-2 py-0.5 rounded-md bg-sky-500/10 border border-sky-500/20 text-sky-300 text-[10px] font-mono font-bold">
                           HS {opt.hsCodeFormatted}
                         </span>
-                        <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 text-[10px] font-mono">
+                        <span className="px-1.5 py-0.5 rounded bg-[var(--surface-3)] text-[var(--text-secondary)] text-[10px] font-mono">
                           {opt.category}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 truncate max-w-md font-sans">
+                      <p className="text-[11px] text-[var(--text-secondary)] truncate max-w-md font-sans">
                         {opt.description}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
+                      <span className="text-[11px] font-mono text-[var(--text-secondary)] hidden sm:inline">
                         Default: {opt.typicalQty.toLocaleString()} {opt.commonUnits}
                       </span>
                       {isSelected && (
-                        <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                        <Check className="w-4 h-4 text-sky-600 shrink-0" />
                       )}
                     </div>
                   </li>

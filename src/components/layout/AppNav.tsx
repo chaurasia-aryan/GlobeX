@@ -81,7 +81,7 @@ export const AppNav: React.FC = () => {
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-[var(--surface-1)]/95 backdrop-blur-md border-b border-[var(--hairline)] select-none">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="w-full px-3 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Left: brand + org */}
           <div className="flex items-center gap-4 min-w-0">
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">

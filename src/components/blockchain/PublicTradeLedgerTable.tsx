@@ -8,30 +8,30 @@ interface PublicTradeLedgerTableProps {
 
 export const PublicTradeLedgerTable = ({ logs = DEMO_AUDIT_LOGS }: PublicTradeLedgerTableProps) => {
   return (
-    <div className="p-5 bg-[#0C121D] border border-white/[0.07] rounded-2xl space-y-4 select-none">
+    <div className="p-5 bg-[var(--surface-1)] border border-[var(--hairline)] rounded-2xl space-y-4 select-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--hairline)] pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+          <div className="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-600">
             <Database className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
                 Public Immutable Evidence Ledger
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--surface-3)] text-[var(--text-secondary)] border border-[var(--hairline-strong)]">
                 DEMO DATA
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-sans">
+            <p className="text-xs text-[var(--text-secondary)] font-sans">
               Cryptographic SHA-256 fingerprint anchoring for tamper-evident trade milestone auditing.
             </p>
           </div>
         </div>
 
-        <div className="text-right text-xs font-mono text-slate-400">
-          Network: <strong className="text-white">Local Hardhat Testnet</strong> (demo rows, not live)
+        <div className="text-right text-xs font-mono text-[var(--text-secondary)]">
+          Network: <strong className="text-[var(--text-primary)]">Local Hardhat Testnet</strong> (demo rows, not live)
         </div>
       </div>
 
@@ -39,7 +39,7 @@ export const PublicTradeLedgerTable = ({ logs = DEMO_AUDIT_LOGS }: PublicTradeLe
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs font-mono">
           <thead>
-            <tr className="border-b border-white/[0.06] text-slate-500 uppercase text-[10px]">
+            <tr className="border-b border-[var(--hairline)] text-[var(--text-tertiary)] uppercase text-[10px]">
               <th className="pb-3 px-3">Event Type</th>
               <th className="pb-3 px-3">Timestamp (UTC)</th>
               <th className="pb-3 px-3">Block Number</th>
@@ -48,19 +48,19 @@ export const PublicTradeLedgerTable = ({ logs = DEMO_AUDIT_LOGS }: PublicTradeLe
               <th className="pb-3 px-3 text-right">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-[var(--hairline)]">
             {logs.map((log) => (
-              <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                <td className="py-3 px-3 font-semibold text-white flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <tr key={log.id} className="hover:bg-[var(--surface-3)] transition-colors">
+                <td className="py-3 px-3 font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span>{log.event}</span>
                 </td>
-                <td className="py-3 px-3 text-slate-400">{log.timestamp}</td>
-                <td className="py-3 px-3 text-sky-400 font-bold">#{log.blockNumber}</td>
-                <td className="py-3 px-3 text-emerald-400 truncate max-w-[140px] select-all">
+                <td className="py-3 px-3 text-[var(--text-secondary)]">{log.timestamp}</td>
+                <td className="py-3 px-3 text-sky-600 font-bold">#{log.blockNumber}</td>
+                <td className="py-3 px-3 text-emerald-600 truncate max-w-[140px] select-all">
                   {log.txHash}
                 </td>
-                <td className="py-3 px-3 text-slate-400 truncate max-w-[120px] select-all">
+                <td className="py-3 px-3 text-[var(--text-secondary)] truncate max-w-[120px] select-all">
                   {log.signerAddress}
                 </td>
                 <td className="py-3 px-3 text-right">

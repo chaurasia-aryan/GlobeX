@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
 import { AuthProvider } from "@/context/AuthContext";
 import ErrorBoundary from "@/components/layout/ErrorBoundary";
@@ -66,9 +65,19 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
+    // No AnimatePresence here: it needs to intercept React's unmount of the
+    // outgoing route to run an exit animation, which requires reliably
+    // observing removal through the Suspense boundary every route is lazy
+    // -loaded behind. In practice that combination (AnimatePresence +
+    // React.lazy route components + React Router's keyed <Routes>) left the
+    // outgoing page's DOM permanently stuck mounted underneath the new page
+    // on a real, reproduced navigation bug (confirmed via Cypress: see
+    // cypress/e2e/*-journey.cy.ts) -- not just a Chrome-automation artifact.
+    // Each PageTransition below still gets a per-mount fade-in; there is no
+    // exit fade, which is a real, deliberate trade-off for correctness over
+    // polish until a Suspense-aware transition approach replaces this.
     <Suspense fallback={<RouteFallback />}>
-      <AnimatePresence mode="wait" initial={false}>
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location}>
           {/* PUBLIC */}
           <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
           <Route path="/auth" element={<PageTransition><AuthPage /></PageTransition>} />
@@ -129,7 +138,6 @@ const AnimatedRoutes = () => {
 
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
-      </AnimatePresence>
     </Suspense>
   );
 };
