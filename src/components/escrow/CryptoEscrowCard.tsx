@@ -1,82 +1,109 @@
-import { useState } from "react";
-import { EscrowContract } from "@/types/trade";
-import { DEMO_ESCROW_CONTRACT } from "@/data/mockTradeData";
-import { blockchainEscrowService } from "@/services/blockchain/escrowService";
+import { useEffect, useState } from "react";
+import {
+  blockchainEscrowService,
+  EscrowApiError,
+  EscrowStatus,
+} from "@/services/blockchain/escrowService";
 import { Button as StatefulButton } from "@/components/ui/stateful-button";
-import confetti from "canvas-confetti";
 import {
   Coins,
-  ShieldCheck,
   Lock,
   Unlock,
   CheckCircle2,
   AlertCircle,
-  ExternalLink,
   Zap,
+  Loader2,
 } from "lucide-react";
 
 interface CryptoEscrowCardProps {
-  contract?: EscrowContract;
+  tradeId: string;
   onPaymentReleased?: () => void;
 }
 
-export const CryptoEscrowCard = ({
-  contract = DEMO_ESCROW_CONTRACT,
-  onPaymentReleased,
-}: CryptoEscrowCardProps) => {
-  const [escrowState, setEscrowState] = useState<EscrowContract>(contract);
+const CONDITION_LABELS: Record<string, string> = {
+  docsVerified: "Trade Documents Cryptographically Registered",
+  shipmentDelivered: "Cargo Discharge Verified",
+  inspectionPassed: "Consignee Joint Quality & Weight Acceptance",
+};
+
+export const CryptoEscrowCard = ({ tradeId, onPaymentReleased }: CryptoEscrowCardProps) => {
+  const [status, setStatus] = useState<EscrowStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [releasing, setReleasing] = useState(false);
+  const [releaseError, setReleaseError] = useState<EscrowApiError | Error | null>(null);
   const [releaseTx, setReleaseTx] = useState<string | null>(null);
 
-  const conditionList = [
-    { key: "buyerVerified", label: "Buyer KYC & Identity Verified", met: escrowState.conditions.buyerVerified },
-    { key: "sellerVerified", label: "Seller KYC & Identity Verified", met: escrowState.conditions.sellerVerified },
-    { key: "documentsVerified", label: "Trade Documents Cryptographically Registered", met: escrowState.conditions.documentsVerified },
-    { key: "shipmentDispatched", label: "Ocean Vessel Departure Confirmed via AIS", met: escrowState.conditions.shipmentDispatched },
-    { key: "shipmentDelivered", label: "Cargo Discharge at Jebel Ali Verified", met: escrowState.conditions.shipmentDelivered },
-    { key: "inspectionAccepted", label: "Consignee Joint Quality & Weight Acceptance", met: escrowState.conditions.inspectionAccepted },
-    { key: "noActiveDispute", label: "No Active Unarbitrated Legal Disputes", met: escrowState.conditions.noActiveDispute },
-  ];
-
-  const handleSimulateFastTrackRelease = async () => {
-    const updatedConditions = {
-      buyerVerified: true,
-      sellerVerified: true,
-      documentsVerified: true,
-      shipmentDispatched: true,
-      shipmentDelivered: true,
-      inspectionAccepted: true,
-      noActiveDispute: true,
-    };
-
-    setEscrowState((prev) => ({
-      ...prev,
-      conditions: updatedConditions,
-    }));
-
-    const receipt = await blockchainEscrowService.releaseEscrowPayment(
-      escrowState.tradeId,
-      escrowState.amountUSDC,
-      escrowState.sellerAddress
-    );
-
-    setEscrowState((prev) => ({
-      ...prev,
-      status: "Released",
-      releasedAt: new Date().toISOString(),
-      txHashRelease: receipt.txHash,
-    }));
-
-    setReleaseTx(receipt.txHash);
-
-    confetti({
-      particleCount: 120,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ["#10b981", "#0ea5e9", "#3b82f6", "#f59e0b"],
-    });
-
-    if (onPaymentReleased) onPaymentReleased();
+  const loadStatus = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const result = await blockchainEscrowService.getEscrowStatus(tradeId);
+      setStatus(result);
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load escrow status");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tradeId]);
+
+  const handleRelease = async () => {
+    setReleasing(true);
+    setReleaseError(null);
+    try {
+      const result = await blockchainEscrowService.releaseEscrow(tradeId);
+      setReleaseTx(result.transaction_hash ?? null);
+      await loadStatus();
+      if (onPaymentReleased) onPaymentReleased();
+    } catch (err) {
+      setReleaseError(err instanceof Error ? err : new Error("Release failed"));
+    } finally {
+      setReleasing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-[#0C121D] border border-white/[0.07] rounded-2xl flex items-center justify-center gap-2 text-slate-400 text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <span>Loading escrow state...</span>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="p-6 bg-[#0C121D] border border-red-500/30 rounded-2xl text-red-400 text-sm">
+        Failed to load escrow: {loadError}
+      </div>
+    );
+  }
+
+  if (!status) {
+    return (
+      <div className="p-6 bg-[#0C121D] border border-white/[0.07] rounded-2xl text-slate-400 text-sm">
+        No escrow exists yet for this trade.
+      </div>
+    );
+  }
+
+  const chain = status.chain;
+  const dbStatus = String(status.db?.status ?? "UNKNOWN");
+  const isReleased = dbStatus === "RELEASED";
+  const isDisputed = dbStatus === "DISPUTED";
+
+  const conditionList = chain
+    ? Object.entries(CONDITION_LABELS).map(([key, label]) => ({
+        key,
+        label,
+        met: Boolean((chain as unknown as Record<string, unknown>)[key]),
+      }))
+    : [];
 
   return (
     <div className="p-6 bg-[#0C121D] border border-white/[0.07] rounded-2xl space-y-6 select-none">
@@ -89,72 +116,81 @@ export const CryptoEscrowCard = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-white text-base">Programmable USDC Escrow</h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60 font-bold">
-                SIMULATION — NOT REAL FUNDS
-              </span>
+              {status.drift && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-900/70 text-amber-300 border border-amber-700/60 font-bold">
+                  DB/CHAIN DRIFT
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Contract: {escrowState.contractAddress}
+              Contract: {chain?.token ?? String(status.db?.token_address ?? "unknown")}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {escrowState.status === "Locked" ? (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold">
-              <Lock className="w-3.5 h-3.5" />
-              <span>$550,000.00 USDC Locked</span>
-            </span>
-          ) : (
+          {isReleased ? (
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold">
               <Unlock className="w-3.5 h-3.5" />
               <span>Funds Disbursed to Seller</span>
+            </span>
+          ) : isDisputed ? (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs font-bold">
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span>Disputed</span>
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold">
+              <Lock className="w-3.5 h-3.5" />
+              <span>{dbStatus}</span>
             </span>
           )}
         </div>
       </div>
 
-      {/* Multi-Sig Conditions Matrix */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 uppercase">
-          <span>Programmable Release Triggers</span>
-          <span>Status</span>
-        </div>
+      {/* Condition Matrix */}
+      {chain && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400 uppercase">
+            <span>Contract Release Conditions</span>
+            <span>Status</span>
+          </div>
 
-        <div className="grid grid-cols-1 gap-2">
-          {conditionList.map((cond) => (
-            <div
-              key={cond.key}
-              className="flex items-center justify-between p-3 rounded-xl bg-[#070A0E] border border-white/[0.05] text-xs"
-            >
-              <div className="flex items-center gap-2.5">
-                {cond.met ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-slate-500 shrink-0" />
-                )}
-                <span className={cond.met ? "text-slate-200 font-medium font-sans" : "text-slate-500 font-sans"}>
-                  {cond.label}
+          <div className="grid grid-cols-1 gap-2">
+            {conditionList.map((cond) => (
+              <div
+                key={cond.key}
+                className="flex items-center justify-between p-3 rounded-xl bg-[#070A0E] border border-white/[0.05] text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  {cond.met ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-slate-500 shrink-0" />
+                  )}
+                  <span className={cond.met ? "text-slate-200 font-medium font-sans" : "text-slate-500 font-sans"}>
+                    {cond.label}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-bold">
+                  {cond.met ? (
+                    <span className="text-emerald-400">SATISFIED</span>
+                  ) : (
+                    <span className="text-slate-500">PENDING</span>
+                  )}
                 </span>
               </div>
-              <span className="text-[10px] font-mono font-bold">
-                {cond.met ? (
-                  <span className="text-emerald-400">SATISFIED</span>
-                ) : (
-                  <span className="text-slate-500">PENDING</span>
-                )}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Release Transaction Evidence */}
       {releaseTx && (
         <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold font-mono">
             <CheckCircle2 className="w-4 h-4" />
-            <span>Escrow Release Simulated — No Real Funds Moved</span>
+            <span>Escrow Released On-Chain</span>
           </div>
           <div className="text-[11px] font-mono text-slate-300 break-all">
             TxHash: {releaseTx}
@@ -162,18 +198,32 @@ export const CryptoEscrowCard = ({
         </div>
       )}
 
-      {/* Fast-Track Simulation Button */}
-      {escrowState.status === "Locked" && (
+      {/* Release refused — show the real reason */}
+      {releaseError && (
+        <div className="p-4 rounded-xl bg-red-950/30 border border-red-500/30 space-y-1.5">
+          <div className="flex items-center gap-2 text-red-400 text-xs font-bold font-mono">
+            <Lock className="w-4 h-4" />
+            <span>
+              LOCKED — {releaseError instanceof EscrowApiError ? releaseError.code : "RELEASE_FAILED"}
+            </span>
+          </div>
+          <div className="text-[11px] font-mono text-slate-300">{releaseError.message}</div>
+        </div>
+      )}
+
+      {/* Release Action */}
+      {!isReleased && dbStatus === "FUNDED" && (
         <div className="pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-400 font-sans">
-            Once vessel arrives and customs sign-off is submitted, escrow automatically executes.
+            Release requires all contract conditions to be met.
           </div>
           <StatefulButton
-            onClick={handleSimulateFastTrackRelease}
-            className="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+            onClick={handleRelease}
+            disabled={releasing}
+            className="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>Simulate Port Sign-off & Release</span>
+            <span>{releasing ? "Releasing..." : "Attempt Release"}</span>
           </StatefulButton>
         </div>
       )}

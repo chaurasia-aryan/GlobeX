@@ -59,6 +59,7 @@ from src.api.compliance_api import router as compliance_router
 from src.api.documents_api import router as documents_router
 from src.api.marketplace_api import router as marketplace_router
 from src.api.trades_api import router as trades_router
+from src.api.escrow_api import router as escrow_router
 from src.api.scoring_api import router as scoring_router
 from src.db.client import init_pool, close_pool, is_configured as db_is_configured
 from src.services import chain_client
@@ -133,6 +134,7 @@ app.include_router(compliance_router)
 app.include_router(documents_router)
 app.include_router(marketplace_router)
 app.include_router(trades_router)
+app.include_router(escrow_router)
 app.include_router(scoring_router)
 
 

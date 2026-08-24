@@ -1,12 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
 @import "./components/agent-elements/agent-ui.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.font-dashboard-rounded {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
 
 @layer base {
   :root {
@@ -16,56 +11,94 @@
     --radius-xl: 18px;
     --radius: 10px;
 
-    /* ── GLOBEX B2B Institutional Design Tokens ─────────────────────
-     * 3-Level Surface Hierarchy
-     * Level 0: Deep Canvas (#070A0E)
-     * Level 1: Default Surface (#0C121D) with 1px border
-     * Level 2: Interactive / Active Card (#111A29)
+    /* ── GLOBEX B2B Institutional Design Tokens — LIGHT ─────────────
+     * 4-Level Surface Hierarchy
+     * Level 0: App canvas          (#F7F8FA)
+     * Level 1: Default card/panel  (#FFFFFF, hairline border)
+     * Level 2: Raised/active card  (#FFFFFF, hairline-strong + shadow)
+     * Level 3: Recessed/input well (#EEF1F5)
      * ─────────────────────────────────────────────────────────────── */
 
     /* Surface levels */
-    --surface-0: #070A0E;
-    --surface-1: #0C121D;
-    --surface-2: #111A29;
-    --surface-3: #182338;
+    --surface-0: #F7F8FA;
+    --surface-1: #FFFFFF;
+    --surface-2: #FFFFFF;
+    --surface-3: #EEF1F5;
 
-    --hairline: rgba(255, 255, 255, 0.07);
-    --hairline-strong: rgba(255, 255, 255, 0.12);
+    --hairline: rgba(15, 23, 42, 0.08);
+    --hairline-strong: rgba(15, 23, 42, 0.14);
 
-    /* Semantic Accent Palette */
-    --accent: #38BDF8;
-    /* Active / in-transit / cyan-sky */
-    --accent-dim: rgba(56, 189, 248, 0.12);
-    --emerald: #34C795;
-    /* Verified, completed, positive savings */
-    --emerald-dim: rgba(52, 199, 149, 0.12);
-    --amber: #F59E0B;
+    /* Brand */
+    --brand: #0F766E;
+    --brand-hover: #0D5F58;
+    --brand-subtle: rgba(15, 118, 110, 0.08);
+    --brand-teal: #0F766E;
+    --brand-teal-dark: #0D5F58;
+    --brand-cyan: #0284C7;
+    --brand-blue: #1D4ED8;
+
+    /* Semantic accent palette — retuned for WCAG AA contrast on white
+       (the old dark-theme values, e.g. amber #F59E0B, fail AA on #FFFFFF) */
+    --accent: #0284C7;
+    /* Active / in-transit / sky */
+    --accent-dim: rgba(2, 132, 199, 0.08);
+    --emerald: #0F9D6B;
+    /* Verified, completed, positive */
+    --emerald-dim: rgba(15, 157, 107, 0.08);
+    --amber: #B45309;
     /* Review, discrepancy, warning */
-    --amber-dim: rgba(245, 158, 11, 0.12);
-    --red: #EF4444;
+    --amber-dim: rgba(180, 83, 9, 0.08);
+    --red: #DC2626;
     /* Error, rejected, disputed */
-    --red-dim: rgba(239, 68, 68, 0.12);
+    --red-dim: rgba(220, 38, 38, 0.08);
+
+    /* Status vocabulary — GlobeXAI_Claude_OneShot_Production_Pack/12_UI_COMPLIANCE_REQUIREMENTS.md */
+    --status-verified: var(--emerald);
+    --status-verified-bg: var(--emerald-dim);
+    --status-pending: #475569;
+    --status-pending-bg: rgba(71, 85, 105, 0.08);
+    --status-review: var(--amber);
+    --status-review-bg: var(--amber-dim);
+    --status-blocked: var(--red);
+    --status-blocked-bg: var(--red-dim);
+    --status-stale: #A16207;
+    --status-stale-bg: rgba(161, 98, 7, 0.08);
+    --status-unavailable: #94A3B8;
+    --status-unavailable-bg: rgba(148, 163, 184, 0.1);
 
     /* Text hierarchy */
-    --text-primary: #F8FAFC;
-    /* Headings, primary values (Slate 50) */
-    --text-secondary: #94A3B8;
-    /* Labels, descriptive text (Slate 400) */
+    --text-primary: #0F172A;
+    /* Headings, primary values (Slate 900) */
+    --text-secondary: #475569;
+    /* Labels, descriptive text (Slate 600) */
     --text-tertiary: #64748B;
     /* Metadata, codes (Slate 500) */
-    --text-muted: #475569;
-    /* Disabled, subtle captions (Slate 600) */
+    --text-muted: #94A3B8;
+    /* Disabled, subtle captions (Slate 400) */
+
+    /* Legacy alias set — previously referenced across 8+ files and undefined
+       anywhere in the repo; defined here for the first time. */
+    --bg-app: var(--surface-0);
+    --bg-surface: var(--surface-1);
+    --bg-surface-subtle: var(--surface-2);
+    --bg-surface-muted: var(--surface-3);
+    --border-subtle: var(--hairline);
+    --border-default: var(--hairline);
+    --border-strong: var(--hairline-strong);
+    --error: var(--red);
+    --info-bg: var(--accent-dim);
+    --success-bg: var(--emerald-dim);
   }
 }
 
 @layer base {
   * {
-    border-color: rgba(255, 255, 255, 0.07);
+    border-color: var(--hairline);
   }
 
   body {
-    background-color: #070A0E;
-    color: #F8FAFC;
+    background-color: var(--surface-0);
+    color: var(--text-primary);
     font-family: theme('fontFamily.sans');
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -90,6 +123,7 @@
     background-color: var(--surface-2);
     border: 1px solid var(--hairline-strong);
     border-radius: var(--radius-md);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   }
 
   /* Backward compatible utility classes */
@@ -97,12 +131,12 @@
     background-color: var(--surface-1);
     border: 1px solid var(--hairline);
     border-radius: var(--radius-md);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .neo-glass-card:hover {
     border-color: var(--hairline-strong);
-    background-color: var(--surface-2);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   }
 
   .glass-panel {
@@ -115,13 +149,14 @@
     background-color: var(--surface-2);
     border: 1px solid var(--hairline-strong);
     border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   }
 }
 
 /* Scrollbars */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  scrollbar-color: rgba(15, 23, 42, 0.16) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -134,10 +169,17 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.16);
   border-radius: 9999px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.28);
+}
+
+/* Deliberately dark hero band — the landing-page globe stays on a scoped dark
+   surface inside the light app (see TradeGlobe.tsx). Do not use elsewhere. */
+.surface-hero-dark {
+  background-color: #070A0E;
+  color: #F8FAFC;
 }
