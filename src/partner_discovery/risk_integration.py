@@ -97,8 +97,7 @@ class TradeRiskIntegrator:
         penalties = []
         risk_levels = []
         risk_flags_list = []
-        gru_risk_scores = []
-        
+
         for i in range(len(df)):
             pts = 0.0
             flags = []
@@ -124,13 +123,15 @@ class TradeRiskIntegrator:
                 pts += self.tariff_deduction
                 flags.append(f"HIGH_TARIFF_BARRIER ({tariff[i]:.1f}%)")
                 
-            # 5. GRU Autoencoder Volatility & Reconstruction Score
-            gru_score = 0.0
-            if self.gru_autoencoder is not None:
-                # Corridor sequence baseline stability score
-                gru_score = float(np.clip(pts / 40.0 * 100.0, 5.0, 95.0)) if pts > 0 else 2.5
-            gru_risk_scores.append(round(gru_score, 1))
-                
+            # NOTE: no GRU autoencoder reconstruction score here. The
+            # checkpoint at backend/brain/models/trade_risk/gru_autoencoder.pt
+            # loads (self.gru_autoencoder is not None), but this loop never
+            # calls it — there is no per-corridor input sequence built for
+            # it. A previous version of this method faked a "gru_risk_score"
+            # as pts / 40.0 * 100.0, i.e. a rescale of the rule-based penalty
+            # already computed above, with no model inference behind it.
+            # That field is removed rather than shipped as fake model output.
+
             # Cap maximum penalty
             total_penalty = float(np.clip(pts, 0.0, self.max_penalty))
             penalties.append(total_penalty)
@@ -149,8 +150,6 @@ class TradeRiskIntegrator:
         df['risk_penalty'] = np.round(penalties, 2)
         df['risk_level'] = risk_levels
         df['risk_flags'] = risk_flags_list
-        df['gru_risk_score'] = gru_risk_scores
-        df['gru_autoencoder_active'] = self.gru_autoencoder is not None
         
         # Calculate risk-adjusted final score
         if 'opportunity_score' in df.columns:

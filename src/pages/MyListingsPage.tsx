@@ -36,7 +36,7 @@ interface OrganizationExportProduct {
   topInquiry: string;
 }
 
-const INITIAL_ORG_PRODUCTS: OrganizationExportProduct[] = [
+const DEMO_ORG_PRODUCTS: OrganizationExportProduct[] = [
   {
     id: "org_prod_01",
     title: "1121 Steam Extra Long Grain Aged Basmati Rice",
@@ -118,7 +118,7 @@ const CATEGORIES = ["All Commodities", "Agriculture", "Spices", "Textiles", "Che
 
 export const MyListingsPage: React.FC = () => {
   const { user } = useWorkspace();
-  const [products, setProducts] = useState<OrganizationExportProduct[]>(INITIAL_ORG_PRODUCTS);
+  const [products, setProducts] = useState<OrganizationExportProduct[]>(DEMO_ORG_PRODUCTS);
   const [selectedCategory, setSelectedCategory] = useState<string>("All Commodities");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -207,6 +207,14 @@ export const MyListingsPage: React.FC = () => {
               </div>
             }
           />
+
+      {/* ── Demo Data Notice ─────────────────────────────────────────── */}
+      <div className="p-2.5 rounded-xl bg-amber-950/30 border border-amber-800/40 flex items-center gap-2 text-amber-300 text-[11px] font-mono">
+        <span className="px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/50 font-bold shrink-0">
+          DEMO DATA — NOT LIVE
+        </span>
+        <span>These export listings are illustrative sample data — not yet connected to your organization's real catalogue.</span>
+      </div>
 
           {/* ── Large Business Numbers / Compact Metric Strip ──────────────── */}
           <MetricStrip

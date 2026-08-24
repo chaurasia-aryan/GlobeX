@@ -1,0 +1,56 @@
+{
+  "model_name": "trade_anomaly_unsupervised_screen",
+  "version": "unsupervised-screen-v2.0.0",
+  "architecture": "IsolationForest",
+  "supervision": "none (unsupervised)",
+  "label_source": "UNSUPERVISED_MODEL",
+  "trained_against_labels": false,
+  "dataset": "D:\\Codes\\SIH26\\GlobeX-New\\backend\\brain\\processed\\trade_anomaly\\02_trade_anomaly_featured.parquet",
+  "rows_total": 12288,
+  "train_rows": 7680,
+  "val_rows": 1536,
+  "test_rows": 3072,
+  "train_period": "<= 202406",
+  "val_period": "202407 - 202412",
+  "test_period": "> 202412",
+  "contamination": 0.05,
+  "n_estimators": 300,
+  "max_samples": 256,
+  "random_state": 42,
+  "numerical_features": [
+    "log_trade_value",
+    "log_unit_value",
+    "unit_value_peer_robust_z",
+    "log_value_per_transaction",
+    "transaction_count",
+    "rolling_cv_3m",
+    "partner_share_fraction_0_1",
+    "partner_share_change_mom",
+    "new_corridor_flag"
+  ],
+  "categorical_features": [
+    "trade_flow",
+    "hs6",
+    "partner_iso3"
+  ],
+  "transformed_matrix_shape": [
+    7680,
+    35
+  ],
+  "excluded_because_they_define_the_v1_label": [
+    "val_rolling_zscore",
+    "unit_value_change_mom",
+    "trade_growth_mom"
+  ],
+  "excluded_for_redundancy_or_proximity": [
+    "val_to_rolling_mean_ratio",
+    "quantity",
+    "net_weight_kg",
+    "quantity_growth_mom",
+    "weight_growth_mom",
+    "yoy_growth"
+  ],
+  "partner_share_scale": "0-1 fraction (NOT 0-100 percentage)",
+  "raw_decision_threshold": -2.7324647603713288e-17,
+  "disclaimer": "Unsupervised statistical screen. Flags statistically unusual trade behaviour by these specific signals. Not fraud detection; no verified fraud outcomes exist in this dataset."
+}

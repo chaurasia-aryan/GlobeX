@@ -325,6 +325,18 @@ def counterparty_risk(req: CounterpartyRiskRequest) -> Dict[str, Any]:
                     ts_row = cur.fetchone()
                     trust_score = float(ts_row["composite_score"]) if ts_row else 0.5
 
+                    # Real name for restricted-party screening (OFAC SDN + UN
+                    # Security Council + UK OFSI + EU consolidated lists —
+                    # see src/compliance/entity_screening.py). This replaces
+                    # the previous sanctions_present/scomet_match_flag stub
+                    # slots, which were never populated from any real source.
+                    cur.execute(
+                        "SELECT COALESCE(trade_name, legal_name) AS org_name FROM organizations WHERE id = %s",
+                        (req.organization_id,),
+                    )
+                    org_row = cur.fetchone()
+                    org_name = org_row["org_name"] if org_row else None
+
                     # Dispute rate
                     cur.execute(
                         """
@@ -355,6 +367,20 @@ def counterparty_risk(req: CounterpartyRiskRequest) -> Dict[str, Any]:
             if total_trades < 5:
                 risk_flags.append("INSUFFICIENT_TRADE_HISTORY")
 
+            sanctions_screening = None
+            if org_name:
+                try:
+                    from src.compliance.entity_screening import screen_entity, ScreeningDecision  # noqa: PLC0415
+                    result = screen_entity(org_name)
+                    sanctions_screening = result
+                    if result["decision"] == ScreeningDecision.MATCH_REQUIRES_RESTRICTION:
+                        risk_flags.append("SANCTIONS_MATCH")
+                        risk_level = "CRITICAL"
+                    elif result["decision"] == ScreeningDecision.POTENTIAL_MATCH:
+                        risk_flags.append("SANCTIONS_POTENTIAL_MATCH_NEEDS_REVIEW")
+                except Exception as exc:
+                    logger.warning("Entity screening failed for org %s: %s", req.organization_id, exc)
+
             return {
                 "status": "OK",
                 "organization_id": req.organization_id,
@@ -367,6 +393,7 @@ def counterparty_risk(req: CounterpartyRiskRequest) -> Dict[str, Any]:
                     "completed_trades": completed,
                     "risk_flags": risk_flags,
                 },
+                "sanctions_screening": sanctions_screening,
                 "model_version": "cr-v1.0",
                 "analysis_id": analysis_id,
             }
@@ -377,9 +404,9 @@ def counterparty_risk(req: CounterpartyRiskRequest) -> Dict[str, Any]:
             )
 
     # ------------------------------------------------------------------
-    # Model evaluation path (uses Isolation Forest if loaded)
+    # No-DB fallback path — seed data only, rule-based flags (see note
+    # below on why the IsolationForest is not evaluated here)
     # ------------------------------------------------------------------
-    risk_model_data = _load_risk_models()
     seed_key = f"risk:{req.organization_id}:{req.hs6}"
     trust_score = round(_deterministic_float(seed_key + ":trust", 0.45, 0.95), 4)
     dispute_rate = round(_deterministic_float(seed_key + ":dispute", 0.0, 0.18), 4)
@@ -397,32 +424,17 @@ def counterparty_risk(req: CounterpartyRiskRequest) -> Dict[str, Any]:
 
     # If Isolation Forest model artifact is present, evaluate anomaly decision function
     model_source = "seed_data"
+    # The IsolationForest at backend/brain/models/trade_risk/ takes 27
+    # features. Without a DB, no real per-organization trade_value/
+    # net_weight/growth history exists — only 5 of 27 slots could ever be
+    # filled, the rest zero-padded, which produced a near-degenerate input
+    # (verified: 85.7% of such inputs flagged "outlier", see
+    # reports/production/phase6_risk_verdict.md). Running the model on a
+    # mostly-fabricated vector and labelling it "isolation_forest_model" is
+    # exactly the kind of fake-success bug this codebase fixes elsewhere, so
+    # it is not run here. `risk_flags` above (rule-based) is the whole story
+    # for this no-DB fallback path — no model score is reported.
     isolation_score = None
-    if risk_model_data and risk_model_data.get("model"):
-        try:
-            # Construct feature vector based on selected_features
-            meta = risk_model_data.get("metadata", {})
-            feat_len = len(meta.get("selected_features", [])) or 27
-            features = np.zeros((1, feat_len))
-            # Populate primary synthetic proxy signals
-            features[0, 0] = np.log1p(completed * 10000.0)  # log_trade_value
-            features[0, 1] = np.log1p(completed * 5000.0)   # log_net_weight
-            features[0, 2] = np.log1p(completed)            # log_transaction_count
-            features[0, 3] = float(trust_score)             # trade_growth_mom_calc
-            features[0, 4] = float(1.0 - dispute_rate)      # growth_acceleration
-            
-            if risk_model_data.get("scaler"):
-                features = risk_model_data["scaler"].transform(features)
-            
-            model = risk_model_data["model"]
-            raw_score = model.decision_function(features)[0]
-            isolation_score = float(round(float(raw_score), 4))
-            if raw_score < -0.10:
-                risk_flags.append("ISOLATION_FOREST_ANOMALOUS_BEHAVIOR")
-                risk_level = "CRITICAL" if risk_level != "CRITICAL" else risk_level
-            model_source = "isolation_forest_model"
-        except Exception as exc:
-            logger.warning("Error evaluating isolation forest model: %s", exc)
 
     return {
         "status": "OK",

@@ -24,6 +24,7 @@ import {
   Layers,
   Zap,
   Package,
+  Building2,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -43,15 +44,17 @@ export const Navbar = () => {
     { label: "Create Listing", href: "/create-listing", icon: PlusCircle },
     { label: "My Export Listings", href: "/my-listings", icon: Package },
     { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle },
-    { label: "Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, isLive: true },
+    { label: "Workspace", href: "/trades", icon: Workflow, isLive: true },
   ];
 
   const drawerGroups = [
     {
       group: "Trade Actions",
       items: [
-        { label: "Trade Workspace", href: "/trades/TRD-IND-UAE-550K", icon: Workflow, desc: "Manage your active trade, papers & safe payment" },
+        { label: "Active Trades", href: "/trades", icon: Workflow, desc: "Manage your active trades, papers & safe payment" },
         { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Review trade requests received by your organization" },
+        { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of your trading partners" },
+        { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model analysis of an active trade" },
       ],
     },
     {

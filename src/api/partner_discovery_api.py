@@ -6,8 +6,9 @@ Wraps the synchronous recommend_destinations() engine from src.partner_discovery
 in an async FastAPI endpoint using run_in_executor for non-blocking I/O.
 
 NOTE: This is the MARKET OPPORTUNITY endpoint. It is distinct from:
-  - Trade Anomaly (/api/trade-anomaly) — historical pattern deviation detection
-  - Trade Risk (/api/trade-risk)        — GRU autoencoder risk modelling
+  - Trade Anomaly (/api/trade-anomaly) — XGBoost + unsupervised IsolationForest screen
+  - Counterparty Risk (/predict/counterparty-risk) — rule-based penalties; no
+    trade-risk IsolationForest/GRU model route is mounted in main.py
 """
 
 from __future__ import annotations
@@ -29,8 +30,13 @@ router = APIRouter(tags=["Partner Discovery"])
 # Fixed path constants (relative to project root, resolved at request time)
 # ---------------------------------------------------------------------------
 
-_DATA_DIR = "backend/brain_temporary/data"
-_MODEL_DIR = "backend/brain_temporary/models/partner_discovery/forecasting"
+_DATA_DIR = "backend/brain"
+# GRU forecaster is disabled (src/partner_discovery/inference.py — walk-forward
+# backtest showed it 2x worse than the 3-year moving-average formula it was
+# meant to beat), so this path is no longer read for model weights. Left
+# pointing at a real directory only so a future re-enable doesn't reintroduce
+# the previous dangling "backend/brain_temporary" path.
+_MODEL_DIR = "backend/brain/models/partner_forecasting"
 
 # ---------------------------------------------------------------------------
 # Pydantic schemas
@@ -83,9 +89,11 @@ class MarketOpportunityRequest(BaseModel):
     summary="Market Opportunity & Destination Recommendation",
     description=(
         "Runs the GlobeXAI Partner Discovery engine: resolves the product to an HS6 code, "
-        "loads the 26-year India-as-exporter trade panel, generates GRU forecasts (with "
-        "rolling-mean fallback), ranks destination countries by multi-criteria opportunity "
-        "score, integrates trade-risk penalties, and returns the top-N recommendations."
+        "loads the 26-year India-as-exporter trade panel, forecasts demand via a 3-year "
+        "moving-average momentum formula (the Dual-Head GRU forecaster is disabled — a "
+        "walk-forward backtest showed it 2x worse than this formula, see "
+        "reports/production/phase4b_outputs), ranks destination countries by multi-criteria "
+        "opportunity score, integrates trade-risk penalties, and returns the top-N recommendations."
     ),
 )
 async def market_opportunity(req: MarketOpportunityRequest) -> Dict[str, Any]:

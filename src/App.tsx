@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -33,7 +33,11 @@ const BlockchainLedgerPage = lazy(() => import("@/pages/BlockchainLedgerPage"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const AdminSystemPage = lazy(() => import("@/pages/AdminSystemPage"));
 const WishlistPage = lazy(() => import("@/pages/WishlistPage"));
+const TradesIndexPage = lazy(() => import("@/pages/TradesIndexPage"));
+const CounterpartiesIndexPage = lazy(() => import("@/pages/CounterpartiesIndexPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -67,35 +71,41 @@ const AnimatedRoutes = () => {
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
-          {/* Primary User Intent & Flow */}
+          {/* Public / pre-auth routes — no guard */}
           <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
           <Route path="/onboarding" element={<PageTransition><OnboardingPage /></PageTransition>} />
-          <Route path="/role-select" element={<PageTransition><OnboardingPage /></PageTransition>} />
+          <Route path="/role-select" element={<Navigate to="/onboarding" replace />} />
+          <Route path="/signup" element={<Navigate to="/onboarding" replace />} />
           <Route path="/login" element={<PageTransition><AuthPage /></PageTransition>} />
-          <Route path="/signup" element={<PageTransition><OnboardingPage /></PageTransition>} />
-          <Route path="/get-started" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
-          <Route path="/trade-intent" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
-          <Route path="/trade-requests" element={<PageTransition><TradeIntentWizardPage /></PageTransition>} />
+
+          {/* Alias redirects — consolidated onto their canonical routes (see docs/product/user_flow.md §4c) */}
+          <Route path="/get-started" element={<Navigate to="/trade-requests" replace />} />
+          <Route path="/trade-intent" element={<Navigate to="/trade-requests" replace />} />
+          <Route path="/export-catalog" element={<Navigate to="/my-listings" replace />} />
+          <Route path="/arbitrator" element={<Navigate to="/disputes" replace />} />
+
+          {/* Primary User Intent & Flow */}
+          <Route path="/trade-requests" element={<ProtectedRoute><PageTransition><TradeIntentWizardPage /></PageTransition></ProtectedRoute>} />
 
           {/* Core Commercial Pages */}
-          <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-          <Route path="/marketplace" element={<PageTransition><MarketplacePage /></PageTransition>} />
-          <Route path="/marketplace/:id" element={<PageTransition><ProductDetailPage /></PageTransition>} />
-          <Route path="/create-listing" element={<PageTransition><CreateListingPage /></PageTransition>} />
-          <Route path="/my-listings" element={<PageTransition><MyListingsPage /></PageTransition>} />
-          <Route path="/export-catalog" element={<PageTransition><MyListingsPage /></PageTransition>} />
-          <Route path="/market-intelligence" element={<PageTransition><MarketIntelligencePage /></PageTransition>} />
-          <Route path="/trade-analysis" element={<PageTransition><TradeAnalysisPage /></PageTransition>} />
-          <Route path="/trades/:id" element={<PageTransition><TradeWorkspacePage /></PageTransition>} />
-          <Route path="/counterparties/:id" element={<PageTransition><CounterpartyDetailPage /></PageTransition>} />
-          <Route path="/documents" element={<PageTransition><DocumentVerificationPage /></PageTransition>} />
-          <Route path="/escrow" element={<PageTransition><EscrowPage /></PageTransition>} />
-          <Route path="/shipments" element={<PageTransition><ShipmentsPage /></PageTransition>} />
-          <Route path="/disputes" element={<PageTransition><DisputesPage /></PageTransition>} />
-          <Route path="/arbitrator" element={<PageTransition><DisputesPage /></PageTransition>} />
-          <Route path="/blockchain" element={<PageTransition><BlockchainLedgerPage /></PageTransition>} />
-          <Route path="/admin" element={<PageTransition><AdminSystemPage /></PageTransition>} />
-          <Route path="/wishlist" element={<PageTransition><WishlistPage /></PageTransition>} />
+          <Route path="/dashboard" element={<ProtectedRoute><PageTransition><DashboardPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
+          <Route path="/marketplace/:id" element={<ProtectedRoute><PageTransition><ProductDetailPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/create-listing" element={<ProtectedRoute><PageTransition><CreateListingPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/my-listings" element={<ProtectedRoute><PageTransition><MyListingsPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/market-intelligence" element={<ProtectedRoute><PageTransition><MarketIntelligencePage /></PageTransition></ProtectedRoute>} />
+          <Route path="/trade-analysis" element={<ProtectedRoute><PageTransition><TradeAnalysisPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/trades" element={<ProtectedRoute><PageTransition><TradesIndexPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/trades/:id" element={<ProtectedRoute><PageTransition><TradeWorkspacePage /></PageTransition></ProtectedRoute>} />
+          <Route path="/counterparties" element={<ProtectedRoute><PageTransition><CounterpartiesIndexPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/counterparties/:id" element={<ProtectedRoute><PageTransition><CounterpartyDetailPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentVerificationPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/escrow" element={<ProtectedRoute><PageTransition><EscrowPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/shipments" element={<ProtectedRoute><PageTransition><ShipmentsPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/disputes" element={<ProtectedRoute><PageTransition><DisputesPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/blockchain" element={<ProtectedRoute><PageTransition><BlockchainLedgerPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminSystemPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><PageTransition><WishlistPage /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-08-23T14:08:14+00:00",
+  "built_at": "2026-08-24T03:26:18+00:00",
   "sources_fetched_successfully": [
     {
       "source": "OFAC_SDN",
@@ -17,21 +17,29 @@
       "list_date_generated": "2026-08-22T23:00:03.221Z",
       "record_count": 1011,
       "retrieved_at": "2026-08-23T13:30:30Z"
+    },
+    {
+      "source": "UK_SANCTIONS_LIST",
+      "authority": "UK Office of Financial Sanctions Implementation (OFSI)",
+      "url": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.csv",
+      "list_date_generated": "03/06/2026",
+      "record_count": 5135,
+      "retrieved_at": "2026-08-24T03:15:00Z"
+    },
+    {
+      "source": "EU_CONSOLIDATED_FINANCIAL_SANCTIONS_LIST",
+      "authority": "European Commission \u2014 Financial Sanctions Database",
+      "url": "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content",
+      "list_date_generated": "2026-08-05T16:47:04.449+02:00",
+      "record_count": 6234,
+      "retrieved_at": "2026-08-24T03:24:47Z"
     }
   ],
   "sources_attempted_and_failed": [],
   "sources_unsupported": [
     {
       "source": "BIS_CONSOLIDATED_SCREENING_LIST",
-      "reason": "Not integrated in this pass \u2014 no free bulk-download wired up yet. Entity screening against BIS Denied Persons/Entity/Unverified/MEU lists is NOT covered."
-    },
-    {
-      "source": "EU_CONSOLIDATED_FINANCIAL_SANCTIONS_LIST",
-      "reason": "Not integrated in this pass \u2014 EU sanctions map/consolidated list not wired up. NOT covered."
-    },
-    {
-      "source": "UK_SANCTIONS_LIST",
-      "reason": "Not integrated in this pass \u2014 UK Sanctions List not wired up. NOT covered."
+      "reason": "trade.gov's consolidated_screening_list API requires a subscription key (401 without one); no unauthenticated bulk CSV/JSON endpoint found. NOT covered."
     },
     {
       "source": "DGFT_RESTRICTED_PARTIES",

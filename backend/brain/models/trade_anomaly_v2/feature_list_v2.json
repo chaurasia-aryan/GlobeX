@@ -1,0 +1,32 @@
+{
+  "numerical_features": [
+    "log_trade_value",
+    "log_unit_value",
+    "unit_value_peer_robust_z",
+    "log_value_per_transaction",
+    "transaction_count",
+    "rolling_cv_3m",
+    "partner_share_fraction_0_1",
+    "partner_share_change_mom",
+    "new_corridor_flag"
+  ],
+  "categorical_features": [
+    "trade_flow",
+    "hs6",
+    "partner_iso3"
+  ],
+  "excluded_because_they_define_the_v1_label": [
+    "val_rolling_zscore",
+    "unit_value_change_mom",
+    "trade_growth_mom"
+  ],
+  "excluded_for_redundancy_or_proximity": [
+    "val_to_rolling_mean_ratio",
+    "quantity",
+    "net_weight_kg",
+    "quantity_growth_mom",
+    "weight_growth_mom",
+    "yoy_growth"
+  ],
+  "units_note": "partner_share_fraction_0_1 is a 0-1 FRACTION in this subsystem, not a 0-100 percentage."
+}

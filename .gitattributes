@@ -1,3 +1,6 @@
 backend/brain/brain_prev/data_pipeline/data/features/anomaly_sequences_test.csv filter=lfs diff=lfs merge=lfs -text
 backend/brain/brain_prev/data_pipeline/data/features/anomaly_sequences_train.csv filter=lfs diff=lfs merge=lfs -text
 backend/brain/brain_prev/data_pipeline/data/features/anomaly_sequences_val.csv filter=lfs diff=lfs merge=lfs -text
+backend/brain/compliance_data/sanctions_entities/uk_conlist.csv filter=lfs diff=lfs merge=lfs -text
+backend/brain/compliance_data/sanctions_entities/normalized_entities.json filter=lfs diff=lfs merge=lfs -text
+backend/brain/compliance_data/sanctions_entities/eu_consolidated.xml filter=lfs diff=lfs merge=lfs -text

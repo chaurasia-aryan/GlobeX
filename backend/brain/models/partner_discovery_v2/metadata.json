@@ -1,0 +1,146 @@
+{
+  "model": "GRUMultiOutputForecaster",
+  "version": "partner_discovery_v2",
+  "trained_at_utc": "2026-08-24T03:21:03.961377+00:00",
+  "source_parquet": "backend/brain/processed/01_partner_discovery_india_as_exporter.parquet",
+  "data_fixes": {
+    "dedup_key": [
+      "importer_iso3",
+      "hs6",
+      "year"
+    ],
+    "dedup_method": "drop_duplicates(subset=key, keep='first') in native file order",
+    "exclude_wld": true,
+    "dropped_features": [
+      "sanctions_present"
+    ]
+  },
+  "row_counts": {
+    "n_raw": 48445,
+    "n_after_wld": 47405,
+    "n_after_dedup": 37941,
+    "kept_spellings": {
+      "100630": "Semi-milled or wholly milled rice, whether or not polished or glazed (Basmati Rice)",
+      "271019": "Medium oils and preparations, of petroleum or bituminous minerals",
+      "300490": "Medicaments consisting of mixed or unmixed products for therapeutic uses (Formulations)",
+      "520512": "Single cotton yarn, measuring < 714.29 dtex but >= 232.56 dtex",
+      "711319": "Articles of jewellery and parts thereof, of precious metal other than silver",
+      "847130": "Portable automatic data processing machines, weighing not more than 10 kg (Laptops)",
+      "851712": "Telephones for cellular networks or for other wireless networks"
+    }
+  },
+  "feature_names": [
+    "log_export_value",
+    "log_export_net_weight",
+    "fob_unit_value",
+    "destination_market_share",
+    "trade_growth_yoy",
+    "log_gdp",
+    "log_population",
+    "applied_tariff_rate",
+    "rta_active",
+    "log_locode_count",
+    "log_active_buyers"
+  ],
+  "sequence_length": 5,
+  "split": {
+    "train_end": 2020,
+    "val_end": 2022,
+    "test_end": 2024
+  },
+  "split_sizes": {
+    "train": 22101,
+    "val": 3168,
+    "test": 3168
+  },
+  "leakage_pct_target_year_in_window": {
+    "before": {
+      "train": {
+        "n": 30420,
+        "leaky": 7049,
+        "pct": 23.1723
+      },
+      "val": {
+        "n": 3976,
+        "leaky": 742,
+        "pct": 18.662
+      },
+      "test": {
+        "n": 3976,
+        "leaky": 742,
+        "pct": 18.662
+      },
+      "all": {
+        "n": 38372,
+        "leaky": 8533,
+        "pct": 22.2376
+      }
+    },
+    "after": {
+      "train": {
+        "n": 22101,
+        "leaky": 0,
+        "pct": 0.0
+      },
+      "val": {
+        "n": 3168,
+        "leaky": 0,
+        "pct": 0.0
+      },
+      "test": {
+        "n": 3168,
+        "leaky": 0,
+        "pct": 0.0
+      },
+      "all": {
+        "n": 28437,
+        "leaky": 0,
+        "pct": 0.0
+      }
+    }
+  },
+  "hyperparameters": {
+    "hidden_dim": 64,
+    "num_layers": 2,
+    "lr": 0.003,
+    "epochs": 70,
+    "batch_size": 32,
+    "patience": 15,
+    "seed": 20260824
+  },
+  "training": {
+    "epochs_trained": 70,
+    "best_val_loss": 30.13318634033203
+  },
+  "test_metrics_gru": {
+    "Model": "Dual-Head GRU v2 (retrained)",
+    "D_MAE_kg": 2372589.0,
+    "D_RMSE_kg": 7839527.5,
+    "D_WAPE_pct": 61.143783652124895,
+    "D_sMAPE_pct": 57.266875634302025,
+    "D_MAPE_pct": 58.478301763534546,
+    "D_DirAcc_pct": 62.247474747474755,
+    "D_R2": 0.28512330591407653,
+    "P_MAE_usd": 117.92359924316406,
+    "P_RMSE_usd": 705.8331909179688,
+    "P_WAPE_pct": 5.236244645765529,
+    "P_sMAPE_pct": 25.93480989669319,
+    "P_R2": 0.9964310870228661
+  },
+  "test_metrics_moving_average_3y": {
+    "Model": "Moving Average (3-year)",
+    "D_MAE_kg": 1116472.25,
+    "D_RMSE_kg": 3496050.75,
+    "D_WAPE_pct": 28.772507429103023,
+    "D_sMAPE_pct": 29.570011324267625,
+    "D_MAPE_pct": 29.91526424884796,
+    "D_DirAcc_pct": 69.22348484848484,
+    "D_R2": 0.8578303841294809,
+    "P_MAE_usd": 61.280662536621094,
+    "P_RMSE_usd": 327.2775573730469,
+    "P_WAPE_pct": 2.7210884040877197,
+    "P_sMAPE_pct": 2.758754711983857,
+    "P_R2": 0.999232701740499
+  },
+  "promoted": false
+}

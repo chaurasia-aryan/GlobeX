@@ -1,7 +1,47 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { appwriteService, UserSession, OrganizationRole, UploadedDoc } from "@/services/appwrite/client";
+import {
+  appwriteService,
+  UserSession,
+  OrganizationRole,
+  UploadedDoc,
+  BusinessType,
+  TradeDirection,
+} from "@/services/appwrite/client";
 import { Listing } from "@/types/trade";
-import { DEMO_LISTINGS } from "@/data/mockTradeData";
+import { aiService, ListingRecord } from "@/services/api/aiService";
+
+/**
+ * Maps a real, DB-backed listing (src/api/trades_api.py::list_listings) to the
+ * UI's Listing shape. Trust/risk/match scores are not fabricated here: a
+ * listing with no trade or compliance history has no earned score, so it
+ * stays 0/unrated rather than showing a plausible-looking fake number (same
+ * rule CreateListingPage.tsx already applies on write).
+ */
+function toUiListing(record: ListingRecord): Listing {
+  return {
+    id: record.id,
+    exporterId: record.organizationId,
+    exporterName: record.exporterName || "Unverified Exporter",
+    exporterCountry: record.exporterCountry || "Unknown",
+    exporterCity: record.exporterCity || "Unknown",
+    title: record.productName,
+    category: (record.productCategory as Listing["category"]) || "Agriculture",
+    hsCode: record.hsCode || "",
+    unitPriceUSD: record.price || 0,
+    unit: record.unit || "MT",
+    minimumOrderQuantity: record.minimumOrderQuantity || 0,
+    availableQuantity: record.quantityAvailable || 0,
+    originPort: record.originPort || "",
+    certifications: record.certifications,
+    leadTimeDays: record.leadTimeDays || 0,
+    trustScore: 0,
+    riskScore: 0,
+    aiMatchScore: 0,
+    description: record.description || "",
+    specs: record.specs,
+    isTopTrusted: false,
+  };
+}
 
 export type RoleType = OrganizationRole;
 export type DutyMode = "dual" | "import" | "export";
@@ -12,6 +52,22 @@ interface WorkspaceContextType {
   setRole: (role: RoleType) => void;
   dutyMode: DutyMode;
   setDutyMode: (mode: DutyMode) => void;
+  /** Which way goods flow for this organization (mirrors `organizations.business_type`). */
+  businessType: BusinessType;
+  setBusinessType: (businessType: BusinessType) => void;
+  /**
+   * The direction the user is currently operating in. Pinned by `businessType` for
+   * EXPORTER/IMPORTER orgs; user-toggleable for BOTH.
+   *
+   * This is the SINGLE SOURCE OF TRUTH for the `trade_flow` parameter sent to the
+   * trade-anomaly model. Do not hardcode "Export" at a call site.
+   */
+  activeDirection: TradeDirection;
+  setActiveDirection: (direction: TradeDirection) => void;
+  /** True only when the org is BOTH — i.e. the direction toggle should be offered. */
+  canSwitchDirection: boolean;
+  isImporterView: boolean;
+  isExporterView: boolean;
   isBuyer: boolean;
   isExporter: boolean;
   isAdmin: boolean;
@@ -22,16 +78,25 @@ interface WorkspaceContextType {
   roleAccentColor: string;
   roleBadgeClass: string;
   listings: Listing[];
+  listingsLoading: boolean;
+  listingsError: string | null;
+  refreshListings: () => Promise<void>;
   addListing: (newListing: Listing) => void;
   register: (payload: {
     adminName: string;
     organizationName: string;
     email: string;
     role?: OrganizationRole;
+    businessType?: BusinessType;
     country?: string;
     documents?: UploadedDoc[];
   }) => Promise<UserSession>;
-  login: (email: string, role?: OrganizationRole, organizationName?: string) => Promise<UserSession>;
+  login: (
+    email: string,
+    role?: OrganizationRole,
+    organizationName?: string,
+    businessType?: BusinessType
+  ) => Promise<UserSession>;
   logout: () => Promise<void>;
   uploadDocument: (file: File, docType: string) => Promise<{ fileId: string; url: string }>;
 }
@@ -41,17 +106,39 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserSession>(() => appwriteService.getCurrentUser());
   const [dutyMode, setDutyMode] = useState<DutyMode>("import");
-  const [listings, setListings] = useState<Listing[]>(() => {
-    const saved = localStorage.getItem("globex_listings");
-    return saved ? JSON.parse(saved) : DEMO_LISTINGS;
+
+  // Only meaningful for a BOTH org; for EXPORTER/IMPORTER the businessType wins below.
+  const [preferredDirection, setPreferredDirection] = useState<TradeDirection>(() => {
+    const saved = localStorage.getItem("globex_active_direction");
+    return saved === "Import" || saved === "Export" ? saved : "Export";
   });
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [listingsLoading, setListingsLoading] = useState<boolean>(true);
+  const [listingsError, setListingsError] = useState<string | null>(null);
+
+  const refreshListings = async () => {
+    setListingsLoading(true);
+    setListingsError(null);
+    try {
+      const records = await aiService.getListings({ status: "ACTIVE" });
+      setListings(records.map(toUiListing));
+    } catch (err) {
+      // Honest empty state on failure — never fall back to fabricated demo
+      // listings. The marketplace must show "no live listings" rather than
+      // pretend the catalog is populated when the backend is unreachable.
+      setListingsError(err instanceof Error ? err.message : "Could not load marketplace listings.");
+      setListings([]);
+    } finally {
+      setListingsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshListings();
+  }, []);
 
   const handleAddListing = (newListing: Listing) => {
-    setListings((prev) => {
-      const updated = [newListing, ...prev];
-      localStorage.setItem("globex_listings", JSON.stringify(updated));
-      return updated;
-    });
+    setListings((prev) => [newListing, ...prev]);
   };
 
   useEffect(() => {
@@ -81,10 +168,25 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return res;
   };
 
-  const handleLogin = async (email: string, role: OrganizationRole = "admin", organizationName?: string) => {
-    const res = await appwriteService.login(email, role, organizationName);
+  const handleLogin = async (
+    email: string,
+    role: OrganizationRole = "admin",
+    organizationName?: string,
+    businessType?: BusinessType
+  ) => {
+    const res = await appwriteService.login(email, role, organizationName, businessType);
     setUser(res);
     return res;
+  };
+
+  const handleSetBusinessType = (next: BusinessType) => {
+    appwriteService.setBusinessType(next);
+    setUser(appwriteService.getCurrentUser());
+  };
+
+  const handleSetActiveDirection = (direction: TradeDirection) => {
+    setPreferredDirection(direction);
+    localStorage.setItem("globex_active_direction", direction);
   };
 
   const handleLogout = async () => {
@@ -97,6 +199,21 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setUser(appwriteService.getCurrentUser());
     return res;
   };
+
+  const businessType: BusinessType = user.businessType || "BOTH";
+  const canSwitchDirection = businessType === "BOTH";
+
+  // EXPORTER / IMPORTER orgs are pinned to their one direction — a pinned org must
+  // never be able to land on the other side's flow. Only BOTH honours the toggle.
+  const activeDirection: TradeDirection =
+    businessType === "EXPORTER"
+      ? "Export"
+      : businessType === "IMPORTER"
+        ? "Import"
+        : preferredDirection;
+
+  const isExporterView = activeDirection === "Export";
+  const isImporterView = activeDirection === "Import";
 
   const role = user.role as RoleType;
   const isBuyer = role === "buyer" || dutyMode === "import";
@@ -151,6 +268,13 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setRole: handleSetRole,
         dutyMode,
         setDutyMode,
+        businessType,
+        setBusinessType: handleSetBusinessType,
+        activeDirection,
+        setActiveDirection: handleSetActiveDirection,
+        canSwitchDirection,
+        isImporterView,
+        isExporterView,
         isBuyer,
         isExporter,
         isAdmin,
@@ -161,6 +285,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         roleAccentColor,
         roleBadgeClass,
         listings,
+        listingsLoading,
+        listingsError,
+        refreshListings,
         addListing: handleAddListing,
         register: handleRegister,
         login: handleLogin,

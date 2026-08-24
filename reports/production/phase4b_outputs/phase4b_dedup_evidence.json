@@ -1,0 +1,42 @@
+{
+  "dup_rows": 19292,
+  "dup_keys": 9646,
+  "pairs_same_weight": 9646,
+  "pairs_same_quantity": 9646,
+  "n_pairs": 9646,
+  "value_ratio_by_hs6": {
+    "100630": 0.945455,
+    "271019": 1.027027,
+    "300490": 1.15,
+    "520512": 1.027778,
+    "711319": 1.044444,
+    "847130": 1.033708,
+    "851712": 0.866667
+  },
+  "differing_columns": [
+    [
+      "trade_value_usd",
+      100.0
+    ],
+    [
+      "export_value_usd",
+      100.0
+    ],
+    [
+      "import_value_usd",
+      100.0
+    ],
+    [
+      "trade_balance_usd",
+      100.0
+    ],
+    [
+      "fob_unit_value_usd_per_kg",
+      100.0
+    ],
+    [
+      "destination_market_share_pct",
+      18.16296910636533
+    ]
+  ]
+}

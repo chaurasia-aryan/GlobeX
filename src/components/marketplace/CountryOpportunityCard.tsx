@@ -107,7 +107,7 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
         </div>
       </div>
 
-      {/* ── Key GRU Forecast Metrics Grid ───────────────────────────────── */}
+      {/* ── Key Forecast Metrics Grid ───────────────────────────────── */}
       <div className="grid grid-cols-3 gap-2.5 py-2 border-y border-white/[0.06] text-xs">
         <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04]">
           <span className="text-[10px] uppercase text-slate-500 font-mono block">Annual Demand</span>

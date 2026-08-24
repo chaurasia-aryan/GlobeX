@@ -56,12 +56,16 @@ export interface CounterpartyMatchResult {
 export interface TradeRiskAnalysis {
   compositeScore: number;
   riskLevel: "LOW" | "MODERATE" | "ELEVATED" | "CRITICAL";
+  // null = not modelled for this request, never a guessed constant.
+  // transactionRisk is the one dimension actually derived from a real
+  // model output (the anomaly score); the rest require data this call
+  // doesn't have access to (see analyzeTradeRisk below).
   subscores: {
-    counterpartyRisk: number;
+    counterpartyRisk: number | null;
     transactionRisk: number;
-    regulatoryRisk: number;
-    documentIntegrity: number;
-    shipmentRisk: number;
+    regulatoryRisk: number | null;
+    documentIntegrity: number | null;
+    shipmentRisk: number | null;
   };
   recommendation: string;
   keyDrivers: string[];
@@ -71,7 +75,7 @@ export interface ComplianceAnalysis {
   tariffRate: string;
   standardMFNRate: string;
   tradeAgreement: string;
-  estimatedSavingsUSD: number;
+  estimatedSavingsUSD: number | null;
   ntmBarriers: string[];
   mandatoryDocuments: {
     name: string;
@@ -253,6 +257,11 @@ export interface ListingCreatePayload {
   price?: number;
   currency?: string;
   incoterms?: string;
+  originPort?: string;
+  certifications?: string[];
+  leadTimeDays?: number;
+  minimumOrderQuantity?: number;
+  specs?: Record<string, string>;
 }
 
 export interface ListingCreateResult {
@@ -261,6 +270,32 @@ export interface ListingCreateResult {
   productName: string;
   status: string;
   createdAt: string;
+}
+
+export interface ListingRecord {
+  id: string;
+  organizationId: string;
+  createdBy: string | null;
+  productName: string;
+  productCategory: string | null;
+  hsCode: string | null;
+  description: string | null;
+  quantityAvailable: number | null;
+  unit: string | null;
+  price: number | null;
+  currency: string | null;
+  incoterms: string | null;
+  status: string;
+  originPort: string | null;
+  certifications: string[];
+  leadTimeDays: number | null;
+  minimumOrderQuantity: number | null;
+  specs: Record<string, string>;
+  exporterName: string | null;
+  exporterCountry: string | null;
+  exporterCity: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 class AIService {
@@ -310,7 +345,7 @@ class AIService {
       anomaly
     );
 
-    const dutySavings = compliance.estimatedSavingsUSD || Math.round(totalContractValue * 0.05);
+    const dutySavings = compliance.estimatedSavingsUSD; // null when the backend didn't compute one — not guessed at 5%
 
     return {
       tradeId: `TRD-${originIso3}-${destIso3}-${Math.round(totalContractValue / 1000)}K`,
@@ -339,56 +374,26 @@ class AIService {
     origin: string = "IND",
     destination: string = "ARE"
   ): Promise<HSClassificationResult> {
-    try {
-      const res = await fetch(`${this.baseUrl}/predict/hs-code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product: productName, origin, destination }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.hs6) {
-          return {
-            hsCode: data.hs_code_formatted || String(data.hs6),
-            category: data.product_description || "Classified Commodity",
-            confidence: data.confidence || 0.85,
-            alternativeCodes: (data.candidates || [])
-              .filter((c: any) => c.hs6 !== data.hs6)
-              .map((c: any) => String(c.hs6)),
-            dataSource: "live",
-          };
-        }
-      }
-    } catch {
-      // Backend unreachable — falls through to the keyword-matched demo
-      // response below. Never presented as a live classification.
+    const res = await fetch(`${this.baseUrl}/predict/hs-code`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product: productName, origin, destination }),
+    });
+    if (!res.ok) {
+      throw new Error(`HS classification failed (${res.status}): ${res.statusText}`);
     }
-
-    const lower = (productName + " " + description).toLowerCase();
-    if (lower.includes("rice") || lower.includes("basmati") || lower.includes("grain")) {
-      return {
-        hsCode: "1006.30",
-        category: "Semi-milled or wholly milled basmati rice",
-        confidence: 0.96,
-        alternativeCodes: ["1006.20", "1006.40"],
-        dataSource: "fallback",
-      };
-    } else if (lower.includes("pepper") || lower.includes("spice") || lower.includes("cardamom")) {
-      return {
-        hsCode: "0904.11",
-        category: "Spices & Pepper: neither crushed nor ground",
-        confidence: 0.94,
-        alternativeCodes: ["0908.31", "0910.30"],
-        dataSource: "fallback",
-      };
+    const data = await res.json();
+    if (!data.hs6) {
+      throw new Error(`HS classification returned no match for "${productName}"`);
     }
-
     return {
-      hsCode: "1006.30",
-      category: "Processed Commercial Goods / Agri Commodities",
-      confidence: 0.90,
-      alternativeCodes: ["0904.11", "5205.23"],
-      dataSource: "fallback",
+      hsCode: data.hs_code_formatted || String(data.hs6),
+      category: data.product_description || "Classified Commodity",
+      confidence: data.confidence || 0.85,
+      alternativeCodes: (data.candidates || [])
+        .filter((c: any) => c.hs6 !== data.hs6)
+        .map((c: any) => String(c.hs6)),
+      dataSource: "live",
     };
   }
 
@@ -399,190 +404,21 @@ class AIService {
     regime: string = "balanced",
     topN: number = 5
   ): Promise<MarketOpportunityResult> {
-    try {
-      const res = await fetch(`${this.baseUrl}/predict/market-opportunity`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product,
-          quantity_kg: quantityKg,
-          regime,
-          top_n: topN,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return { ...data, dataSource: "live" };
-      }
-    } catch {
-      // Backend unreachable — falls through to the demo response below.
+    const res = await fetch(`${this.baseUrl}/predict/market-opportunity`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product,
+        quantity_kg: quantityKg,
+        regime,
+        top_n: topN,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Market opportunity ranking failed (${res.status}): ${res.statusText}`);
     }
-
-    return {
-      status: "success",
-      dataSource: "fallback",
-      product_resolution: {
-        status: "exact_match",
-        hs6: 100630,
-        product_description: "Semi-milled or wholly milled rice, whether or not polished or glazed (Basmati Rice)",
-      },
-      requested_quantity_kg: quantityKg || 1000,
-      total_candidates_evaluated: 18,
-      top_recommendations: [
-        {
-          destination: {
-            iso3: "ARE",
-            country_name: "United Arab Emirates",
-            region: "Asia",
-            sub_region: "Western Asia",
-            currency: "AED",
-          },
-          product: {
-            hs6: 100630,
-            description: "Semi-milled or wholly milled rice, whether or not polished or glazed (Basmati Rice)",
-          },
-          forecast: {
-            annual_market_demand_kg: 85000000,
-            expected_fob_price_usd_per_kg: 1.15,
-            user_shipment_quantity_kg: quantityKg || 1000,
-            estimated_shipment_revenue_usd: (quantityKg || 1000) * 1.15,
-          },
-          risk: {
-            risk_level: "LOW",
-            risk_penalty_points: 0,
-            risk_flags: "COMPLIANT_CLEAR",
-            sanctions_active: false,
-            ofac_count: 0,
-            scomet_controlled: false,
-          },
-          scores: {
-            final_score: 94.2,
-            opportunity_score: 94.2,
-            risk_penalty: 0,
-            quantity_fit_score: 96.5,
-            score_revealed_demand: 96.1,
-            score_forecast_demand: 95.6,
-            score_growth_momentum: 82.4,
-            score_trade_access: 98.0,
-            score_economic_capacity: 93.7,
-            score_forecast_price: 88.0,
-            score_logistics: 92.5,
-            score_buyer_ecosystem: 95.6,
-            score_stability: 95.6,
-          },
-          pros: [
-            "Duty-Free Preferential Access (0.0% tariff) under India - UAE CEPA.",
-            "Tariff preference margin of 5.0% over non-FTA competitors.",
-            "High maritime freight connectivity with 290 major container ports (850 LOCODE hubs).",
-            "Established B2B buyer network (3,776 active verified corporate buyers).",
-          ],
-          cons: [
-            "Standard international logistics and exchange rate fluctuations.",
-          ],
-        },
-        {
-          destination: {
-            iso3: "SAU",
-            country_name: "Saudi Arabia",
-            region: "Asia",
-            sub_region: "Western Asia",
-            currency: "SAR",
-          },
-          product: {
-            hs6: 100630,
-            description: "Semi-milled or wholly milled rice, whether or not polished or glazed (Basmati Rice)",
-          },
-          forecast: {
-            annual_market_demand_kg: 120000000,
-            expected_fob_price_usd_per_kg: 1.18,
-            user_shipment_quantity_kg: quantityKg || 1000,
-            estimated_shipment_revenue_usd: (quantityKg || 1000) * 1.18,
-          },
-          risk: {
-            risk_level: "LOW",
-            risk_penalty_points: 0,
-            risk_flags: "COMPLIANT_CLEAR",
-            sanctions_active: false,
-            ofac_count: 0,
-            scomet_controlled: false,
-          },
-          scores: {
-            final_score: 88.6,
-            opportunity_score: 88.6,
-            risk_penalty: 0,
-            quantity_fit_score: 95.0,
-            score_revealed_demand: 94.0,
-            score_forecast_demand: 92.0,
-            score_growth_momentum: 78.0,
-            score_trade_access: 80.0,
-            score_economic_capacity: 91.0,
-            score_forecast_price: 85.0,
-            score_logistics: 88.0,
-            score_buyer_ecosystem: 90.0,
-            score_stability: 92.0,
-          },
-          pros: [
-            "Largest regional volume demand market for Basmati Rice in the Middle East.",
-            "Strong historical buyer relationships and direct shipping routes.",
-            "High purchasing power parity with consistent demand cycles.",
-          ],
-          cons: [
-            "Applied standard MFN tariff rate of 5.0%.",
-          ],
-        },
-        {
-          destination: {
-            iso3: "JPN",
-            country_name: "Japan",
-            region: "Asia",
-            sub_region: "Eastern Asia",
-            currency: "JPY",
-          },
-          product: {
-            hs6: 100630,
-            description: "Semi-milled or wholly milled rice, whether or not polished or glazed (Basmati Rice)",
-          },
-          forecast: {
-            annual_market_demand_kg: 7214386.5,
-            expected_fob_price_usd_per_kg: 1.45,
-            user_shipment_quantity_kg: quantityKg || 1000,
-            estimated_shipment_revenue_usd: (quantityKg || 1000) * 1.45,
-          },
-          risk: {
-            risk_level: "LOW",
-            risk_penalty_points: 0,
-            risk_flags: "COMPLIANT_CLEAR",
-            sanctions_active: false,
-            ofac_count: 0,
-            scomet_controlled: false,
-          },
-          scores: {
-            final_score: 82.98,
-            opportunity_score: 82.98,
-            risk_penalty: 0,
-            quantity_fit_score: 91.86,
-            score_revealed_demand: 96.12,
-            score_forecast_demand: 95.63,
-            score_growth_momentum: 31.55,
-            score_trade_access: 83.98,
-            score_economic_capacity: 93.69,
-            score_forecast_price: 50.0,
-            score_logistics: 83.98,
-            score_buyer_ecosystem: 95.63,
-            score_stability: 95.63,
-          },
-          pros: [
-            "Duty-Free Preferential Access (0.0% tariff) under India - Japan CEPA.",
-            "Tariff preference margin of 7.7% over non-FTA competitors.",
-            "High maritime freight connectivity with 290 major container ports (850 LOCODE hubs).",
-          ],
-          cons: [
-            "Standard international logistics and exchange rate fluctuations.",
-          ],
-        },
-      ],
-      model_version: "pd-gru-v1.0",
-    };
+    const data = await res.json();
+    return { ...data, dataSource: "live" };
   }
 
   // 3. Trade Anomaly Detection
@@ -594,47 +430,25 @@ class AIService {
     quantity: number,
     quantityUnit: string = "kg"
   ): Promise<TradeAnomalyResult> {
-    try {
-      const res = await fetch(`${this.baseUrl}/api/trade-anomaly/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trade_flow: tradeFlow,
-          hs6,
-          partner_country: partnerCountry,
-          trade_value_usd: tradeValueUSD,
-          quantity,
-          quantity_unit: quantityUnit,
-          period: new Date().toISOString().slice(0, 7).replace("-", ""),
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return { ...data, status: data.status ?? "OK" };
-      }
-    } catch {
-      // Backend unreachable — honestly reported as FALLBACK, not OK. An
-      // anomaly/risk signal the model never actually computed must never be
-      // presented as if it had.
+    const res = await fetch(`${this.baseUrl}/api/trade-anomaly/predict`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        trade_flow: tradeFlow,
+        hs6,
+        partner_country: partnerCountry,
+        trade_value_usd: tradeValueUSD,
+        quantity,
+        quantity_unit: quantityUnit,
+        period: new Date().toISOString().slice(0, 7).replace("-", ""),
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Trade anomaly prediction failed (${res.status}): ${body || res.statusText}`);
     }
-
-    return {
-      status: "FALLBACK",
-      risk: {
-        anomaly_score: 0.18,
-        is_anomaly: false,
-        risk_level: "LOW",
-        anomaly_type: "NORMAL",
-        label_source: "RULE_BASED_HEURISTIC",
-      },
-      metadata: {
-        version: "1.0.0",
-        model_name: "Trade Behaviour Anomaly Detection XGBoost",
-        model_loaded: true,
-        threshold: 0.5,
-        label_source: "RULE_BASED_HEURISTIC",
-      },
-    };
+    const data = await res.json();
+    return { ...data, status: data.status ?? "OK" };
   }
 
   // 4. Semantic Counterparty Matching
@@ -645,91 +459,44 @@ class AIService {
     destinationCountry: string = "ARE",
     hs6: number = 100630
   ): Promise<CounterpartyMatchResult[]> {
-    try {
-      const res = await fetch(`${this.baseUrl}/predict/counterparty-match`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          hs6,
-          destination_country: destinationCountry,
-          quantity_kg: quantity,
-          top_n: 5,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data.counterparties) && data.counterparties.length > 0) {
-          return data.counterparties.map((cp: any) => ({
-            exporterId: cp.organization_id || `ORG-${Math.random().toString(36).slice(2, 7)}`,
-            companyName: cp.name,
-            originCountry: cp.country || "India",
-            port: "JNPT Nhava Sheva (INNSA)",
-            trustScore: Math.round(cp.trust_score * 100),
-            matchScore: Math.round(cp.match_score * 100),
-            breakdown: {
-              productFit: 25,
-              quantityFit: 20,
-              priceFit: 19,
-              certificationFit: 15,
-              trustScoreWeight: 20,
-              riskDeduction: -3,
-            },
-            certifications: cp.certifications || ["ISO 22000", "FSSAI"],
-            historicalVolumeMT: 14800,
-            disputeRate: "0.0%",
-            explanation: `Verified candidate matching ${query} in ${destinationCountry} corridor.`,
-            dataSource: "live" as const,
-          }));
-        }
-      }
-    } catch {
-      // Backend unreachable — falls through to the demo candidates below.
+    const res = await fetch(`${this.baseUrl}/predict/counterparty-match`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        hs6,
+        destination_country: destinationCountry,
+        quantity_kg: quantity,
+        top_n: 5,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Counterparty matching failed (${res.status}): ${res.statusText}`);
     }
-
-    return [
-      {
-        exporterId: "EXP-IND-001",
-        companyName: "Arvind Global Agro Exports Ltd",
-        dataSource: "fallback" as const,
-        originCountry: "India",
-        port: "JNPT Nhava Sheva (INNSA)",
-        trustScore: 94,
-        matchScore: 96,
-        breakdown: {
-          productFit: 25,
-          quantityFit: 20,
-          priceFit: 19,
-          certificationFit: 15,
-          trustScoreWeight: 20,
-          riskDeduction: -3,
-        },
-        certifications: ["ISO 22000", "FSSAI", "APEDA", "Halal"],
-        historicalVolumeMT: 14800,
-        disputeRate: "0.0%",
-        explanation: "Primary candidate: Exact Basmati specifications with active ISO/FSSAI certificates and 128 successful GCC deliveries.",
+    const data = await res.json();
+    if (!Array.isArray(data.counterparties) || data.counterparties.length === 0) {
+      return [];
+    }
+    return data.counterparties.map((cp: any) => ({
+      exporterId: cp.organization_id || `ORG-${Math.random().toString(36).slice(2, 7)}`,
+      companyName: cp.name,
+      originCountry: cp.country || "India",
+      port: "JNPT Nhava Sheva (INNSA)",
+      trustScore: Math.round(cp.trust_score * 100),
+      matchScore: Math.round(cp.match_score * 100),
+      breakdown: {
+        productFit: 25,
+        quantityFit: 20,
+        priceFit: 19,
+        certificationFit: 15,
+        trustScoreWeight: 20,
+        riskDeduction: -3,
       },
-      {
-        exporterId: "EXP-IND-002",
-        companyName: "Bharat Heritage Agro Industries",
-        dataSource: "fallback" as const,
-        originCountry: "India",
-        port: "Mundra Port (INMUN)",
-        trustScore: 91,
-        matchScore: 92,
-        breakdown: {
-          productFit: 23,
-          quantityFit: 19,
-          priceFit: 18,
-          certificationFit: 14,
-          trustScoreWeight: 18,
-          riskDeduction: -4,
-        },
-        certifications: ["ISO 22000", "FSSAI", "APEDA"],
-        historicalVolumeMT: 9400,
-        disputeRate: "0.4%",
-        explanation: "Secondary candidate: High capacity exporter with competitive pricing and validated cold storage facilities.",
-      },
-    ];
+      certifications: cp.certifications || ["ISO 22000", "FSSAI"],
+      historicalVolumeMT: 14800,
+      disputeRate: "0.0%",
+      explanation: `Verified candidate matching ${query} in ${destinationCountry} corridor.`,
+      dataSource: "live" as const,
+    }));
   }
 
   // 5. Trade Risk Analysis
@@ -741,27 +508,36 @@ class AIService {
     hs6: number = 100630,
     anomalyResult?: TradeAnomalyResult
   ): Promise<TradeRiskAnalysis> {
-    const anomalyScore = anomalyResult?.risk?.anomaly_score ?? 0.18;
-    const isCritical = anomalyResult?.risk?.risk_level === "CRITICAL";
+    // This method makes no network call: it does not have per-organization
+    // trade history, document data, or shipment data to model counterparty/
+    // regulatory/document/shipment risk with. Rather than fabricate those
+    // four subscores as plausible-looking constants (12/14/16/22, unchanged
+    // for every request regardless of input), they are reported null —
+    // "not modelled here" — and only transactionRisk, which genuinely comes
+    // from the trade-anomaly model's anomaly_score, is populated. Real
+    // counterparty risk is available separately from
+    // POST /predict/counterparty-risk (src/api/counterparty_api.py).
+    if (!anomalyResult) {
+      throw new Error("analyzeTradeRisk requires a real anomaly result — no fallback risk score is fabricated.");
+    }
+    const anomalyScore = anomalyResult.risk?.anomaly_score ?? 0;
+    const riskLevel = (anomalyResult.risk?.risk_level as TradeRiskAnalysis["riskLevel"]) || "LOW";
+    const isCritical = riskLevel === "CRITICAL";
 
     return {
-      compositeScore: isCritical ? 78 : Math.round(anomalyScore * 100),
-      riskLevel: (anomalyResult?.risk?.risk_level as any) || "LOW",
+      compositeScore: Math.round(anomalyScore * 100),
+      riskLevel,
       subscores: {
-        counterpartyRisk: 12,
+        counterpartyRisk: null,
         transactionRisk: Math.round(anomalyScore * 100),
-        regulatoryRisk: 14,
-        documentIntegrity: 16,
-        shipmentRisk: 22,
+        regulatoryRisk: null,
+        documentIntegrity: null,
+        shipmentRisk: null,
       },
       recommendation: isCritical
-        ? "Caution: Volume collapse or price anomaly detected relative to 3-month rolling baseline."
-        : "Low Risk corridor with India-UAE CEPA treaty tariff benefits and fully collateralized USDC escrow settlement.",
-      keyDrivers: anomalyResult?.signals?.map(s => `${s.signal}: ${s.message}`) || [
-        "Verified Tier-1 Exporter with 14-year clean operational record.",
-        "Zero import tariff under India-UAE CEPA bilateral agreement.",
-        "Short 4-day direct maritime transit between Nhava Sheva and Jebel Ali.",
-      ],
+        ? "Caution: transaction anomaly detected relative to historical corridor baseline. Review before proceeding."
+        : "No transaction-level anomaly detected. Counterparty, regulatory, document, and shipment risk are not modelled by this call — see /predict/counterparty-risk and /compliance/rag-analyze.",
+      keyDrivers: (anomalyResult.signals || []).map(s => `${s.signal}: ${s.message}`),
     };
   }
 
@@ -774,62 +550,37 @@ class AIService {
     certifications?: string[]
   ): Promise<ComplianceAnalysis> {
     const hs6Int = parseInt(hsCode.replace(/\D/g, "").slice(0, 6), 10) || 100630;
-    try {
-      const res = await fetch(`${this.baseUrl}/compliance/rag-analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          hs6: hs6Int,
-          origin_country: origin,
-          destination_country: destination,
-          trade_value_usd: tradeValueUSD,
-          certifications,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return {
-          tariffRate: `${data.tariff?.preferential_rate_pct ?? 0.0}%`,
-          standardMFNRate: `${data.tariff?.standard_mfn_rate_pct ?? 5.0}%`,
-          tradeAgreement: data.tariff?.agreement || "Bilateral Trade Agreement",
-          estimatedSavingsUSD: data.tariff?.duty_savings_usd || 27500,
-          ntmBarriers: data.ntm_barriers || [],
-          mandatoryDocuments: (data.required_documents || []).map((d: any) => ({
-            name: d.name,
-            issuingAuthority: d.issuing_authority,
-            mandatory: d.mandatory,
-          })),
-          disclaimer: data.disclaimer || "AI-generated regulatory analysis grounded in official tariff schedules.",
-          dataSource: "live",
-        };
-      }
-    } catch {
-      // Backend unreachable — falls through to the labelled demo response
-      // below. A compliance result is safety-critical: it must never look
-      // indistinguishable from a live regulatory answer.
+    const res = await fetch(`${this.baseUrl}/compliance/rag-analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        hs6: hs6Int,
+        origin_country: origin,
+        destination_country: destination,
+        trade_value_usd: tradeValueUSD,
+        certifications,
+      }),
+    });
+    if (!res.ok) {
+      // Compliance is safety-critical: it must never look indistinguishable
+      // from a live regulatory answer, so a failure surfaces as a failure.
+      const body = await res.text().catch(() => "");
+      throw new Error(`Compliance analysis failed (${res.status}): ${body || res.statusText}`);
     }
-
+    const data = await res.json();
     return {
-      tariffRate: "0.0%",
-      standardMFNRate: "5.0%",
-      tradeAgreement: "India-UAE Comprehensive Economic Partnership Agreement (CEPA)",
-      estimatedSavingsUSD: 27500,
-      ntmBarriers: [
-        "Ministry of Climate Change and Environment (MOCCAE) Food Import Permit",
-        "Halal Certification for processed products",
-        "NPPO Phytosanitary Inspection at origin port",
-        "Maximum Residue Limit (MRL) laboratory test certificate",
-      ],
-      mandatoryDocuments: [
-        { name: "Commercial Invoice", issuingAuthority: "Exporter / Shipper", mandatory: true },
-        { name: "Bill of Lading", issuingAuthority: "Ocean Carrier (MSC / Maersk)", mandatory: true },
-        { name: "Packing List", issuingAuthority: "Exporter / Warehouse", mandatory: true },
-        { name: "Certificate of Origin (CEPA)", issuingAuthority: "DGFT / Export Inspection Council", mandatory: true },
-        { name: "Phytosanitary Certificate", issuingAuthority: "NPPO / Plant Quarantine of India", mandatory: true },
-        { name: "Independent Weight & Quality Certificate", issuingAuthority: "SGS / Bureau Veritas", mandatory: false },
-      ],
-      disclaimer: "DEMO DATA — NOT LIVE COMPLIANCE. AI-generated regulatory analysis grounded in official tariff schedules. Final customs clearance subject to port inspection.",
-      dataSource: "fallback",
+      tariffRate: `${data.tariff?.preferential_rate_pct ?? 0.0}%`,
+      standardMFNRate: `${data.tariff?.standard_mfn_rate_pct ?? 5.0}%`,
+      tradeAgreement: data.tariff?.agreement || "Bilateral Trade Agreement",
+      estimatedSavingsUSD: data.tariff?.duty_savings_usd ?? null,
+      ntmBarriers: data.ntm_barriers || [],
+      mandatoryDocuments: (data.required_documents || []).map((d: any) => ({
+        name: d.name,
+        issuingAuthority: d.issuing_authority,
+        mandatory: d.mandatory,
+      })),
+      disclaimer: data.disclaimer || "Rule-based regulatory analysis grounded in official tariff schedules.",
+      dataSource: "live",
     };
   }
 
@@ -945,6 +696,11 @@ class AIService {
         price: payload.price,
         currency: payload.currency,
         incoterms: payload.incoterms,
+        origin_port: payload.originPort,
+        certifications: payload.certifications,
+        lead_time_days: payload.leadTimeDays,
+        minimum_order_quantity: payload.minimumOrderQuantity,
+        specs: payload.specs,
       }),
     });
     if (!res.ok) {
@@ -959,6 +715,50 @@ class AIService {
       status: data.status,
       createdAt: data.created_at,
     };
+  }
+
+  /**
+   * Read path for the marketplace catalog. No fallback: an empty/failed
+   * result must surface as empty/failed to the caller, never silently
+   * replaced with fabricated demo listings.
+   */
+  public async getListings(params?: { status?: string; category?: string; organizationId?: string }): Promise<ListingRecord[]> {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.category) qs.set("category", params.category);
+    if (params?.organizationId) qs.set("organization_id", params.organizationId);
+
+    const res = await fetch(`${this.baseUrl}/api/v1/listings?${qs.toString()}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Fetching listings failed (${res.status}): ${body || res.statusText}`);
+    }
+    const data = await res.json();
+    return (data.listings || []).map((d: any) => ({
+      id: d.id,
+      organizationId: d.organization_id,
+      createdBy: d.created_by,
+      productName: d.product_name,
+      productCategory: d.product_category,
+      hsCode: d.hs_code,
+      description: d.description,
+      quantityAvailable: d.quantity_available,
+      unit: d.unit,
+      price: d.price,
+      currency: d.currency,
+      incoterms: d.incoterms,
+      status: d.status,
+      originPort: d.origin_port,
+      certifications: d.certifications || [],
+      leadTimeDays: d.lead_time_days,
+      minimumOrderQuantity: d.minimum_order_quantity,
+      specs: d.specs || {},
+      exporterName: d.exporter_name,
+      exporterCountry: d.exporter_country,
+      exporterCity: d.exporter_city,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   public getStatus() {
