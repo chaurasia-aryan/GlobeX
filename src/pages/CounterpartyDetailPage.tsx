@@ -21,8 +21,8 @@ export const CounterpartyDetailPage: React.FC = () => {
         {/* Page Header */}
         <PageHeader
           breadcrumbs={[
-            { label: "Marketplace", href: "/marketplace" },
-            { label: "Counterparties" },
+            { label: "Discover", href: "/discover" },
+            { label: "Counterparties", href: "/counterparties" },
             { label: partner.name },
           ]}
           title={partner.name}
@@ -40,7 +40,7 @@ export const CounterpartyDetailPage: React.FC = () => {
           }
           badge={<StatusBadge status="verified" label="KYC Verified Tier-1" size="md" />}
           action={
-            <Link to="/trade-requests?duty=import">
+            <Link to="/requests?duty=import">
               <PrimaryAction icon={<PlusCircle className="w-4 h-4" />} iconPosition="left" size="sm">
                 Start Trade with Partner
               </PrimaryAction>

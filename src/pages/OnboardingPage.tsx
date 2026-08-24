@@ -1,265 +1,339 @@
-import React, { useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useWorkspace, RoleType } from "@/context/WorkspaceContext";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuthContext } from "@/context/AuthContext";
+import {
+  saveOrgProfileStep,
+  saveBusinessTypeStep,
+  saveVerificationStep,
+  uploadVerificationFile,
+  type BusinessType,
+  type VerificationDocumentType,
+} from "@/services/auth/authService";
 import {
   Building2,
-  User,
-  Mail,
-  Briefcase,
+  Globe2,
+  Ship,
+  ArrowLeftRight,
   Upload,
   FileText,
-  CheckCircle2,
   Trash2,
-  ShieldCheck,
+  CheckCircle2,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 import SpecularButton from "@/components/ui/SpecularButton";
-import { UploadedDoc } from "@/services/appwrite/client";
+import { cn } from "@/lib/utils";
+
+type WizardStep = "PROFILE" | "BUSINESS_TYPE" | "VERIFICATION";
+
+const STEP_ORDER: WizardStep[] = ["PROFILE", "BUSINESS_TYPE", "VERIFICATION"];
+
+interface PendingDoc {
+  file: File;
+  documentType: VerificationDocumentType;
+}
+
+const StepIndicator: React.FC<{ current: WizardStep }> = ({ current }) => {
+  const idx = STEP_ORDER.indexOf(current);
+  return (
+    <div className="flex items-center gap-2 mb-8">
+      {STEP_ORDER.map((step, i) => (
+        <React.Fragment key={step}>
+          <div
+            className={cn(
+              "w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-mono font-semibold shrink-0",
+              i < idx
+                ? "bg-[var(--brand)] text-white"
+                : i === idx
+                  ? "border-2 border-[var(--brand)] text-[var(--brand)]"
+                  : "border border-[var(--hairline-strong)] text-[var(--text-muted)]"
+            )}
+          >
+            {i < idx ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
+          </div>
+          {i < STEP_ORDER.length - 1 && (
+            <div className={cn("flex-1 h-px", i < idx ? "bg-[var(--brand)]" : "bg-[var(--hairline)]")} />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
 
 export const OnboardingPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { register } = useWorkspace();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { appUser, organization, refresh } = useAuthContext();
 
-  const [orgName, setOrgName] = useState("Acme Global Trading Ltd.");
-  const [adminName, setAdminName] = useState("John Doe");
-  const [email, setEmail] = useState("john.doe@acmeglobaltrade.com");
-  const [role, setSelectedRole] = useState<RoleType>("admin");
+  const currentStep: WizardStep =
+    !organization ? "PROFILE" : organization.onboardingStep === "DONE" ? "VERIFICATION" : organization.onboardingStep;
+  const orgId = organization?.id ?? null;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const [documents, setDocuments] = useState<UploadedDoc[]>([
-    {
-      id: "doc_1",
-      name: "IEC_Certificate_GovIndia.pdf",
-      size: "2.4 MB",
-      type: "IEC License",
-      uploadTime: "Verified",
-    },
-    {
-      id: "doc_2",
-      name: "GSTIN_Incorporation_27AABCA.pdf",
-      size: "1.1 MB",
-      type: "GSTIN Registration",
-      uploadTime: "Verified",
-    },
-  ]);
+  // Step 1 — profile
+  const [legalName, setLegalName] = useState("");
+  const [tradeName, setTradeName] = useState("");
+  const [country, setCountry] = useState("India");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files).map((file, idx) => ({
-        id: `doc_${Date.now()}_${idx}`,
-        name: file.name,
-        size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-        type: file.name.toLowerCase().includes("iec")
-          ? "IEC License"
-          : file.name.toLowerCase().includes("gst")
-          ? "GSTIN Registration"
-          : "Commercial Trade Doc",
-        uploadTime: "Uploaded",
-      }));
-      setDocuments((prev) => [...newFiles, ...prev]);
+  // Step 2 — business type
+  const [businessType, setBusinessType] = useState<BusinessType | null>(null);
+
+  // Step 3 — verification documents
+  const [pendingDocs, setPendingDocs] = useState<PendingDoc[]>([]);
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!appUser) return;
+    setFormError(null);
+    setIsSubmitting(true);
+    try {
+      await saveOrgProfileStep(appUser.id, { legalName, tradeName, country, state, city });
+      await refresh();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Could not save organization profile.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleRemoveDoc = (id: string) => {
-    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  const handleBusinessTypeSubmit = async () => {
+    if (!orgId || !businessType) return;
+    setFormError(null);
+    setIsSubmitting(true);
+    try {
+      await saveBusinessTypeStep(orgId, businessType);
+      await refresh();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Could not save business type.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleRegisterAndProceed = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await register({
-      adminName,
-      organizationName: orgName,
-      email,
-      role,
-      documents,
-    });
-    setTimeout(() => {
-      setIsSubmitting(false);
-      navigate("/dashboard");
-    }, 300);
+  const handleAddDoc = (documentType: VerificationDocumentType) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingDocs((prev) => [...prev, { file, documentType }]);
+    e.target.value = "";
   };
+
+  const handleRemoveDoc = (index: number) => {
+    setPendingDocs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVerificationSubmit = async () => {
+    if (!appUser || !orgId) return;
+    setFormError(null);
+    setIsSubmitting(true);
+    try {
+      const uploaded = await Promise.all(
+        pendingDocs.map(async (d) => {
+          const filePath = await uploadVerificationFile(orgId, d.file);
+          return { documentType: d.documentType, filePath, fileName: d.file.name };
+        })
+      );
+      await saveVerificationStep(appUser.id, orgId, uploaded);
+      await refresh();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Could not submit verification documents.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const requiredDocs: { type: VerificationDocumentType; label: string }[] =
+    businessType === "IMPORTER"
+      ? [
+          { type: "COMPANY_REGISTRATION", label: "Company Registration" },
+          { type: "IMPORT_LICENSE", label: "Import License" },
+          { type: "GST_CERTIFICATE", label: "GST Certificate" },
+        ]
+      : [
+          { type: "COMPANY_REGISTRATION", label: "Company Registration" },
+          { type: "IEC_EXPORT_LICENSE", label: "IEC Export License" },
+          { type: "GST_CERTIFICATE", label: "GST Certificate" },
+        ];
 
   return (
-    <div className="min-h-screen bg-[#070A0E] text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 font-sans select-none relative">
-      <div
-        className="fixed inset-0 pointer-events-none opacity-20"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(56, 189, 248, 0.08), transparent 70%)",
-        }}
-      />
-
-      <div className="w-full max-w-xl space-y-6 relative z-10">
-        {/* Brand header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-slate-400 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>GLOBEX UNIFIED PROTOCOL</span>
+    <div className="min-h-[100dvh] w-full bg-[var(--surface-0)] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-xl">
+        <div className="flex items-center gap-2.5 justify-center mb-8">
+          <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--brand-subtle)] border border-[var(--brand)]/25 flex items-center justify-center">
+            <Globe2 className="w-4 h-4 text-[var(--brand)]" />
           </div>
-
-          <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight">
-            Register Organization
-          </h1>
-
-          <p className="text-sm text-slate-400">
-            Set up your organization credentials, admin profile, and verified documents
-          </p>
+          <span className="font-display font-bold text-base tracking-tight text-[var(--text-primary)]">
+            GlobeX<span className="text-[var(--brand)]">AI</span>
+          </span>
         </div>
 
-        <div className="p-7 sm:p-8 rounded-3xl border border-white/[0.08] bg-[#0C121D] shadow-2xl">
-          <form onSubmit={handleRegisterAndProceed} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {/* Organization Name */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Organization Name</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={orgName}
-                  onChange={(e) => setOrgName(e.target.value)}
-                  placeholder="e.g. Acme Global Trading Ltd."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
-                />
-              </div>
+        <div className="rounded-3xl border border-[var(--hairline)] bg-[var(--surface-1)] p-6 sm:p-8 shadow-xl">
+          <StepIndicator current={currentStep} />
 
-              {/* Admin Name */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Admin Name (Full Name)</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={adminName}
-                  onChange={(e) => setAdminName(e.target.value)}
-                  placeholder="e.g. John Doe"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
-                />
-              </div>
+          <AnimatePresence mode="wait">
+            {currentStep === "PROFILE" && (
+              <motion.div key="profile" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <h2 className="font-display font-bold text-lg text-[var(--text-primary)] mb-1">Organization profile</h2>
+                <p className="text-xs text-[var(--text-secondary)] mb-5">Tell us about the organization you're setting up.</p>
 
-              {/* Corporate Email */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Corporate Email</span>
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@organization.com"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans"
-                />
-              </div>
-
-              {/* Role Dropdown */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Organization Role</span>
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setSelectedRole(e.target.value as RoleType)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#101726] border border-white/[0.08] focus:border-emerald-500 text-xs text-white outline-none font-sans cursor-pointer"
-                >
-                  <option value="admin" className="bg-[#0C121D] text-white">
-                    Admin (Full Enterprise Access)
-                  </option>
-                  <option value="compliance" className="bg-[#0C121D] text-white">
-                    Compliance Officer (Regulatory & Verification)
-                  </option>
-                  <option value="salesman" className="bg-[#0C121D] text-white">
-                    Salesman (Commercial Contracts & Deals)
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            {/* Document Upload Section */}
-            <div className="p-3.5 rounded-2xl bg-[#0D1420] border border-white/[0.08] space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-display font-bold text-white flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Add Documents & KYC Credentials</span>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <SpecularButton
-                  type="button"
-                  variant="sky"
-                  size="xs"
-                  radius={10}
-                  onClick={() => fileInputRef.current?.click()}
-                  icon={<Upload className="w-3.5 h-3.5" />}
-                  iconPosition="left"
-                >
-                  Upload Documents
-                </SpecularButton>
-              </div>
-
-              <div className="space-y-1.5">
-                {documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#111824] border border-white/[0.06] text-xs"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span className="text-white truncate max-w-[200px] font-mono">{doc.name}</span>
-                      <span className="text-slate-400 font-mono text-[10px]">{doc.size}</span>
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono">
-                        {doc.type}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveDoc(doc.id)}
-                      className="text-slate-500 hover:text-rose-400 p-1 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                <form onSubmit={handleProfileSubmit} className="space-y-3 text-xs">
+                  <div className="space-y-1">
+                    <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
+                      <Building2 className="w-3 h-3 text-[var(--text-tertiary)]" />
+                      <span>Legal Name</span>
+                    </label>
+                    <input
+                      type="text" required value={legalName} onChange={(e) => setLegalName(e.target.value)}
+                      placeholder="e.g. Acme Global Trading Ltd."
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] outline-none focus:border-[var(--brand-cyan)]"
+                    />
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="space-y-1">
+                    <label className="text-[var(--text-secondary)] text-[11px] font-medium">Trade Name (optional)</label>
+                    <input
+                      type="text" value={tradeName} onChange={(e) => setTradeName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] outline-none focus:border-[var(--brand-cyan)]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <div className="space-y-1">
+                      <label className="text-[var(--text-secondary)] text-[11px] font-medium">Country</label>
+                      <input
+                        type="text" required value={country} onChange={(e) => setCountry(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] outline-none focus:border-[var(--brand-cyan)]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[var(--text-secondary)] text-[11px] font-medium">State</label>
+                      <input
+                        type="text" value={state} onChange={(e) => setState(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] outline-none focus:border-[var(--brand-cyan)]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[var(--text-secondary)] text-[11px] font-medium">City</label>
+                      <input
+                        type="text" value={city} onChange={(e) => setCity(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] outline-none focus:border-[var(--brand-cyan)]"
+                      />
+                    </div>
+                  </div>
 
-            <div className="pt-2">
-              <SpecularButton
-                type="submit"
-                size="md"
-                radius={12}
-                isLoading={isSubmitting}
-                className="w-full justify-center"
-                icon={<ArrowRight className="w-4 h-4" />}
-                iconPosition="right"
-              >
-                Launch Unified Workspace
-              </SpecularButton>
-            </div>
-          </form>
+                  {formError && (
+                    <div className="flex items-start gap-2 text-[11px] text-[var(--status-blocked)] bg-[var(--status-blocked-bg)] rounded-lg px-2.5 py-2">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
 
-          <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
-            <Link to="/login" className="text-emerald-400 hover:underline">
-              Already registered? Sign in →
-            </Link>
-            <Link to="/" className="hover:text-white">
-              Back to Globe
-            </Link>
-          </div>
+                  <div className="pt-2">
+                    <SpecularButton type="submit" size="md" radius={12} variant="sky" isLoading={isSubmitting} className="w-full justify-center">
+                      Continue <ArrowRight className="w-3.5 h-3.5" />
+                    </SpecularButton>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+
+            {currentStep === "BUSINESS_TYPE" && (
+              <motion.div key="business-type" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <h2 className="font-display font-bold text-lg text-[var(--text-primary)] mb-1">How do you trade?</h2>
+                <p className="text-xs text-[var(--text-secondary)] mb-5">This decides your entire workspace journey.</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                  {(["EXPORTER", "IMPORTER", "BOTH"] as BusinessType[]).map((bt) => {
+                    const Icon = bt === "EXPORTER" ? Ship : bt === "IMPORTER" ? Building2 : ArrowLeftRight;
+                    const label = bt === "EXPORTER" ? "I Export" : bt === "IMPORTER" ? "I Import" : "Both";
+                    const selected = businessType === bt;
+                    return (
+                      <button
+                        key={bt}
+                        type="button"
+                        onClick={() => setBusinessType(bt)}
+                        className={cn(
+                          "flex flex-col items-center gap-2 p-4 rounded-2xl border text-center transition-colors cursor-pointer",
+                          selected
+                            ? "border-[var(--brand)] bg-[var(--brand-subtle)]"
+                            : "border-[var(--hairline)] hover:border-[var(--hairline-strong)]"
+                        )}
+                      >
+                        <Icon className={cn("w-5 h-5", selected ? "text-[var(--brand)]" : "text-[var(--text-tertiary)]")} />
+                        <span className={cn("text-xs font-semibold", selected ? "text-[var(--brand)]" : "text-[var(--text-primary)]")}>
+                          {label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {formError && (
+                  <div className="flex items-start gap-2 text-[11px] text-[var(--status-blocked)] bg-[var(--status-blocked-bg)] rounded-lg px-2.5 py-2 mb-3">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
+                <SpecularButton
+                  type="button" size="md" radius={12} variant="sky" isLoading={isSubmitting}
+                  disabled={!businessType} onClick={handleBusinessTypeSubmit} className="w-full justify-center"
+                >
+                  Continue <ArrowRight className="w-3.5 h-3.5" />
+                </SpecularButton>
+              </motion.div>
+            )}
+
+            {currentStep === "VERIFICATION" && (
+              <motion.div key="verification" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <h2 className="font-display font-bold text-lg text-[var(--text-primary)] mb-1">Verification documents</h2>
+                <p className="text-xs text-[var(--text-secondary)] mb-5">
+                  Upload documents so compliance can verify your organization. You can add more later.
+                </p>
+
+                <div className="space-y-2.5 mb-4">
+                  {requiredDocs.map((rd) => (
+                    <label
+                      key={rd.type}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-[var(--hairline-strong)] hover:border-[var(--brand)]/40 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
+                      <span className="text-xs font-medium text-[var(--text-primary)] flex-1">{rd.label}</span>
+                      <input type="file" className="hidden" onChange={handleAddDoc(rd.type)} />
+                      <span className="text-[10px] font-mono text-[var(--text-muted)]">Choose file</span>
+                    </label>
+                  ))}
+                </div>
+
+                {pendingDocs.length > 0 && (
+                  <div className="space-y-1.5 mb-4">
+                    {pendingDocs.map((d, i) => (
+                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)] text-xs">
+                        <FileText className="w-3.5 h-3.5 text-[var(--brand)] shrink-0" />
+                        <span className="flex-1 truncate text-[var(--text-secondary)]">{d.file.name}</span>
+                        <button type="button" onClick={() => handleRemoveDoc(i)} className="text-[var(--text-muted)] hover:text-[var(--status-blocked)] cursor-pointer">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {formError && (
+                  <div className="flex items-start gap-2 text-[11px] text-[var(--status-blocked)] bg-[var(--status-blocked-bg)] rounded-lg px-2.5 py-2 mb-3">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
+                <SpecularButton
+                  type="button" size="md" radius={12} variant="emerald" isLoading={isSubmitting}
+                  disabled={pendingDocs.length === 0} onClick={handleVerificationSubmit} className="w-full justify-center"
+                >
+                  Submit &amp; Enter Workspace <ArrowRight className="w-3.5 h-3.5" />
+                </SpecularButton>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

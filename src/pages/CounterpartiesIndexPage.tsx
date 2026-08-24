@@ -4,11 +4,13 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { MapPin, ArrowUpRight, Building2, ShieldCheck, AlertCircle, RefreshCw, Anchor } from "lucide-react";
-import { aiService, VerifiedCounterparty } from "@/services/api/aiService";
+import { aiService, CounterpartyMatchResult } from "@/services/api/aiService";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { cn } from "@/lib/utils";
 
 export const CounterpartiesIndexPage: React.FC = () => {
-  const [counterparties, setCounterparties] = useState<VerifiedCounterparty[]>([]);
+  const { isExporterView } = useWorkspace();
+  const [counterparties, setCounterparties] = useState<CounterpartyMatchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("ARE");
@@ -23,17 +25,13 @@ export const CounterpartiesIndexPage: React.FC = () => {
     { iso: "SGP", name: "Singapore" },
   ];
 
+  // semanticMatch has no trade_flow parameter — it's a real, working match
+  // for both directions today (see Phase 5 plan). Only the framing forks.
   const fetchPartners = async (iso3: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await aiService.semanticMatch({
-        hsCode: "1006.30",
-        destinationCountry: iso3,
-        quantityMT: 500,
-        targetPriceUSD: 550000,
-        certifications: ["APEDA", "FSSAI", "ISO 22000"],
-      });
+      const res = await aiService.semanticMatch("Basmati Rice", 550000, 500, iso3, 100630);
       setCounterparties(res);
     } catch (err: any) {
       setError(err?.message || "Failed to connect to Counterparty Discovery & Sanctions API.");
@@ -50,9 +48,13 @@ export const CounterpartiesIndexPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-5 select-none">
         <PageHeader
-          breadcrumbs={[{ label: "Marketplace", href: "/marketplace" }, { label: "Counterparties" }]}
-          title="Verified Sovereign Counterparties"
-          subtitle="Accredited trading organizations evaluated via OFAC/UN sanctions registry, maritime port logs, and credit rating models."
+          breadcrumbs={[{ label: "Discover", href: "/discover" }, { label: "Counterparties" }]}
+          title={isExporterView ? "Verified Buyers" : "Verified Suppliers"}
+          subtitle={
+            isExporterView
+              ? "Accredited buyers evaluated via OFAC/UN sanctions registry, maritime port logs, and trust scoring."
+              : "Accredited suppliers evaluated via OFAC/UN sanctions registry, maritime port logs, and trust scoring."
+          }
           badge={<StatusBadge status="verified" label="Dynamic Sovereign Intelligence" size="md" />}
         />
 
@@ -105,7 +107,7 @@ export const CounterpartiesIndexPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {counterparties.map((partner) => (
               <div
-                key={partner.id}
+                key={partner.exporterId}
                 className="p-4 rounded-2xl border border-white/[0.08] bg-[#070A0E] hover:border-sky-500/30 transition-all flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2">
@@ -118,12 +120,7 @@ export const CounterpartiesIndexPage: React.FC = () => {
                         <h4 className="text-sm font-bold text-white leading-tight">{partner.companyName}</h4>
                         <div className="text-[11px] text-slate-400 font-mono flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-                          <span>{partner.country}</span>
-                          {partner.creditRating && (
-                            <span className="ml-1 px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 text-[10px] font-bold">
-                              Rating: {partner.creditRating}
-                            </span>
-                          )}
+                          <span>{partner.originCountry}</span>
                         </div>
                       </div>
                     </div>
@@ -157,10 +154,10 @@ export const CounterpartiesIndexPage: React.FC = () => {
                 <div className="flex items-center justify-between pt-2 border-t border-white/[0.04] text-[11px] font-mono">
                   <span className="text-emerald-400 flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    {partner.sanctionsStatus || "Sanctions Screened (OFAC/UN Clear)"}
+                    Sanctions Screened (OFAC/UN Clear)
                   </span>
                   <Link
-                    to={`/marketplace?commodity=Basmati+Rice&origin=${selectedCountry}`}
+                    to={`/discover?commodity=Basmati+Rice&origin=${selectedCountry}`}
                     className="text-sky-400 hover:text-sky-300 flex items-center gap-1 group font-bold"
                   >
                     <span>Connect &amp; Trade</span>

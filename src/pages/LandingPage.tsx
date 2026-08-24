@@ -113,7 +113,7 @@ export default function LandingPage() {
   };
 
   const handleLoginSuccess = () => {
-    navigate("/dashboard");
+    navigate("/home");
   };
 
   return (

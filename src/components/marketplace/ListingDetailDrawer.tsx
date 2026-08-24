@@ -132,7 +132,7 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
 
             {/* Bottom Dominant CTA with SpecularButton */}
             <div className="pt-6 border-t border-white/[0.08] mt-6">
-              <Link to="/trades/TRD-IND-UAE-550K" onClick={onClose} className="block w-full">
+              <Link to={`/requests?listingId=${listing.id}`} onClick={onClose} className="block w-full">
                 <SpecularButton
                   size="md"
                   radius={12}
@@ -141,7 +141,7 @@ export function ListingDetailDrawer({ listing, isOpen, onClose }: ListingDetailD
                   icon={<ArrowRight className="w-4 h-4" />}
                   iconPosition="right"
                 >
-                  Start Trade & Lock Escrow ($550k)
+                  Request Trade
                 </SpecularButton>
               </Link>
             </div>

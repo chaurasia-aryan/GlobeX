@@ -1,41 +1,33 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { appwriteService } from "@/services/appwrite/client";
+import { useAuthContext } from "@/context/AuthContext";
+
+const AuthLoadingScreen: React.FC = () => (
+  <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[var(--surface-0)]">
+    <div className="w-8 h-8 rounded-full border-2 border-[var(--hairline-strong)] border-t-[var(--brand)] animate-spin" />
+  </div>
+);
 
 /**
- * ProtectedRoute — PLACEHOLDER auth gate, not a real security boundary.
+ * Real session + onboarding-completion gate, backed by useAuth()'s
+ * appState (derived from a live Supabase session + the org's
+ * onboarding_completed column — see src/hooks/useAuth.ts).
  *
- * There is no real authentication backend wired into this app yet (see
- * docs/product/user_flow.md §5 and §"What could not be determined without a
- * live session"): `AuthPage` / `AuthAccordion` make zero network calls, and
- * `appwriteService` (src/services/appwrite/client.ts) is a local mock store
- * that seeds a `DEFAULT_USER` with `isLoggedIn: true` into localStorage the
- * very first time the app loads — and its `logout()` resets back to that
- * same `DEFAULT_USER`, which is *also* `isLoggedIn: true`. In other words,
- * the only "session" flag that exists today can never actually be false in
- * the current implementation, so this guard is currently an inert
- * passthrough for every visitor.
- *
- * It is still wired up (rather than left absent) so that:
- *   1. The route table already declares which routes are meant to require
- *      a session (everything except "/", "/onboarding", "/role-select",
- *      "/signup", "/login") — that intent shouldn't disappear.
- *   2. The moment `appwriteService` (or a real Supabase Auth session check)
- *      starts genuinely flipping `isLoggedIn` to false — on logout, on
- *      session expiry, on first-ever visit with no session at all — this
- *      component starts enforcing it with no route-table changes required.
- *
- * Do not represent this as "the app now has authentication." It does not.
- * This closes the gap between "some routes assume a logged-in user" and
- * "the router enforces that," using the only signal the codebase has, while
- * that signal itself remains a placeholder pending real Supabase Auth.
+ * NO_SESSION      -> /auth
+ * ONBOARDING      -> /onboarding (org missing or onboarding_completed=false)
+ * AUTH_LOADING    -> spinner (don't flash-redirect while the session resolves)
+ * DASHBOARD       -> render children
  */
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const currentUser = appwriteService.getCurrentUser();
+  const { appState } = useAuthContext();
 
-  if (!currentUser || !currentUser.isLoggedIn) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (appState === "AUTH_LOADING") return <AuthLoadingScreen />;
+  if (appState === "NO_SESSION") {
+    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+  }
+  if (appState === "ONBOARDING") {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

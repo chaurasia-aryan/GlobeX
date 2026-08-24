@@ -1,16 +1,19 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * The closed status vocabulary (docs/product IA rules): every status shown
+ * anywhere in the app renders as one of these six terms. Legacy variant
+ * strings (still passed by older call sites) are normalized onto this set
+ * below rather than getting their own colors.
+ */
 export type StatusVariant =
   | "verified"
-  | "completed"
-  | "active"
-  | "in_transit"
   | "pending"
-  | "warning"
-  | "rejected"
-  | "disputed"
-  | "muted";
+  | "review"
+  | "blocked"
+  | "stale"
+  | "unavailable";
 
 interface StatusBadgeProps {
   status: StatusVariant | string;
@@ -20,6 +23,48 @@ interface StatusBadgeProps {
   className?: string;
 }
 
+const LABELS: Record<StatusVariant, string> = {
+  verified: "Verified",
+  pending: "Pending",
+  review: "Review Required",
+  blocked: "Blocked",
+  stale: "Stale",
+  unavailable: "Source Unavailable",
+};
+
+/** Maps legacy/free-form status strings from existing call sites onto the closed vocabulary. */
+function normalize(status: string): StatusVariant {
+  const s = (status || "").toLowerCase().replace(/[\s-]/g, "_");
+  if (["verified", "completed", "settled", "operational", "success", "kyc_verified", "released", "resolved", "clear", "active", "in_transit", "in_progress", "live", "funded"].includes(s)) {
+    return "verified";
+  }
+  if (["pending", "created", "processing"].includes(s)) {
+    return "pending";
+  }
+  if (["review", "warning", "discrepancy", "attention", "review_required"].includes(s)) {
+    return "review";
+  }
+  if (["rejected", "disputed", "failed", "critical", "blocked", "unsupported"].includes(s)) {
+    return "blocked";
+  }
+  if (["stale"].includes(s)) {
+    return "stale";
+  }
+  if (["unavailable", "unknown", "muted", "no_data"].includes(s)) {
+    return "unavailable";
+  }
+  return "pending";
+}
+
+const TOKEN_VARS: Record<StatusVariant, { fg: string; bg: string }> = {
+  verified: { fg: "var(--status-verified)", bg: "var(--status-verified-bg)" },
+  pending: { fg: "var(--status-pending)", bg: "var(--status-pending-bg)" },
+  review: { fg: "var(--status-review)", bg: "var(--status-review-bg)" },
+  blocked: { fg: "var(--status-blocked)", bg: "var(--status-blocked-bg)" },
+  stale: { fg: "var(--status-stale)", bg: "var(--status-stale-bg)" },
+  unavailable: { fg: "var(--status-unavailable)", bg: "var(--status-unavailable-bg)" },
+};
+
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   status,
   label,
@@ -27,71 +72,24 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   showDot = true,
   className,
 }) => {
-  const normalized = (status || "").toLowerCase().replace(/[\s-]/g, "_");
-
-  let colorClasses = "bg-slate-800/60 text-slate-300 border-slate-700/50";
-  let dotColor = "bg-slate-400";
-  let defaultLabel = label || status;
-
-  if (
-    normalized === "verified" ||
-    normalized === "completed" ||
-    normalized === "settled" ||
-    normalized === "operational" ||
-    normalized === "success" ||
-    normalized === "kyc_verified"
-  ) {
-    colorClasses = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
-    dotColor = "bg-emerald-400";
-    defaultLabel = label || (normalized === "kyc_verified" ? "KYC Verified" : "Verified");
-  } else if (
-    normalized === "active" ||
-    normalized === "in_transit" ||
-    normalized === "in_progress" ||
-    normalized === "live"
-  ) {
-    colorClasses = "bg-sky-500/10 text-sky-400 border-sky-500/30";
-    dotColor = "bg-sky-400 animate-pulse";
-    defaultLabel = label || (normalized === "in_transit" ? "In Transit" : "Active");
-  } else if (
-    normalized === "pending" ||
-    normalized === "review" ||
-    normalized === "warning" ||
-    normalized === "discrepancy" ||
-    normalized === "attention"
-  ) {
-    colorClasses = "bg-amber-500/10 text-amber-300 border-amber-500/30";
-    dotColor = "bg-amber-400";
-    defaultLabel = label || (normalized === "discrepancy" ? "Discrepancy" : "Pending");
-  } else if (
-    normalized === "rejected" ||
-    normalized === "disputed" ||
-    normalized === "failed" ||
-    normalized === "critical"
-  ) {
-    colorClasses = "bg-red-500/10 text-red-400 border-red-500/30";
-    dotColor = "bg-red-400";
-    defaultLabel = label || (normalized === "disputed" ? "Disputed" : "Rejected");
-  }
+  const variant = normalize(String(status));
+  const { fg, bg } = TOKEN_VARS[variant];
+  const displayLabel = label || LABELS[variant];
 
   const sizeClasses =
-    size === "md"
-      ? "text-xs px-2.5 py-1 gap-1.5"
-      : "text-[11px] px-2 py-0.5 gap-1.5";
+    size === "md" ? "text-xs px-2.5 py-1 gap-1.5" : "text-[11px] px-2 py-0.5 gap-1.5";
 
   return (
     <span
       className={cn(
-        "inline-flex items-center font-mono font-medium rounded-md border tracking-wide whitespace-nowrap select-none",
+        "inline-flex items-center font-mono font-medium rounded-[var(--radius-sm)] border tracking-wide whitespace-nowrap select-none",
         sizeClasses,
-        colorClasses,
         className
       )}
+      style={{ color: fg, backgroundColor: bg, borderColor: "var(--hairline-strong)" }}
     >
-      {showDot && (
-        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", dotColor)} />
-      )}
-      <span>{defaultLabel}</span>
+      {showDot && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: fg }} />}
+      <span>{displayLabel}</span>
     </span>
   );
 };

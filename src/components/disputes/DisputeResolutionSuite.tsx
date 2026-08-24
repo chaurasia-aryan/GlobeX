@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DisputeCase } from "@/types/trade";
 import { DEMO_DISPUTES } from "@/data/mockTradeData";
-import { appwriteService } from "@/services/appwrite/client";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { blockchainEscrowService } from "@/services/blockchain/escrowService";
 import {
   Scale,
@@ -29,8 +29,11 @@ export const DisputeResolutionSuite = ({
   const [isRulingSettled, setIsRulingSettled] = useState(false);
   const [arbitrateError, setArbitrateError] = useState<string | null>(null);
 
-  const currentUser = appwriteService.getCurrentUser();
-  const isArbitrator = currentUser.role === "arbitrator" || currentUser.role === "admin";
+  const { user: currentUser } = useWorkspace();
+  // Real org_role has no distinct "arbitrator" persona — arbitration is a
+  // platform_role, not an org membership role. ORGANIZATION_ADMIN is the
+  // closest real role for this demo-data-driven dispute panel.
+  const isArbitrator = currentUser.roleTitle === "Admin";
 
   const handleArbitrate = async () => {
     setIsSubmittingRuling(true);

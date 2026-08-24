@@ -226,7 +226,7 @@ export const TradeAnalysisPage: React.FC = () => {
         {/* Page Header */}
         <PageHeader
           breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
+            { label: "Dashboard", href: "/home" },
             { label: "Trade Analysis" },
           ]}
           title="Trade Intelligence & RAG Synthesizer"

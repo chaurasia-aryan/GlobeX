@@ -6,34 +6,33 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
+import { AuthProvider } from "@/context/AuthContext";
 import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import PageTransition from "@/components/layout/PageTransition";
+import OnboardingRouteGuard from "@/components/auth/OnboardingRouteGuard";
 
 // Eager load LandingPage for instant first paint
 import LandingPage from "@/pages/LandingPage";
 
 // Route-based code splitting for ultra-fast load times across Cloudflare & Vercel
 const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
-const TradeIntentWizardPage = lazy(() => import("@/pages/TradeIntentWizardPage"));
-const MarketplacePage = lazy(() => import("@/pages/MarketplacePage"));
-const MyListingsPage = lazy(() => import("@/pages/MyListingsPage"));
-const CreateListingPage = lazy(() => import("@/pages/CreateListingPage"));
-const ProductDetailPage = lazy(() => import("@/pages/ProductDetailPage"));
-const MarketIntelligencePage = lazy(() => import("@/pages/MarketIntelligencePage"));
-const TradeAnalysisPage = lazy(() => import("@/pages/TradeAnalysisPage"));
-const TradeWorkspacePage = lazy(() => import("@/pages/TradeWorkspacePage"));
-const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const AuthPage = lazy(() => import("@/pages/AuthPage"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const DiscoverPage = lazy(() => import("@/pages/DiscoverPage"));
+const ListingDetailPage = lazy(() => import("@/pages/ListingDetailPage"));
+const CatalogPage = lazy(() => import("@/pages/CatalogPage"));
+const CatalogEditorPage = lazy(() => import("@/pages/CatalogEditorPage"));
+const AssessPage = lazy(() => import("@/pages/AssessPage"));
+const CounterpartiesIndexPage = lazy(() => import("@/pages/CounterpartiesIndexPage"));
 const CounterpartyDetailPage = lazy(() => import("@/pages/CounterpartyDetailPage"));
-const DocumentVerificationPage = lazy(() => import("@/pages/DocumentVerificationPage"));
+const RequestsPage = lazy(() => import("@/pages/RequestsPage"));
+const TradesIndexPage = lazy(() => import("@/pages/TradesIndexPage"));
+const TradeWorkspacePage = lazy(() => import("@/pages/TradeWorkspacePage"));
 const EscrowPage = lazy(() => import("@/pages/EscrowPage"));
-const ShipmentsPage = lazy(() => import("@/pages/ShipmentsPage"));
 const DisputesPage = lazy(() => import("@/pages/DisputesPage"));
 const BlockchainLedgerPage = lazy(() => import("@/pages/BlockchainLedgerPage"));
-const AuthPage = lazy(() => import("@/pages/AuthPage"));
+const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const AdminSystemPage = lazy(() => import("@/pages/AdminSystemPage"));
-const WishlistPage = lazy(() => import("@/pages/WishlistPage"));
-const TradesIndexPage = lazy(() => import("@/pages/TradesIndexPage"));
-const CounterpartiesIndexPage = lazy(() => import("@/pages/CounterpartiesIndexPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -70,41 +69,64 @@ const AnimatedRoutes = () => {
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
-          {/* Public / pre-auth routes — no guard */}
+          {/* PUBLIC */}
           <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
-          <Route path="/onboarding" element={<PageTransition><OnboardingPage /></PageTransition>} />
-          <Route path="/role-select" element={<Navigate to="/onboarding" replace />} />
-          <Route path="/signup" element={<Navigate to="/onboarding" replace />} />
-          <Route path="/login" element={<PageTransition><AuthPage /></PageTransition>} />
+          <Route path="/auth" element={<PageTransition><AuthPage /></PageTransition>} />
+          <Route
+            path="/onboarding"
+            element={<OnboardingRouteGuard><PageTransition><OnboardingPage /></PageTransition></OnboardingRouteGuard>}
+          />
 
-          {/* Alias redirects — consolidated onto their canonical routes (see docs/product/user_flow.md §4c) */}
-          <Route path="/get-started" element={<Navigate to="/trade-requests" replace />} />
-          <Route path="/trade-intent" element={<Navigate to="/trade-requests" replace />} />
-          <Route path="/export-catalog" element={<Navigate to="/my-listings" replace />} />
-          <Route path="/arbitrator" element={<Navigate to="/disputes" replace />} />
+          {/* APP — ProtectedRoute + AppShell + direction-aware nav */}
+          <Route path="/home" element={<ProtectedRoute><PageTransition><HomePage /></PageTransition></ProtectedRoute>} />
 
-          {/* Primary User Intent & Flow */}
-          <Route path="/trade-requests" element={<ProtectedRoute><PageTransition><TradeIntentWizardPage /></PageTransition></ProtectedRoute>} />
+          {/* DISCOVER */}
+          <Route path="/discover" element={<ProtectedRoute><PageTransition><DiscoverPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/discover/:listingId" element={<ProtectedRoute><PageTransition><ListingDetailPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/catalog" element={<ProtectedRoute><PageTransition><CatalogPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/catalog/new" element={<ProtectedRoute><PageTransition><CatalogEditorPage /></PageTransition></ProtectedRoute>} />
 
-          {/* Core Commercial Pages */}
-          <Route path="/dashboard" element={<ProtectedRoute><PageTransition><DashboardPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
-          <Route path="/marketplace/:id" element={<ProtectedRoute><PageTransition><ProductDetailPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/create-listing" element={<ProtectedRoute><PageTransition><CreateListingPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/my-listings" element={<ProtectedRoute><PageTransition><MyListingsPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/market-intelligence" element={<ProtectedRoute><PageTransition><MarketIntelligencePage /></PageTransition></ProtectedRoute>} />
-          <Route path="/trade-analysis" element={<ProtectedRoute><PageTransition><TradeAnalysisPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/trades" element={<ProtectedRoute><PageTransition><TradesIndexPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/trades/:id" element={<ProtectedRoute><PageTransition><TradeWorkspacePage /></PageTransition></ProtectedRoute>} />
+          {/* ASSESS */}
+          <Route path="/assess/:tradeId?" element={<ProtectedRoute><PageTransition><AssessPage /></PageTransition></ProtectedRoute>} />
           <Route path="/counterparties" element={<ProtectedRoute><PageTransition><CounterpartiesIndexPage /></PageTransition></ProtectedRoute>} />
           <Route path="/counterparties/:id" element={<ProtectedRoute><PageTransition><CounterpartyDetailPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentVerificationPage /></PageTransition></ProtectedRoute>} />
+
+          {/* DEAL */}
+          <Route path="/requests" element={<ProtectedRoute><PageTransition><RequestsPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/trades" element={<ProtectedRoute><PageTransition><TradesIndexPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/trades/:id" element={<ProtectedRoute><PageTransition><TradeWorkspacePage /></PageTransition></ProtectedRoute>} />
+
+          {/* SETTLE */}
           <Route path="/escrow/:tradeId?" element={<ProtectedRoute><PageTransition><EscrowPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/shipments" element={<ProtectedRoute><PageTransition><ShipmentsPage /></PageTransition></ProtectedRoute>} />
           <Route path="/disputes" element={<ProtectedRoute><PageTransition><DisputesPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/blockchain" element={<ProtectedRoute><PageTransition><BlockchainLedgerPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/ledger" element={<ProtectedRoute><PageTransition><BlockchainLedgerPage /></PageTransition></ProtectedRoute>} />
+
+          {/* SYSTEM */}
+          <Route path="/settings" element={<ProtectedRoute><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminSystemPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/wishlist" element={<ProtectedRoute><PageTransition><WishlistPage /></PageTransition></ProtectedRoute>} />
+
+          {/* Legacy redirects — retired routes onto their canonical replacements (rebuild plan §1c) */}
+          <Route path="/login" element={<Navigate to="/auth" replace />} />
+          <Route path="/signup" element={<Navigate to="/auth" replace />} />
+          <Route path="/role-select" element={<Navigate to="/onboarding" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+          <Route path="/workspace" element={<Navigate to="/home" replace />} />
+          <Route path="/marketplace" element={<Navigate to="/discover" replace />} />
+          <Route path="/marketplace/:id" element={<Navigate to="/discover" replace />} />
+          <Route path="/market-intelligence" element={<Navigate to="/discover" replace />} />
+          <Route path="/trade-analysis" element={<Navigate to="/assess" replace />} />
+          <Route path="/my-listings" element={<Navigate to="/catalog" replace />} />
+          <Route path="/export-catalog" element={<Navigate to="/catalog" replace />} />
+          <Route path="/wishlist" element={<Navigate to="/catalog" replace />} />
+          <Route path="/create-listing" element={<Navigate to="/catalog/new" replace />} />
+          <Route path="/trade-requests" element={<Navigate to="/requests" replace />} />
+          <Route path="/trade-intent" element={<Navigate to="/requests" replace />} />
+          <Route path="/get-started" element={<Navigate to="/requests" replace />} />
+          <Route path="/documents" element={<Navigate to="/trades" replace />} />
+          <Route path="/shipments" element={<Navigate to="/trades" replace />} />
+          <Route path="/blockchain" element={<Navigate to="/ledger" replace />} />
+          <Route path="/arbitrator" element={<Navigate to="/disputes" replace />} />
+
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
@@ -117,18 +139,20 @@ const App: React.FC = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <WorkspaceProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <div className="flex flex-col min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] selection:bg-emerald-dim selection:text-emerald">
-            <main className="flex-1">
-              <ErrorBoundary>
-                <AnimatedRoutes />
-              </ErrorBoundary>
-            </main>
-          </div>
-        </BrowserRouter>
-      </WorkspaceProvider>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <div className="flex flex-col min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] selection:bg-emerald-dim selection:text-emerald">
+              <main className="flex-1">
+                <ErrorBoundary>
+                  <AnimatedRoutes />
+                </ErrorBoundary>
+              </main>
+            </div>
+          </BrowserRouter>
+        </WorkspaceProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

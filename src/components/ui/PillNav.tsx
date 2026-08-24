@@ -328,7 +328,7 @@ export const PillNav: React.FC<PillNavProps> = ({
           {items.map((item, i) => {
             const isActive =
               activeHref === item.href ||
-              (item.href !== "/" && item.href !== "/dashboard" && activeHref?.startsWith(item.href));
+              (item.href !== "/" && item.href !== "/home" && activeHref?.startsWith(item.href));
 
             const pillStyle = {
               background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',

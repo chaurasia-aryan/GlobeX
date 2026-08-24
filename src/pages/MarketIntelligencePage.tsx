@@ -56,7 +56,7 @@ export const MarketIntelligencePage: React.FC = () => {
         {/* Page Header */}
         <PageHeader
           breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
+            { label: "Dashboard", href: "/home" },
             { label: "Market Intelligence" },
           ]}
           title="Market Opportunity Radar"

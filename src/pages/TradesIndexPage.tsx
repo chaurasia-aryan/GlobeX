@@ -24,7 +24,7 @@ export const TradesIndexPage: React.FC = () => {
     <AppShell maxWidth="lg">
       <div className="space-y-5 select-none">
         <PageHeader
-          breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Active Trades" }]}
+          breadcrumbs={[{ label: "Dashboard", href: "/home" }, { label: "Active Trades" }]}
           title="Active Trades"
           subtitle="Trades your organization currently has in progress."
         />

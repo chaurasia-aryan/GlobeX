@@ -1,5 +1,4 @@
 import React from "react";
-import { appwriteService } from "@/services/appwrite/client";
 import { aiService } from "@/services/api/aiService";
 import { n8nWorkflowService } from "@/services/n8n/workflowService";
 import { blockchainEscrowService } from "@/services/blockchain/escrowService";
@@ -9,7 +8,12 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { Database, Workflow, Cpu, Coins } from "lucide-react";
 
 export const AdminSystemPage: React.FC = () => {
-  const appwriteStatus = appwriteService.getStatus();
+  const supabaseConfigured = Boolean(
+    (import.meta as any).env?.VITE_SUPABASE_URL && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY
+  );
+  const appwriteStatus = {
+    projectId: supabaseConfigured ? "globex (Supabase Auth)" : "Not configured",
+  };
   const aiStatus = aiService.getStatus();
   const n8nStatus = n8nWorkflowService.getStatus();
   const blockchainStatus = blockchainEscrowService.getStatus();

@@ -92,7 +92,7 @@ export const SpecularButton: React.FC<SpecularButtonProps> = ({
     switch (variant) {
       case "sky":
         return {
-          bg: "bg-[var(--brand-blue)]/90 hover:bg-[var(--brand-blue)] active:scale-[0.98]",
+          bg: "bg-[var(--brand-blue)] hover:brightness-110 active:scale-[0.98]",
           border: "border-[var(--brand-cyan)]/40 hover:border-[var(--brand-cyan)]/70",
           text: textColor || "text-white",
           glow: "var(--info-bg)",
@@ -100,11 +100,11 @@ export const SpecularButton: React.FC<SpecularButtonProps> = ({
         };
       case "amber":
         return {
-          bg: "bg-[var(--warning)]/90 hover:bg-[var(--warning)] active:scale-[0.98]",
-          border: "border-[var(--warning)]/40 hover:border-[var(--warning)]/70",
+          bg: "bg-[var(--amber)] hover:brightness-110 active:scale-[0.98]",
+          border: "border-[var(--amber)]/40 hover:border-[var(--amber)]/70",
           text: textColor || "text-white",
-          glow: "var(--warning-bg)",
-          rim: "linear-gradient(135deg, var(--warning) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)",
+          glow: "var(--amber-dim)",
+          rim: "linear-gradient(135deg, var(--amber) 0%, transparent 50%, rgba(255, 255, 255, 0.2) 100%)",
         };
       case "outline":
         return {
