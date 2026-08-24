@@ -112,15 +112,15 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
           </div>
         </div>
 
-        {/* ── Demand & Revenue Forecast Panel (3yr moving-average model) ──── */}
+        {/* ── Demand & Revenue Forecast Panel (XGBoost Forecaster) ──── */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <BarChart3 className="w-4 h-4 text-sky-400" />
-              <span>Demand & Revenue Forecast</span>
+              <span>XGBoost Quantile Demand &amp; Revenue Forecast</span>
             </h4>
-            <span className="text-[10px] font-mono text-sky-400/80 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-              3yr Moving Average
+            <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20 font-bold">
+              XGB Residual Forecaster
             </span>
           </div>
 
@@ -128,13 +128,19 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
             <div className="p-3 rounded-xl bg-[#0C121D] border border-white/[0.07]">
               <span className="text-[10px] font-mono uppercase text-slate-500 block">Annual Demand</span>
               <span className="text-base font-mono font-bold text-white mt-0.5 block">{annualDemandMT} MT</span>
-              <span className="text-[10px] font-sans text-slate-400">Market absorption</span>
+              {forecast.demand_interval_80_lower_kg && forecast.demand_interval_80_upper_kg ? (
+                <span className="text-[10px] font-mono text-sky-300 block mt-0.5">
+                  80% P10–P90: {Math.round(forecast.demand_interval_80_lower_kg / 1000).toLocaleString()}–{Math.round(forecast.demand_interval_80_upper_kg / 1000).toLocaleString()} MT
+                </span>
+              ) : (
+                <span className="text-[10px] font-sans text-slate-400">Market absorption</span>
+              )}
             </div>
 
             <div className="p-3 rounded-xl bg-[#0C121D] border border-white/[0.07]">
               <span className="text-[10px] font-mono uppercase text-slate-500 block">Expected FOB</span>
               <span className="text-base font-mono font-bold text-sky-400 mt-0.5 block">${fobPrice} / kg</span>
-              <span className="text-[10px] font-sans text-slate-400">Weighted unit value</span>
+              <span className="text-[10px] font-sans text-slate-400">3-yr median anchor</span>
             </div>
 
             <div className="p-3 rounded-xl bg-[#0C121D] border border-white/[0.07]">
@@ -270,8 +276,8 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
           </div>
         </div>
 
-        {/* ── Action Button: Simulate Corridor ────────────────────────────── */}
-        <div className="pt-2">
+        {/* ── Action Button: Simulate Corridor & Generate Report ───────────────── */}
+        <div className="pt-2 space-y-2.5">
           <PrimaryAction
             size="lg"
             onClick={handleSimulateTrade}
@@ -279,7 +285,7 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
             icon={<ArrowRight className="w-4 h-4" />}
             iconPosition="right"
           >
-            Simulate Trade to {destination.country_name} ({destination.iso3}) →
+            Launch Full Corridor Analysis ({destination.iso3}) →
           </PrimaryAction>
         </div>
       </div>

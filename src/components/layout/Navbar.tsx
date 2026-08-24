@@ -27,52 +27,91 @@ import {
   Building2,
 } from "lucide-react";
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+
 export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { activeDirection, isExporterView, isImporterView } = useWorkspace();
   const [currentUser, setCurrentUser] = useState<UserSession>(appwriteService.getCurrentUser());
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     setCurrentUser(appwriteService.getCurrentUser());
     setIsDrawerOpen(false); // Close drawer on route change
-  }, [location]);
+  }, [location, activeDirection]);
 
-  const navItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Global Marketplace", href: "/marketplace", icon: Store },
-    { label: "Create Listing", href: "/create-listing", icon: PlusCircle },
-    { label: "My Export Listings", href: "/my-listings", icon: Package },
-    { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle },
-    { label: "Workspace", href: "/trades", icon: Workflow, isLive: true },
-  ];
+  const navItems = isExporterView
+    ? [
+        { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Global Marketplace", href: "/marketplace", icon: Store },
+        { label: "Create Listing", href: "/create-listing", icon: PlusCircle },
+        { label: "My Export Listings", href: "/my-listings", icon: Package },
+        { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle },
+        { label: "Workspace", href: "/trades", icon: Workflow, isLive: true },
+      ]
+    : [
+        { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Supplier Marketplace", href: "/marketplace", icon: Store },
+        { label: "Purchase RFQs", href: "/trade-requests", icon: PlusCircle },
+        { label: "Active Orders", href: "/trades", icon: Workflow, isLive: true },
+        { label: "Documents", href: "/documents", icon: FileCheck2 },
+        { label: "Escrow Vault", href: "/escrow", icon: Coins },
+      ];
 
-  const drawerGroups = [
-    {
-      group: "Trade Actions",
-      items: [
-        { label: "Active Trades", href: "/trades", icon: Workflow, desc: "Manage your active trades, papers & safe payment" },
-        { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Review trade requests received by your organization" },
-        { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of your trading partners" },
-        { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model analysis of an active trade" },
-      ],
-    },
-    {
-      group: "Browse & Catalog",
-      items: [
-        { label: "Global Exporters Marketplace", href: "/marketplace", icon: Store, desc: "Source products from verified international exporters" },
-        { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add a new export product listing to the global marketplace" },
-        { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Manage your organization's export products and catalog" },
-        { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Trade overview, active shipments & alerts" },
-      ],
-    },
-    {
-      group: "System & Proofs",
-      items: [
-        { label: "System Health & Logs", href: "/admin", icon: Layers, desc: "Payment contract status & document verification logs" },
-      ],
-    },
-  ];
+  const drawerGroups = isExporterView
+    ? [
+        {
+          group: "Trade Actions",
+          items: [
+            { label: "Active Trades", href: "/trades", icon: Workflow, desc: "Manage active export contracts & payments" },
+            { label: "Trade Requests", href: "/trade-requests", icon: PlusCircle, desc: "Review buyer purchase inquiries" },
+            { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of buyers" },
+            { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model corridor analysis" },
+          ],
+        },
+        {
+          group: "Browse & Catalog",
+          items: [
+            { label: "Global Exporters Marketplace", href: "/marketplace", icon: Store, desc: "Source & benchmark products" },
+            { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Publish new export product" },
+            { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Manage catalog & stock lots" },
+            { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Export radar & active shipments" },
+          ],
+        },
+        {
+          group: "System & Proofs",
+          items: [
+            { label: "System Health & Logs", href: "/admin", icon: Layers, desc: "Payment contract status & verification logs" },
+          ],
+        },
+      ]
+    : [
+        {
+          group: "Import Procurement",
+          items: [
+            { label: "Inbound Active Orders", href: "/trades", icon: Workflow, desc: "Track inbound vessel transit & escrow" },
+            { label: "Purchase Requests (RFQs)", href: "/trade-requests", icon: PlusCircle, desc: "Issue & manage supplier RFQs" },
+            { label: "Supplier Counterparty Risk", href: "/counterparties", icon: Building2, desc: "Restricted list & trust ratings" },
+            { label: "Import Landed Duty Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Customs duty & undervaluation screen" },
+          ],
+        },
+        {
+          group: "Sourcing & Catalog",
+          items: [
+            { label: "Verified Supplier Discovery", href: "/marketplace", icon: Store, desc: "Browse international warehouses" },
+            { label: "Customs Document Vault", href: "/documents", icon: FileCheck2, desc: "Bill of Lading & Inspection Papers" },
+            { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard, desc: "Inbound radar & shipments" },
+          ],
+        },
+        {
+          group: "Settlement & Ledger",
+          items: [
+            { label: "Smart Escrow Multi-Sig", href: "/escrow", icon: Coins, desc: "USDC Collateral & Release rules" },
+            { label: "System Health & Logs", href: "/admin", icon: Layers, desc: "FastAPI, n8n, Appwrite & EVM state" },
+          ],
+        },
+      ];
 
 
 

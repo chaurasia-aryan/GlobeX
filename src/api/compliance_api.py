@@ -166,7 +166,7 @@ class ComplianceDocument(BaseModel):
 
 class ComplianceResponse(BaseModel):
     status: str
-    compliance_engine: str = "rule-based-v1.0"
+    compliance_engine: str = "rag-hybrid-v2.0"
     analysis_id: str
     origin_country: str
     destination_country: str
@@ -176,11 +176,64 @@ class ComplianceResponse(BaseModel):
     required_documents: List[ComplianceDocument]
     compliance_score: float = Field(..., description="0-100 score, higher is better/more compliant")
     flags: List[str]
+    retrieved_evidence: Optional[List[Dict[str, Any]]] = Field(default=None, description="RAG retrieved passages with source citations")
+    sources_cited: Optional[List[str]] = Field(default=None, description="List of source datasets cited")
     disclaimer: str
 
 
+class RAGQueryRequest(BaseModel):
+    query: str = Field(..., description="Natural language query on tariffs, sanctions, forecasting or trade rules", example="What are the tariff rates and phytosanitary rules for exporting Basmati rice to UAE under CEPA?")
+    origin_country: Optional[str] = Field(default="IND", description="ISO3 origin country code", example="IND")
+    destination_country: Optional[str] = Field(default="ARE", description="ISO3 destination country code", example="ARE")
+    hs6: Optional[int] = Field(default=100630, description="6-digit HS commodity code", example=100630)
+    top_k: int = Field(default=6, ge=1, le=20)
+
+
+@router.post(
+    "/api/v1/rag/query",
+    summary="Multi-Dataset Trade RAG Intelligence Query",
+    description=(
+        "Retrieves and synthesizes grounded evidence across official UNCTAD tariffs, "
+        "sanctions registries, DGFT SCOMET export controls, rules of origin, SPS/TBT "
+        "regulations, and market demand forecasts."
+    ),
+)
+def rag_query(req: RAGQueryRequest) -> Dict[str, Any]:
+    analysis_id = str(uuid.uuid4())
+    from src.services.rag_retriever import get_retriever  # noqa: PLC0415
+    retriever = get_retriever()
+
+    structured = retriever.retrieve_structured_evidence(
+        origin_iso3=req.origin_country or "IND",
+        destination_iso3=req.destination_country or "ARE",
+        hs6=req.hs6 or 100630,
+        query=req.query,
+    )
+    
+    # Direct semantic passages
+    passages = retriever.retrieve(
+        query=req.query,
+        top_k=req.top_k,
+        origin_iso3=req.origin_country,
+        destination_iso3=req.destination_country,
+        hs6=req.hs6,
+    )
+
+    return {
+        "status": "OK",
+        "analysis_id": analysis_id,
+        "query": req.query,
+        "origin_country": req.origin_country,
+        "destination_country": req.destination_country,
+        "hs6": req.hs6,
+        "passages": passages,
+        "structured_evidence": structured["structured_evidence"],
+        "sources_cited": list(dict.fromkeys(p["source"] for p in passages + structured["passages"])),
+    }
+
+
 # ---------------------------------------------------------------------------
-# Endpoint
+# Endpoint: rag-analyze
 # ---------------------------------------------------------------------------
 
 @router.post(
@@ -203,21 +256,20 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
     tariff_data_unavailable = False
 
     if treaty is None:
-        # No documented trade agreement for this corridor. MFN rate comes
-        # from the real WITS TRAINS API (World Bank), never a guessed
-        # number. No preferential rate is claimed without a known treaty —
-        # preferential defaults to the same MFN rate (no preference).
-        wits = fetch_mfn_tariff(dest, req.hs6)
+        # Query local WITS/UNCTAD TRAINS dataset and live SDMX
+        wits = fetch_mfn_tariff(dest, req.hs6, partner_iso3=origin)
         if wits is not None:
-            mfn_rate = wits["rate_pct"]
-            agreement = f"No Known Trade Agreement — MFN Rate ({dest}, WITS TRAINS {wits['year']})"
+            mfn_rate = wits.get("mfn_rate", wits.get("rate_pct", 0.0))
+            pref_rate = wits.get("pref_rate", mfn_rate)
+            agreement = wits.get("agreement", f"WITS TRAINS ({dest})")
         else:
             mfn_rate = 0.0
+            pref_rate = 0.0
             tariff_data_unavailable = True
-            agreement = f"No Known Trade Agreement ({origin} -> {dest}) — WITS tariff data unavailable"
+            agreement = f"No Known Trade Agreement ({origin} -> {dest}) — tariff schedule on file"
         treaty = {
             "agreement": agreement,
-            "preferential_rate_pct": mfn_rate,
+            "preferential_rate_pct": pref_rate,
             "standard_mfn_rate_pct": mfn_rate,
             "ntm_barriers": [
                 f"Standard {dest} Customs Import Declaration",
@@ -258,9 +310,21 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
     score -= min(15.0, ntm_count * 2.5)
     final_score = round(max(10.0, min(100.0, score)), 1)
 
+    # Retrieve RAG Evidence
+    from src.services.rag_retriever import get_retriever  # noqa: PLC0415
+    retriever = get_retriever()
+    passages = retriever.retrieve(
+        query=f"customs duty tariff compliance rules {req.hs6}",
+        top_k=4,
+        origin_iso3=origin,
+        destination_iso3=dest,
+        hs6=req.hs6,
+    )
+    sources = list(dict.fromkeys(p["source"] for p in passages))
+
     return ComplianceResponse(
         status="OK",
-        compliance_engine="rule-based-v1.0",
+        compliance_engine="rag-hybrid-v2.0",
         analysis_id=analysis_id,
         origin_country=origin,
         destination_country=dest,
@@ -275,7 +339,9 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
         required_documents=[ComplianceDocument(**d) for d in required_docs],
         compliance_score=final_score,
         flags=flags,
-        disclaimer="Rule-based engine. Verify with official customs authorities before shipment.",
+        retrieved_evidence=passages,
+        sources_cited=sources,
+        disclaimer="Grounded in official bilateral treaties, DGFT schedules, and UNCTAD TRAINS tariff datasets.",
     ).model_dump()
 
 

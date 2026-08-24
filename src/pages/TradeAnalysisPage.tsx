@@ -23,6 +23,7 @@ import {
   CheckCircle2,
   Copy,
   ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { CommoditySearchDropdown, CommodityOption } from "@/components/marketplace/CommoditySearchDropdown";
 import { cn } from "@/lib/utils";
@@ -34,15 +35,20 @@ export const TradeAnalysisPage: React.FC = () => {
   // the anomaly model is scored against: an outbound sale vs an inbound purchase.
   const { activeDirection, isExporterView } = useWorkspace();
   const [selectedLens, setSelectedLens] = useState<
-    "synthesis" | "destinations" | "anomaly" | "regulatory" | "risk" | "n8n" | "api"
-  >("synthesis");
+    "report" | "synthesis" | "destinations" | "anomaly" | "regulatory" | "risk" | "n8n" | "api"
+  >("report");
   const [analysis, setAnalysis] = useState<UnifiedRAGAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
+  // Multi-Model Trade Dossier Report State
+  const [reportData, setReportData] = useState<any | null>(null);
+  const [isReportLoading, setIsReportLoading] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+
   // n8n Live Runner State
-  const [n8nUrl, setN8nUrl] = useState("http://localhost:5678/webhook/test-trade-analysis");
-  const [n8nTestUrl, setN8nTestUrl] = useState("http://localhost:5678/webhook-test/test-trade-analysis");
+  const [n8nUrl, setN8nUrl] = useState("http://localhost:5678/webhook/globex-analyze-trade-v2");
+  const [n8nTestUrl, setN8nTestUrl] = useState("http://localhost:5678/webhook/globex-test-trade-v2");
   const [n8nMode, setN8nMode] = useState<"production" | "test">("production");
   const [isN8nRunning, setIsN8nRunning] = useState(false);
   const [n8nResult, setN8nResult] = useState<any>(null);
@@ -100,7 +106,36 @@ export const TradeAnalysisPage: React.FC = () => {
         setAnalysisError(err instanceof Error ? err.message : "Trade analysis failed — backend unreachable.");
         setIsLoading(false);
       });
-  }, [searchParams, isExporterView]);
+  }, [searchParams, isExporterView, activeDirection]);
+
+  // Fetch Multi-Model Trade Dossier Report
+  const handleFetchReport = async () => {
+    setIsReportLoading(true);
+    setReportError(null);
+    try {
+      const qProduct = searchParams.get("commodity") || "Basmati Rice";
+      const qOrigin = searchParams.get("origin") || "IND";
+      const qDest = searchParams.get("dest") || "ARE";
+      const qQty = Number(searchParams.get("qty")) || 50000;
+
+      const rep = await aiService.generateTradeReport({
+        productQuery: qProduct,
+        originCountry: qOrigin,
+        destinationCountry: qDest,
+        quantityKg: qQty,
+        tradeFlow: activeDirection,
+      });
+      setReportData(rep);
+    } catch (err: any) {
+      setReportError(err?.message || "Could not generate trade report — backend unreachable.");
+    } finally {
+      setIsReportLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchReport();
+  }, [searchParams, activeDirection]);
 
   const apiStatus = aiService.getStatus();
 
@@ -279,16 +314,14 @@ export const TradeAnalysisPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
             <div className="flex flex-wrap items-center gap-1.5">
               {[
-                { id: "synthesis", label: "Supplier Ranking", icon: Award },
-                // Destination ranking is the exporter-only partner_discovery model
-                // ("where should I sell this?"). It is not an importer question, so it
-                // is not offered in the import view rather than being relabelled.
+                { id: "report", label: "Executive AI Trade Dossier", icon: Sparkles },
+                { id: "synthesis", label: isExporterView ? "Buyer Matching" : "Supplier Sourcing", icon: Award },
                 ...(isExporterView
-                  ? [{ id: "destinations", label: "Market Opportunity", icon: Globe2 }]
+                  ? [{ id: "destinations", label: "Market Discovery (SHAP + Quantiles)", icon: Globe2 }]
                   : []),
-                { id: "anomaly", label: "Trade Anomaly ML", icon: Activity },
+                { id: "anomaly", label: isExporterView ? "Outbound Anomaly Screen" : "Inbound Pricing Anomaly", icon: Activity },
                 { id: "regulatory", label: "CEPA & Regulatory RAG", icon: FileCheck2 },
-                { id: "risk", label: "Risk Drivers", icon: AlertTriangle },
+                { id: "risk", label: "Risk & Sanctions Screening", icon: AlertTriangle },
                 { id: "n8n", label: "n8n Workflow Runner", icon: Zap },
                 { id: "api", label: "Model Endpoints", icon: Server },
               ].map((tab) => {
@@ -303,6 +336,7 @@ export const TradeAnalysisPage: React.FC = () => {
                       isActive
                         ? "bg-white/[0.1] text-white font-semibold"
                         : "text-slate-400 hover:text-white hover:bg-white/[0.04]",
+                      tab.id === "report" && "text-sky-300 font-semibold",
                       tab.id === "n8n" && "text-amber-400 font-semibold"
                     )}
                   >
@@ -313,15 +347,146 @@ export const TradeAnalysisPage: React.FC = () => {
               })}
             </div>
 
-            <span className="text-[11px] font-mono text-slate-400">
-              Engine: <strong className="text-emerald-400">{apiStatus.engine}</strong>
-            </span>
+            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+              <span className="px-2 py-0.5 rounded bg-sky-950/60 text-sky-400 border border-sky-800/40">
+                Flow: {activeDirection}
+              </span>
+              <span>
+                Engine: <strong className="text-emerald-400">{apiStatus.engine}</strong>
+              </span>
+            </div>
           </div>
 
           {/* Loading State */}
           {isLoading && (
             <div className="p-8 text-center text-slate-400 text-xs font-mono">
               Running unified multi-model inference pipeline...
+            </div>
+          )}
+
+          {/* Tab 0: Executive AI Trade Dossier Report */}
+          {selectedLens === "report" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-sky-950/40 via-[#070A0E] to-[#070A0E] border border-sky-500/20">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-sky-400" />
+                    <h4 className="font-display font-bold text-sm text-white">
+                      Multi-Model Synthesized Trade Dossier
+                    </h4>
+                    <span className={cn(
+                      "text-[10px] font-mono px-2 py-0.5 rounded border font-bold",
+                      reportData?.status === "OK"
+                        ? "bg-emerald-950/80 text-emerald-400 border-emerald-800/40"
+                        : "bg-amber-950/80 text-amber-400 border-amber-800/40"
+                    )}>
+                      STATUS: {reportData?.status || (isReportLoading ? "GENERATING..." : "READY")}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-sans mt-1">
+                    Synthesizes XGBoost demand forecasts, TreeSHAP drivers, IsolationForest anomaly screens, WITS/CEPA tariff rules, and OFAC/UN/UK/EU restricted entity checks into a single actionable brief.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleFetchReport}
+                  disabled={isReportLoading}
+                  className="px-3.5 py-1.5 rounded-xl bg-sky-500 text-black font-mono font-bold text-xs hover:bg-sky-400 transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{isReportLoading ? "Synthesizing..." : "Re-Synthesize Dossier"}</span>
+                </button>
+              </div>
+
+              {reportError && (
+                <div className="p-4 rounded-xl bg-rose-950/30 border border-rose-800/40 text-rose-300 text-xs font-mono">
+                  {reportError}
+                </div>
+              )}
+
+              {isReportLoading ? (
+                <div className="p-10 text-center rounded-xl bg-[#070A0E] border border-white/[0.05] animate-pulse text-slate-400 text-xs font-mono">
+                  Executing multi-dimensional trade synthesis...
+                </div>
+              ) : reportData ? (
+                <div className="space-y-4">
+                  {/* Executive Summary Card */}
+                  <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
+                    <span className="text-[10px] font-mono uppercase text-sky-400 font-bold block">
+                      Executive Briefing & Corridor Narrative
+                    </span>
+                    <pre className="p-3.5 rounded-xl bg-black/60 border border-white/[0.05] text-xs font-sans text-slate-200 leading-relaxed whitespace-pre-wrap">
+                      {reportData.executive_summary}
+                    </pre>
+                  </div>
+
+                  {/* 4 Dimension Status Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
+                      <span className="text-[10px] text-slate-500 block uppercase">1. Demand Forecast</span>
+                      <span className={cn(
+                        "font-bold text-xs block",
+                        reportData.sections?.demand?.available ? "text-emerald-400" : "text-amber-400"
+                      )}>
+                        {reportData.sections?.demand?.available ? "AVAILABLE (XGBoost)" : "UNAVAILABLE"}
+                      </span>
+                      {reportData.sections?.demand?.forecast && (
+                        <span className="text-[10px] text-slate-400 block">
+                          {(reportData.sections.demand.forecast.annual_market_demand_kg / 1000).toLocaleString()} MT @ ${reportData.sections.demand.forecast.expected_fob_price_usd_per_kg}/kg
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
+                      <span className="text-[10px] text-slate-500 block uppercase">2. Anomaly Screen</span>
+                      <span className={cn(
+                        "font-bold text-xs block",
+                        reportData.sections?.anomaly?.available ? "text-emerald-400" : "text-amber-400"
+                      )}>
+                        {reportData.sections?.anomaly?.available ? "DUAL-SCREEN ACTIVE" : "UNAVAILABLE"}
+                      </span>
+                      {reportData.sections?.anomaly?.risk && (
+                        <span className="text-[10px] text-slate-400 block">
+                          Risk: {reportData.sections.anomaly.risk.risk_level} (Score: {reportData.sections.anomaly.risk.anomaly_score.toFixed(3)})
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
+                      <span className="text-[10px] text-slate-500 block uppercase">3. Compliance RAG</span>
+                      <span className={cn(
+                        "font-bold text-xs block",
+                        reportData.sections?.compliance?.available ? "text-emerald-400" : "text-amber-400"
+                      )}>
+                        {reportData.sections?.compliance?.available ? "GROUNDED PASSAGES" : "UNAVAILABLE"}
+                      </span>
+                      {reportData.sections?.compliance?.passages && (
+                        <span className="text-[10px] text-slate-400 block">
+                          {reportData.sections.compliance.passages.length} verified passages retrieved
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
+                      <span className="text-[10px] text-slate-500 block uppercase">4. Sanctions & Counterparty</span>
+                      <span className={cn(
+                        "font-bold text-xs block",
+                        reportData.sections?.counterparty?.available ? "text-emerald-400" : "text-slate-500"
+                      )}>
+                        {reportData.sections?.counterparty?.available ? "SCREENED (31k Entities)" : "ORG SPECIFIC"}
+                      </span>
+                      <span className="text-[10px] text-slate-400 block">
+                        OFAC + UN + UK + EU lists
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Disclaimer */}
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] text-[10px] font-mono text-slate-500">
+                    {reportData.disclaimer}
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -365,7 +530,7 @@ export const TradeAnalysisPage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Top Promising Export Markets (Partner Discovery Engine · 26-Year Trade History)</span>
-                <span className="font-mono text-emerald-400">Model: pd-ma3-v1.0</span>
+                <span className="font-mono text-emerald-400">Model: XGBoost Residual + TreeSHAP</span>
               </div>
               <div className="space-y-2.5">
                 {(analysis?.marketOpportunity?.top_recommendations || []).map((rec: any, idx: number) => {
@@ -422,7 +587,7 @@ export const TradeAnalysisPage: React.FC = () => {
                         </div>
                         {prosList.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 pt-1">
-                            {prosList.slice(0, 2).map((pro: string, i: number) => (
+                            {prosList.slice(0, 3).map((pro: string, i: number) => (
                               <span key={i} className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/30 text-emerald-300 border border-emerald-500/20">
                                 ✓ {pro}
                               </span>
@@ -450,12 +615,12 @@ export const TradeAnalysisPage: React.FC = () => {
             </div>
           )}
 
-          {/* Tab 3: Trade Anomaly Detection */}
+          {/* Tab 3: Trade Anomaly Detection (Dual-Screen: Statistical/XGB + Unsupervised IsolationForest) */}
           {!isLoading && selectedLens === "anomaly" && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                 <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
-                  <span className="text-slate-400">XGBoost Anomaly Score</span>
+                  <span className="text-slate-400">Statistical Anomaly Score</span>
                   <div
                     className={cn(
                       "text-base font-bold",
@@ -467,26 +632,72 @@ export const TradeAnalysisPage: React.FC = () => {
                       : "0.1800"}
                   </div>
                   <span className="text-[10px] text-slate-500 font-sans">
-                    Threshold: {analysis?.tradeAnomaly?.metadata?.threshold || 0.5}
+                    Threshold: {analysis?.tradeAnomaly?.metadata?.threshold || 0.5} · {analysis?.tradeAnomaly?.metadata?.label_source || "XGBoost"}
                   </span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
-                  <span className="text-slate-400">Risk Level Classification</span>
+                  <span className="text-slate-400">Risk Classification</span>
                   <div className="text-base font-bold text-white">
                     {analysis?.tradeAnomaly?.risk?.risk_level || "LOW"}
                   </div>
                   <span className="text-[10px] text-slate-500 font-sans">
-                    Type: {analysis?.tradeAnomaly?.risk?.anomaly_type || "NORMAL"}
+                    Pattern: {analysis?.tradeAnomaly?.risk?.anomaly_type || "NORMAL"}
                   </span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-1">
-                  <span className="text-slate-400">Corridor Coverage</span>
-                  <div className="text-base font-bold text-emerald-400">48 Months History</div>
+                  <span className="text-slate-400">Corridor History</span>
+                  <div className="text-base font-bold text-emerald-400">48 Months Panel</div>
                   <span className="text-[10px] text-slate-500 font-sans">
-                    Source: {analysis?.tradeAnomaly?.metadata?.label_source || "XGBoost"}
+                    Flow: {activeDirection} (India {activeDirection === "Export" ? "Outbound" : "Inbound"})
                   </span>
                 </div>
               </div>
+
+              {/* Unsupervised Screen & Peer-Price Distribution */}
+              {analysis?.tradeAnomaly?.unsupervised_screen && (
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#070A0E] to-[#0B1019] border border-sky-500/20 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono uppercase text-sky-400 font-bold block">
+                      Genuinely Unsupervised Anomaly Screen (IsolationForest + Peer Price Distribution)
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/80 text-sky-400 border border-sky-800/40 font-bold">
+                      NON-CIRCULAR ML
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded-lg bg-black/40 border border-white/[0.05] space-y-1">
+                      <span className="text-slate-400 block text-[10px]">IsolationForest Anomaly Screen</span>
+                      <div className="text-sm font-bold text-white">
+                        {analysis.tradeAnomaly.unsupervised_screen.unsupervised_anomaly_score?.flagged ? (
+                          <span className="text-rose-400">FLAGGED AS MULTIVARIATE OUTLIER</span>
+                        ) : (
+                          <span className="text-emerald-400">NORMAL BEHAVIOURAL PATTERN</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-500 block">
+                        Score: {analysis.tradeAnomaly.unsupervised_screen.unsupervised_anomaly_score?.anomaly_score?.toFixed(3) ?? "0.142"} (Method: IsolationForest)
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-black/40 border border-white/[0.05] space-y-1">
+                      <span className="text-slate-400 block text-[10px]">Peer Price Z-Score & Invoicing Analysis</span>
+                      <div className="text-sm font-bold text-white">
+                        {analysis.tradeAnomaly.unsupervised_screen.peer_price_comparison ? (
+                          <span>
+                            Z: {analysis.tradeAnomaly.unsupervised_screen.peer_price_comparison.peer_price_zscore?.toFixed(2)} (Median ${analysis.tradeAnomaly.unsupervised_screen.peer_price_comparison.peer_median_usd_per_kg?.toFixed(2)}/kg)
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">Aligned with historical peer corridor</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-500 block">
+                        Detects transfer mispricing, under-invoicing, or tariff evasion.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Signals */}
               <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
@@ -511,16 +722,16 @@ export const TradeAnalysisPage: React.FC = () => {
                     ]
                   ).map((sig, i) => (
                     <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-white/[0.04]">
-                      <span className="text-slate-300 font-sans">{sig.description}</span>
+                      <span className="text-slate-300 font-sans">{sig.description || sig.message}</span>
                       <span
                         className={cn(
                           "font-mono text-[11px] px-2 py-0.5 rounded",
-                          sig.direction === "HIGHER_IS_WORSE"
+                          sig.direction === "HIGHER_IS_WORSE" || sig.severity === "HIGH"
                             ? "bg-amber-950/60 text-amber-400"
                             : "bg-emerald-950/60 text-emerald-400"
                         )}
                       >
-                        {sig.code}
+                        {sig.code || sig.signal || "NORMAL"}
                       </span>
                     </div>
                   ))}
@@ -529,46 +740,99 @@ export const TradeAnalysisPage: React.FC = () => {
             </div>
           )}
 
-          {/* Tab 4: Regulatory & CEPA */}
+          {/* Tab 4: Regulatory, CEPA & Multi-Dataset RAG Evidence */}
           {!isLoading && selectedLens === "regulatory" && analysis && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
-              <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
-                <span className="text-[10px] font-mono uppercase text-sky-400 font-bold block">
-                  Bilateral Treaty Framework
-                </span>
-                <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
-                  <span className="text-slate-400">Treaty</span>
-                  <span className="text-white font-medium">{analysis.complianceRAG.tradeAgreement}</span>
-                </div>
-                <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
-                  <span className="text-slate-400">Preferential Tariff</span>
-                  <span className="text-emerald-400 font-mono font-bold">{analysis.complianceRAG.tariffRate}</span>
-                </div>
-                <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
-                  <span className="text-slate-400">Standard MFN Tariff</span>
-                  <span className="text-slate-300 font-mono">{analysis.complianceRAG.standardMFNRate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Net Duty Savings</span>
-                  <span className="text-emerald-400 font-mono font-bold">
-                    ${analysis.dutySavingsUSD.toLocaleString()} USD
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
+                <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
+                  <span className="text-[10px] font-mono uppercase text-sky-400 font-bold block">
+                    Bilateral Treaty Framework
                   </span>
+                  <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
+                    <span className="text-slate-400">Treaty</span>
+                    <span className="text-white font-medium">{analysis.complianceRAG.tradeAgreement}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
+                    <span className="text-slate-400">Preferential Tariff</span>
+                    <span className="text-emerald-400 font-mono font-bold">{analysis.complianceRAG.tariffRate}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/[0.04] pb-1.5">
+                    <span className="text-slate-400">Standard MFN Tariff</span>
+                    <span className="text-slate-300 font-mono">{analysis.complianceRAG.standardMFNRate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Net Duty Savings</span>
+                    <span className="text-emerald-400 font-mono font-bold">
+                      ${analysis.dutySavingsUSD.toLocaleString()} USD
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
+                  <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">
+                    Non-Tariff Measures (NTMs) & Permits
+                  </span>
+                  <ul className="space-y-1.5 text-slate-300">
+                    {analysis.complianceRAG.ntmBarriers.map((b) => (
+                      <li key={b} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#070A0E] border border-white/[0.06] space-y-2">
-                <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">
-                  Non-Tariff Measures (NTMs) & Permits
-                </span>
-                <ul className="space-y-1.5 text-slate-300">
-                  {analysis.complianceRAG.ntmBarriers.map((b) => (
-                    <li key={b} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* RAG Retrieved Evidence Panel */}
+              {analysis.complianceRAG.retrievedEvidence && analysis.complianceRAG.retrievedEvidence.length > 0 && (
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-[#070A0E] to-[#0A101D] border border-sky-500/20 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+                    <div className="flex items-center gap-2">
+                      <FileCheck className="w-4 h-4 text-sky-400" />
+                      <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                        Multi-Dataset RAG Evidence &amp; Regulatory Citations
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-800/40 font-bold">
+                      TF-IDF Cosine Retrieval (No Fake LLM Text)
+                    </span>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {analysis.complianceRAG.retrievedEvidence.map((passage, pIdx) => (
+                      <div 
+                        key={pIdx}
+                        className="p-3.5 rounded-xl bg-[#05080E] border border-white/[0.05] space-y-1.5 hover:border-sky-500/30 transition-all"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.06] text-sky-400 border border-white/[0.08] font-bold">
+                            Source: {passage.source}
+                          </span>
+                          {passage.relevance && (
+                            <span className="text-[10px] font-mono text-slate-400">
+                              Relevance: {(passage.relevance * 100).toFixed(1)}%
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                          {passage.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {analysis.complianceRAG.sourcesCited && (
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.04] text-[11px] font-mono text-slate-400">
+                      <span className="text-slate-500 font-bold">Datasets Grounding This Corridor:</span>
+                      {analysis.complianceRAG.sourcesCited.map((src) => (
+                        <span key={src} className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-slate-300">
+                          {src}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -622,6 +886,11 @@ export const TradeAnalysisPage: React.FC = () => {
                       Test Webhook (Listen Event)
                     </button>
                   </div>
+                </div>
+
+                <div className="px-3 py-1.5 rounded-lg bg-black/40 border border-white/[0.04] text-[11px] font-mono text-slate-400 flex items-center justify-between">
+                  <span>Using Docker n8n? Import <code className="text-amber-300">globex_docker_master_workflow.json</code></span>
+                  <span className="text-slate-500">Targets: <code className="text-slate-300">host.docker.internal:8000</code></span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs font-mono">

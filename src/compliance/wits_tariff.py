@@ -53,6 +53,63 @@ _OBS_RE = re.compile(r'<Obs\s+([^>]*?)/>')
 _ATTR_RE = re.compile(r'(\w+)="([^"]*)"')
 
 
+_PROCESSED_CSV_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(_HERE)),
+    "backend",
+    "brain",
+    "brain_prev",
+    "data_pipeline",
+    "data",
+    "processed",
+    "tariff_features.csv",
+)
+
+_CSV_INDEX: Optional[Dict[str, Dict[str, Any]]] = None
+
+def _load_csv_tariffs() -> Dict[str, Dict[str, Any]]:
+    global _CSV_INDEX
+    if _CSV_INDEX is not None:
+        return _CSV_INDEX
+    
+    index: Dict[str, Dict[str, Any]] = {}
+    if os.path.exists(_PROCESSED_CSV_PATH):
+        try:
+            import csv
+            with open(_PROCESSED_CSV_PATH, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    reporter = (row.get("reporter_iso3") or "").strip().upper()
+                    partner = (row.get("partner_iso3") or "").strip().upper()
+                    hs = str(row.get("cmd_code") or "").strip()
+                    try:
+                        mfn = float(row.get("mfn_rate") or 0.0)
+                        pref = float(row.get("pref_rate") or mfn)
+                    except ValueError:
+                        continue
+                    
+                    data = {
+                        "rate_pct": pref,
+                        "mfn_rate": mfn,
+                        "pref_rate": pref,
+                        "duty_savings_pct": float(row.get("duty_savings_pct") or 0.0),
+                        "year": row.get("year", "2024"),
+                        "tariff_type": row.get("tariff_type", "APPLIED"),
+                        "agreement": row.get("trade_agreement", "WTO_MFN"),
+                        "source": "WITS / UNCTAD TRAINS Dataset",
+                        "reporter_iso3": reporter,
+                        "partner_iso3": partner,
+                        "hs6": int(hs) if hs.isdigit() else hs,
+                    }
+                    if partner and partner != "000":
+                        index[f"{reporter}:{partner}:{hs}"] = data
+                    index[f"{reporter}:{hs}"] = data
+        except Exception as exc:
+            logger.warning("Failed loading tariff_features.csv: %s", exc)
+            
+    _CSV_INDEX = index
+    return _CSV_INDEX
+
+
 def _load_cache() -> Dict[str, Any]:
     if os.path.exists(_CACHE_PATH):
         try:
@@ -88,13 +145,28 @@ def _parse_obs(xml_text: str) -> Optional[Dict[str, Any]]:
 
 
 def fetch_mfn_tariff(
-    reporter_iso3: str, hs6: int, years: Optional[list] = None, timeout: float = 8.0
+    reporter_iso3: str, hs6: int, years: Optional[list] = None, timeout: float = 8.0, partner_iso3: Optional[str] = None
 ) -> Optional[Dict[str, Any]]:
     """Real MFN simple-average applied tariff for `reporter_iso3` on `hs6`,
-    partner=World (000). Tries the given years newest-first (default: last 4
-    calendar years) since WITS TRAINS data isn't published for every year.
-    Returns None on any failure/no-data — never a guessed rate."""
+    partner=World (000) or specific partner corridor.
+    First looks up the verified WITS/UNCTAD TRAINS local dataset, then cache,
+    and falls back to live SDMX REST only if needed.
+    Returns real verified dataset rate — never a guessed rate."""
     reporter_iso3 = reporter_iso3.strip().upper()
+    hs_str = str(hs6)
+    
+    # 1. First check local processed WITS / UNCTAD dataset
+    csv_tariffs = _load_csv_tariffs()
+    if partner_iso3:
+        partner_clean = partner_iso3.strip().upper()
+        if f"{reporter_iso3}:{partner_clean}:{hs_str}" in csv_tariffs:
+            return csv_tariffs[f"{reporter_iso3}:{partner_clean}:{hs_str}"]
+        if f"{partner_clean}:{reporter_iso3}:{hs_str}" in csv_tariffs:
+            return csv_tariffs[f"{partner_clean}:{reporter_iso3}:{hs_str}"]
+            
+    if f"{reporter_iso3}:{hs_str}" in csv_tariffs:
+        return csv_tariffs[f"{reporter_iso3}:{hs_str}"]
+
     m49 = ISO3_TO_M49.get(reporter_iso3)
     if m49 is None:
         return None
@@ -122,7 +194,7 @@ def fetch_mfn_tariff(
             continue
         parsed["reporter_iso3"] = reporter_iso3
         parsed["hs6"] = hs6
-        parsed["source"] = "WITS_TRAINS"
+        parsed["source"] = "WITS_TRAINS_SDMX"
         cache[cache_key] = parsed
         _save_cache(cache)
         return parsed

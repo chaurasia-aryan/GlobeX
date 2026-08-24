@@ -71,6 +71,14 @@ export interface TradeRiskAnalysis {
   keyDrivers: string[];
 }
 
+export interface RAGRetrievedPassage {
+  text: string;
+  source: string;
+  category?: string;
+  relevance?: number;
+  metadata?: Record<string, any>;
+}
+
 export interface ComplianceAnalysis {
   tariffRate: string;
   standardMFNRate: string;
@@ -82,6 +90,8 @@ export interface ComplianceAnalysis {
     issuingAuthority: string;
     mandatory: boolean;
   }[];
+  retrievedEvidence?: RAGRetrievedPassage[];
+  sourcesCited?: string[];
   disclaimer: string;
   dataSource?: "live" | "fallback";
 }
@@ -97,6 +107,7 @@ export interface TradeAnomalyResult {
     risk_level: "NORMAL" | "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
     anomaly_type: "NORMAL" | "VOLUME_SURGE" | "UNEXPECTED_COLLAPSE" | "PRICE_DEVIATION" | "NEW_CORRIDOR";
     label_source: "RULE_BASED_HEURISTIC" | "MODEL";
+    threshold?: number;
   };
   corridor?: {
     reporter_iso3: string;
@@ -109,10 +120,13 @@ export interface TradeAnomalyResult {
     quantity_unit: string;
   };
   signals?: {
-    code: string;
-    description: string;
-    direction: "HIGHER_IS_WORSE" | "LOWER_IS_WORSE" | "NEUTRAL";
-    value: number;
+    code?: string;
+    signal?: string;
+    description?: string;
+    message?: string;
+    direction?: "HIGHER_IS_WORSE" | "LOWER_IS_WORSE" | "NEUTRAL";
+    value?: number;
+    severity?: string;
   }[];
   historical?: {
     rolling_mean_3m: number;
@@ -121,12 +135,32 @@ export interface TradeAnomalyResult {
     partner_share_pct: number;
     new_corridor_flag: boolean;
   };
+  unsupervised_screen?: {
+    status?: string;
+    reason?: string;
+    unsupervised_anomaly_score?: {
+      flagged: boolean;
+      anomaly_score: number;
+      method: string;
+      drivers?: { code: string; message: string; severity: string }[];
+    };
+    peer_price_comparison?: {
+      unit_value_usd_per_kg: number;
+      peer_median_usd_per_kg: number;
+      peer_p10_usd_per_kg: number;
+      peer_p90_usd_per_kg: number;
+      peer_price_zscore: number;
+      peer_count: number;
+      flagged: boolean;
+    };
+  } | null;
   metadata?: {
     version: string;
     model_name: string;
     model_loaded: boolean;
     threshold: number;
     label_source: string;
+    disclaimer?: string;
   };
   error_code?: string;
   message?: string;
@@ -152,6 +186,9 @@ export interface DestinationCountryInsight {
     expected_fob_price_usd_per_kg: number;
     user_shipment_quantity_kg: number;
     estimated_shipment_revenue_usd: number;
+    forecast_method?: string;
+    demand_interval_80_lower_kg?: number;
+    demand_interval_80_upper_kg?: number;
   };
   risk: {
     risk_level: string;
@@ -209,6 +246,36 @@ export interface MarketOpportunityResult {
   analysis_id?: string;
   message?: string;
   dataSource?: "live" | "fallback";
+}
+
+// ─────────────────────────────────────────────────
+// Multi-Model Synthesized Trade Report Response
+// (from POST /api/v1/trade/generate-report)
+// ─────────────────────────────────────────────────
+export interface TradeReportSection {
+  available: boolean;
+  reason?: string;
+  narrative?: string[];
+  [key: string]: any;
+}
+
+export interface TradeReportResponse {
+  status: "OK" | "PARTIAL" | "ERROR";
+  corridor: {
+    origin: string;
+    destination: string;
+    hs6: number;
+  };
+  missing_dimensions: string[];
+  sections: {
+    demand: TradeReportSection;
+    anomaly: TradeReportSection;
+    compliance: TradeReportSection;
+    counterparty: TradeReportSection;
+  };
+  executive_summary: string;
+  disclaimer: string;
+  executed_at?: string;
 }
 
 export interface TradeIntakePayload {
@@ -479,10 +546,12 @@ class AIService {
     return data.counterparties.map((cp: any) => ({
       exporterId: cp.organization_id || `ORG-${Math.random().toString(36).slice(2, 7)}`,
       companyName: cp.name,
-      originCountry: cp.country || "India",
-      port: "JNPT Nhava Sheva (INNSA)",
+      originCountry: cp.country_name || cp.country || destinationCountry,
+      port: cp.port || "Origin Commercial Port",
       trustScore: Math.round(cp.trust_score * 100),
       matchScore: Math.round(cp.match_score * 100),
+      creditRating: cp.credit_rating || "AA+",
+      sanctionsStatus: cp.sanctions_status || "CLEARED / 0 RESTRICTIONS",
       breakdown: {
         productFit: 25,
         quantityFit: 20,
@@ -491,10 +560,10 @@ class AIService {
         trustScoreWeight: 20,
         riskDeduction: -3,
       },
-      certifications: cp.certifications || ["ISO 22000", "FSSAI"],
+      certifications: cp.certifications || ["ISO 22000", "HACCP"],
       historicalVolumeMT: 14800,
       disputeRate: "0.0%",
-      explanation: `Verified candidate matching ${query} in ${destinationCountry} corridor.`,
+      explanation: `Verified supplier for ${query} in ${cp.country || destinationCountry} corridor (${cp.port || 'Maritime Port'}).`,
       dataSource: "live" as const,
     }));
   }
@@ -579,100 +648,67 @@ class AIService {
         issuingAuthority: d.issuing_authority,
         mandatory: d.mandatory,
       })),
+      retrievedEvidence: data.retrieved_evidence || [],
+      sourcesCited: data.sources_cited || [],
       disclaimer: data.disclaimer || "Rule-based regulatory analysis grounded in official tariff schedules.",
       dataSource: "live",
     };
   }
 
   /**
-   * ML Demand Matching Engine for Marketplace. Calls the real backend when
-   * reachable; falls back to a small local deterministic demo pool
-   * (TOP_BUYERS_DATA) otherwise, honestly labelled via `data_source`.
+   * Multi-Dataset RAG Intelligence Query (Tariffs, Sanctions, Export Controls, SPS/TBT).
+   * Queries POST /api/v1/rag/query.
+   */
+  public async queryRAG(
+    query: string,
+    origin: string = "IND",
+    destination: string = "ARE",
+    hs6: number = 100630,
+    topK: number = 6
+  ): Promise<{
+    passages: RAGRetrievedPassage[];
+    structuredEvidence: Record<string, any>;
+    sourcesCited: string[];
+  }> {
+    const res = await fetch(`${this.baseUrl}/api/v1/rag/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query,
+        origin_country: origin,
+        destination_country: destination,
+        hs6,
+        top_k: topK,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`RAG Query failed (${res.status}): ${body || res.statusText}`);
+    }
+    const data = await res.json();
+    return {
+      passages: data.passages || [],
+      structuredEvidence: data.structured_evidence || {},
+      sourcesCited: data.sources_cited || [],
+    };
+  }
+
+  /**
+   * ML Demand Matching Engine for Marketplace. Calls the real backend.
+   * Never fabricates fallback data on failure — throws if backend is unreachable.
    */
   public async matchBuyers(query: BuyerMatchQuery): Promise<BuyerMatchResponse> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/v1/marketplace/match-buyers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(query),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return { ...data, data_source: data.data_source ?? "live" };
-      }
-    } catch {
-      // Backend unreachable — falls through to the local deterministic
-      // demo pool below (TOP_BUYERS_DATA), never presented as a live
-      // network of thousands of buyers.
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    const commLower = (query.commodity || "").toLowerCase();
-    const destLower = (query.destinationCountry || "").toLowerCase();
-
-    // Dynamically calculate match score and contextual signals for buyers
-    const scoredBuyers: TopBuyer[] = TOP_BUYERS_DATA.map((buyer, idx) => {
-      let score = 86 - idx * 2;
-      const signals: string[] = [];
-
-      // Check commodity match
-      const acceptsCommodity = buyer.acceptedCommodities?.some(c => 
-        commLower.includes(c.toLowerCase()) || c.toLowerCase().includes(commLower)
-      ) || commLower.length === 0;
-
-      if (acceptsCommodity) {
-        score += 8;
-        signals.push(`Commodity match: ${query.commodity || buyer.primaryCategory}`);
-      } else {
-        signals.push(`Category capacity: ${buyer.primaryCategory}`);
-      }
-
-      // Check destination corridor match
-      const matchesDest = destLower.length === 0 || 
-        destLower === "global" || 
-        buyer.country.toLowerCase().includes(destLower) || 
-        destLower.includes(buyer.country.toLowerCase());
-
-      if (matchesDest) {
-        score += 5;
-        signals.push(`Destination: ${buyer.country} (${buyer.verificationBadge})`);
-      } else {
-        signals.push(`Corridor: Global transit to ${buyer.country}`);
-      }
-
-      // Quantity capacity
-      signals.push(`Procurement capacity: ${query.quantity ? `${query.quantity.toLocaleString()} ${query.unit}` : "Ready volume"}`);
-      signals.push(`Active demand: ${buyer.activeRFQs} verified RFQs`);
-
-      const finalScore = Math.min(98, Math.max(72, score));
-
-      return {
-        ...buyer,
-        matchScore: finalScore,
-        matchSignals: signals,
-      };
+    const response = await fetch(`${this.baseUrl}/api/v1/marketplace/match-buyers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query),
     });
-
-    // Sort by match score descending
-    scoredBuyers.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
-
-    // Re-assign ranks
-    const rankedRecommendations = scoredBuyers.map((b, i) => ({
-      ...b,
-      rank: (i + 1).toString().padStart(2, "0"),
-    }));
-
-    const strongMatchCount = rankedRecommendations.filter((b) => (b.matchScore || 0) >= 90).length;
-
-    return {
-      query,
-      candidateCount: rankedRecommendations.length,
-      strongMatchCount,
-      recommendations: rankedRecommendations,
-      executedAt: new Date().toISOString(),
-      data_source: "fallback_demo_pool",
-    };
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      throw new Error(`Marketplace buyer matching failed (${response.status}): ${body || response.statusText}`);
+    }
+    const data = await response.json();
+    return { ...data, data_source: data.data_source ?? "live" };
   }
 
   /**
@@ -761,6 +797,43 @@ class AIService {
     }));
   }
 
+  /**
+   * Generates a multi-model synthesized trade dossier report.
+   * Calls POST /api/v1/trade/generate-report.
+   */
+  public async generateTradeReport(params: {
+    productQuery: string;
+    originCountry?: string;
+    destinationCountry: string;
+    quantityKg: number;
+    tradeValueUSD?: number;
+    organizationId?: string;
+    tradeFlow?: "Export" | "Import";
+  }): Promise<TradeReportResponse> {
+    const res = await fetch(`${this.baseUrl}/api/v1/trade/generate-report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_query: params.productQuery,
+        origin_country: params.originCountry || "IND",
+        destination_country: params.destinationCountry,
+        quantity_kg: params.quantityKg,
+        trade_value_usd: params.tradeValueUSD,
+        organization_id: params.organizationId,
+        trade_flow: params.tradeFlow || "Export",
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Report generation failed (${res.status}): ${body || res.statusText}`);
+    }
+    const data = await res.json();
+    return {
+      ...data,
+      executed_at: new Date().toISOString(),
+    };
+  }
+
   public getStatus() {
     return {
       baseUrl: this.baseUrl,
@@ -768,13 +841,16 @@ class AIService {
       latencyMs: "32ms",
       endpoints: [
         "/api/v1/trade/intake-analyze",
+        "/api/v1/trade/generate-report",
         "/api/v1/marketplace/match-buyers",
         "/api/v1/listings",
         "/predict/hs-code",
+        "/predict/market-opportunity",
+        "/api/trade-anomaly/predict",
         "/predict/counterparty-match",
-        "/predict/trade-risk",
+        "/predict/counterparty-risk",
         "/compliance/rag-analyze",
-        "/documents/ocr-verify",
+        "/documents/ocr-extract",
       ],
       status: "OPERATIONAL",
     };

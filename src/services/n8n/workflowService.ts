@@ -45,21 +45,37 @@ export interface AnalyzeTradePayload {
 
 class N8nWorkflowService {
   private webhookBaseUrl: string;
-  private isRealBackend: boolean;
+  public readonly isRealBackend: boolean;
+  public readonly isDev: boolean;
 
   constructor() {
     const envUrl = (import.meta as any).env?.VITE_N8N_WEBHOOK_URL;
-    this.isRealBackend = !!envUrl;
-    this.webhookBaseUrl = envUrl || "https://n8n.internal.globex.ai/webhook";
+    this.webhookBaseUrl = envUrl || "http://localhost:5678/webhook";
+    this.isRealBackend = Boolean(envUrl);
+    this.isDev = (import.meta as any).env?.DEV ?? true;
   }
 
-  private get isDev(): boolean {
-    return !this.isRealBackend;
+  /**
+   * Checks whether the local or configured n8n instance is reachable.
+   */
+  public async checkHealth(): Promise<{ isOnline: boolean; url: string; error?: string }> {
+    try {
+      // Browser-safe probe to n8n webhook listener (no-cors prevents preflight rejection)
+      await fetch(`${this.webhookBaseUrl}/globex-analyze-trade-v2`, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ probe: true, product: "Basmati Rice", origin_country: "IND", destination_country: "ARE", quantity_kg: 50000 }),
+        signal: AbortSignal.timeout(2500),
+      });
+      return { isOnline: true, url: `${this.webhookBaseUrl}/globex-analyze-trade-v2` };
+    } catch (err: any) {
+      return { isOnline: false, url: `${this.webhookBaseUrl}/globex-analyze-trade-v2`, error: err?.message || "Unreachable" };
+    }
   }
 
   /**
    * POST to an n8n webhook and return the result.
-   * Returns UNAVAILABLE (not FAILED) if the server is unreachable.
+   * Never fabricates fallback data on failure — always returns the real status.
    */
   private async callWebhook(
     path: string,
@@ -75,7 +91,7 @@ class N8nWorkflowService {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(60000),
+        signal: AbortSignal.timeout(45000),
       });
 
       const latencyMs = Math.round(performance.now() - t0);
@@ -91,14 +107,22 @@ class N8nWorkflowService {
           finishedAt: new Date().toISOString(),
           nodesExecuted: 0,
           payloadOutput: {
-            error: `HTTP ${response.status}`,
+            error: `n8n webhook returned HTTP ${response.status}: ${response.statusText}`,
             detail: errBody.slice(0, 500),
+            hint: `Make sure the workflow containing webhook '/${path}' is active in n8n.`,
           },
           latencyMs,
         };
       }
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : { status: "SUCCESS", message: "Workflow executed successfully." };
+      } catch {
+        data = { status: "SUCCESS", message: text || "Workflow executed successfully." };
+      }
+
       return {
         workflowId,
         workflowName,
@@ -111,11 +135,12 @@ class N8nWorkflowService {
         latencyMs,
       };
     } catch (err: any) {
-      // Distinguish network-unreachable from unexpected errors
       const isNetworkError =
         err?.name === "AbortError" ||
         err?.name === "TypeError" ||
-        String(err).includes("fetch");
+        String(err).includes("fetch") ||
+        String(err).includes("Failed to fetch");
+
       return {
         workflowId,
         workflowName,
@@ -125,82 +150,39 @@ class N8nWorkflowService {
         finishedAt: new Date().toISOString(),
         nodesExecuted: 0,
         payloadOutput: {
-          error: isNetworkError ? "n8n unreachable" : String(err),
-          hint: "Set VITE_N8N_WEBHOOK_URL and ensure n8n is running.",
+          error: isNetworkError
+            ? `n8n server is offline or unreachable at ${this.webhookBaseUrl}`
+            : String(err),
+          hint: "Launch n8n locally (`n8n start` at http://localhost:5678) and activate 'GlobeX Trade Automation' workflow.",
         },
         latencyMs: Math.round(performance.now() - t0),
       };
     }
   }
 
-  /**
-   * Development-only fallback. Only invoked when VITE_N8N_WEBHOOK_URL is NOT set.
-   * Always clearly marks itself as FALLBACK so the UI can show an appropriate warning.
-   */
-  private devFallback(
-    workflowId: string,
-    workflowName: string,
-    payloadOutput: Record<string, unknown>
-  ): WorkflowExecutionResult {
-    return {
-      workflowId,
-      workflowName,
-      executionId: `dev_${Date.now()}`,
-      status: "FALLBACK",
-      startedAt: new Date().toISOString(),
-      finishedAt: new Date().toISOString(),
-      nodesExecuted: 0,
-      payloadOutput,
-      fallbackReason:
-        "VITE_N8N_WEBHOOK_URL not set. This is development mock data. Set the env var and restart to use real n8n.",
-    };
-  }
-
   // ──────────────────────────────────────────────────────────────
   // Workflow 1: Trade Intelligence / Analyze Trade
   // ──────────────────────────────────────────────────────────────
-
-  /**
-   * Triggers the full AI Trade Analysis n8n workflow.
-   * Webhook path: POST /webhook/analyze-trade
-   *
-   * The workflow calls:
-   *   HS Classifier → Market Opportunity → Trade Anomaly →
-   *   Counterparty Match → Compliance → Aggregate → Persist
-   */
   public async triggerTradeIntelligenceWorkflow(
     payload: AnalyzeTradePayload
   ): Promise<WorkflowExecutionResult> {
-    if (this.isDev) {
-      return this.devFallback("wf_trade_intelligence_01", "Trade Intelligence", {
-        note: "Set VITE_N8N_WEBHOOK_URL to call real n8n",
-        input: payload,
-      });
-    }
     return this.callWebhook(
-      "analyze-trade",
+      "globex-analyze-trade-v2",
       payload as unknown as Record<string, unknown>,
-      "wf_trade_intelligence_01",
-      "WF-01: End-to-End Trade Intelligence Aggregator"
+      "wf_trade_intelligence_02",
+      "WF-02: GlobeXAI Production Trade Automation OS v2 (Schema-Corrected)"
     );
   }
 
   // ──────────────────────────────────────────────────────────────
   // Workflow 2: Document Verification
   // ──────────────────────────────────────────────────────────────
-
   public async triggerDocumentVerificationWorkflow(
     tradeId: string,
     documentUrl: string,
     documentType: string = "COMMERCIAL_INVOICE",
     uploaderOrgId?: string
   ): Promise<WorkflowExecutionResult> {
-    if (this.isDev) {
-      return this.devFallback("wf_doc_verification_02", "Document Verification", {
-        note: "Set VITE_N8N_WEBHOOK_URL to call real n8n",
-        trade_id: tradeId,
-      });
-    }
     return this.callWebhook(
       "document-uploaded",
       { trade_id: tradeId, document_url: documentUrl, document_type: documentType, uploader_org_id: uploaderOrgId },
@@ -212,18 +194,11 @@ class N8nWorkflowService {
   // ──────────────────────────────────────────────────────────────
   // Workflow 3: Trade Creation + Escrow
   // ──────────────────────────────────────────────────────────────
-
   public async triggerEscrowLifecycleWorkflow(
     tradeId: string,
     counterpartyOrgId: string,
     eventData?: Record<string, unknown>
   ): Promise<WorkflowExecutionResult> {
-    if (this.isDev) {
-      return this.devFallback("wf_escrow_manager_03", "Trade + Escrow Creation", {
-        note: "Set VITE_N8N_WEBHOOK_URL to call real n8n",
-        trade_id: tradeId,
-      });
-    }
     return this.callWebhook(
       "create-trade",
       { trade_id: tradeId, counterparty_org_id: counterpartyOrgId, ...eventData },
@@ -233,19 +208,11 @@ class N8nWorkflowService {
   }
 
   // ──────────────────────────────────────────────────────────────
-  // Workflow 4: Shipment Tracking (note: this is a scheduled n8n
-  // workflow; this endpoint is for manual trigger/status check)
+  // Workflow 4: Shipment Tracking
   // ──────────────────────────────────────────────────────────────
-
   public async triggerShipmentIngestionWorkflow(
     voyageNumber: string
   ): Promise<WorkflowExecutionResult> {
-    if (this.isDev) {
-      return this.devFallback("wf_shipment_ingest_04", "Shipment Tracking", {
-        note: "Shipment polling is a scheduled n8n workflow (every 6h). Set VITE_N8N_WEBHOOK_URL for status.",
-        voyage_number: voyageNumber,
-      });
-    }
     return this.callWebhook(
       "shipment-status",
       { voyage_number: voyageNumber },
