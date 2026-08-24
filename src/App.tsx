@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
-import { ThemeProvider } from "@/context/ThemeContext";
 import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import PageTransition from "@/components/layout/PageTransition";
 
@@ -52,12 +51,12 @@ const ScrollToTop: React.FC = () => {
 
 // Ultra-light, non-jarring fallback loader
 const RouteFallback: React.FC = () => (
-  <div className="min-h-[calc(100vh-3.5rem)] w-full flex items-center justify-center bg-[#070A0E] text-slate-400">
+  <div className="min-h-[calc(100vh-3.5rem)] w-full flex items-center justify-center bg-app text-text-tertiary">
     <div className="flex flex-col items-center gap-3">
-      <div className="w-8 h-8 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center animate-pulse text-emerald-400">
-        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+      <div className="w-8 h-8 rounded-xl border border-emerald/30 bg-emerald-dim flex items-center justify-center animate-pulse text-emerald">
+        <span className="w-2.5 h-2.5 rounded-full bg-emerald" />
       </div>
-      <span className="text-xs font-mono tracking-wider text-slate-500 uppercase">
+      <span className="text-xs font-mono tracking-wider text-text-tertiary uppercase">
         Loading workspace...
       </span>
     </div>
@@ -100,7 +99,7 @@ const AnimatedRoutes = () => {
           <Route path="/counterparties" element={<ProtectedRoute><PageTransition><CounterpartiesIndexPage /></PageTransition></ProtectedRoute>} />
           <Route path="/counterparties/:id" element={<ProtectedRoute><PageTransition><CounterpartyDetailPage /></PageTransition></ProtectedRoute>} />
           <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentVerificationPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/escrow" element={<ProtectedRoute><PageTransition><EscrowPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/escrow/:tradeId?" element={<ProtectedRoute><PageTransition><EscrowPage /></PageTransition></ProtectedRoute>} />
           <Route path="/shipments" element={<ProtectedRoute><PageTransition><ShipmentsPage /></PageTransition></ProtectedRoute>} />
           <Route path="/disputes" element={<ProtectedRoute><PageTransition><DisputesPage /></PageTransition></ProtectedRoute>} />
           <Route path="/blockchain" element={<ProtectedRoute><PageTransition><BlockchainLedgerPage /></PageTransition></ProtectedRoute>} />
@@ -118,20 +117,18 @@ const App: React.FC = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <ThemeProvider>
-        <WorkspaceProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <div className="flex flex-col min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] selection:bg-emerald-500/20 selection:text-emerald-300 transition-colors duration-200">
-              <main className="flex-1">
-                <ErrorBoundary>
-                  <AnimatedRoutes />
-                </ErrorBoundary>
-              </main>
-            </div>
-          </BrowserRouter>
-        </WorkspaceProvider>
-      </ThemeProvider>
+      <WorkspaceProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <div className="flex flex-col min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] selection:bg-emerald-dim selection:text-emerald">
+            <main className="flex-1">
+              <ErrorBoundary>
+                <AnimatedRoutes />
+              </ErrorBoundary>
+            </main>
+          </div>
+        </BrowserRouter>
+      </WorkspaceProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -88,3 +88,64 @@ async def get_exporter_reputation(exporter_id: str) -> Dict[str, Any]:
     if not body.get("ok", False):
         raise ChainClientError(body.get("code", "UNKNOWN"), body.get("message", "Unknown chain error"), resp.status_code)
     return body["reputation"]
+
+
+# ---------------------------------------------------------------------------
+# Escrow — same shape as anchor_trade/get_trade above, one function per
+# services/chain-adapter/src/controllers/escrow.controller.ts route.
+# ---------------------------------------------------------------------------
+
+async def _escrow_post(path: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(f"{_base_url()}{path}", json=payload or {})
+    except httpx.RequestError as exc:
+        raise ChainClientError("CHAIN_UNAVAILABLE", f"chain-adapter unreachable: {exc}", 503) from exc
+
+    body = resp.json()
+    if not body.get("ok", False):
+        raise ChainClientError(
+            body.get("code", "UNKNOWN"), body.get("message", "Unknown chain error"), resp.status_code, body.get("details")
+        )
+    return body
+
+
+async def escrow_create(trade_id: str, buyer: str, seller: str, amount: Any) -> Dict[str, Any]:
+    return await _escrow_post("/escrow/create", {"tradeId": trade_id, "buyer": buyer, "seller": seller, "amount": amount})
+
+
+async def escrow_fund(trade_id: str) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/fund")
+
+
+async def escrow_set_condition(trade_id: str, kind: int, value: bool) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/condition", {"kind": kind, "value": value})
+
+
+async def escrow_release(trade_id: str) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/release")
+
+
+async def escrow_dispute(trade_id: str) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/dispute")
+
+
+async def escrow_resolve(trade_id: str, seller_amount: Any, buyer_amount: Any) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/resolve", {"sellerAmount": seller_amount, "buyerAmount": buyer_amount})
+
+
+async def escrow_refund(trade_id: str) -> Dict[str, Any]:
+    return await _escrow_post(f"/escrow/{trade_id}/refund")
+
+
+async def escrow_get(trade_id: str) -> Dict[str, Any]:
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(f"{_base_url()}/escrow/{trade_id}")
+    except httpx.RequestError as exc:
+        raise ChainClientError("CHAIN_UNAVAILABLE", f"chain-adapter unreachable: {exc}", 503) from exc
+
+    body = resp.json()
+    if not body.get("ok", False):
+        raise ChainClientError(body.get("code", "UNKNOWN"), body.get("message", "Unknown chain error"), resp.status_code)
+    return body["escrow"]

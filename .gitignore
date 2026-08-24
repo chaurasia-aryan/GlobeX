@@ -27,8 +27,6 @@ dist-ssr
 .playwright-mcp/
 .tempmediaStorage/
 *.local
-.env
-.env.*.local
 coverage/
 
 # Python virtual environment
@@ -49,18 +47,9 @@ blockchain/coverage/
 services/chain-adapter/node_modules/
 services/chain-adapter/dist/
 
-# Locally installed agent skills / MCP config (tooling, not product code)
-.agents/
-.claude/skills/
-.mcp.json
-
 # Runtime document storage (test/demo uploads, not source)
 backend/storage/
 
 # Large raw archive files (>100MB)
 data_pipeline/data/raw/ofac/SDN_ENHANCED.XML
-
-# Local test scripts containing database secrets
-scripts/test_supabase_admin.py
-scripts/test_supabase_admin2.py
 

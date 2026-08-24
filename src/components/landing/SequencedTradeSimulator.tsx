@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Ship,
   Lock,
+} from "lucide-react";
 import SpecularButton from "@/components/ui/SpecularButton";
 
 interface StepData {

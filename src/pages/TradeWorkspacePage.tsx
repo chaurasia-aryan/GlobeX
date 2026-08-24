@@ -307,7 +307,7 @@ export const TradeWorkspacePage: React.FC = () => {
 
               {/* TAB 3: PAYMENT & ESCROW */}
               <TabsContent value="payment" className="mt-0 focus-visible:outline-none">
-                <CryptoEscrowCard />
+                <CryptoEscrowCard tradeId={trade.id} />
               </TabsContent>
 
               {/* TAB 4: SHIPMENT */}

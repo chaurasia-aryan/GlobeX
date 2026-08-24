@@ -118,10 +118,10 @@ export const AdminSystemPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-mono text-xs font-bold text-white">EVM Escrow Protocol</h3>
-                  <div className="text-[10px] font-mono text-slate-400">Ethereum Sepolia / Arbitrum</div>
+                  <div className="text-[10px] font-mono text-slate-400">{blockchainStatus.network}</div>
                 </div>
               </div>
-              <StatusBadge status="verified" label="CONNECTED" />
+              <StatusBadge status="verified" label={blockchainStatus.status} />
             </div>
 
             <div className="space-y-2 text-xs font-mono">
@@ -130,12 +130,12 @@ export const AdminSystemPage: React.FC = () => {
                 <span className="text-white">{blockchainStatus.network}</span>
               </div>
               <div className="p-2 rounded-xl bg-[#070A0E] border border-white/[0.04] flex justify-between">
-                <span className="text-slate-400">Contract:</span>
-                <span className="text-sky-400 truncate max-w-[180px]">{blockchainStatus.contractAddress}</span>
+                <span className="text-slate-400">Path:</span>
+                <span className="text-sky-400 truncate max-w-[220px]">{blockchainStatus.path}</span>
               </div>
               <div className="p-2 rounded-xl bg-[#070A0E] border border-white/[0.04] flex justify-between">
                 <span className="text-slate-400">Asset:</span>
-                <span className="text-emerald-400 font-bold">USDC (ERC-20 Stablecoin)</span>
+                <span className="text-emerald-400 font-bold">{blockchainStatus.tokenAsset}</span>
               </div>
             </div>
           </div>

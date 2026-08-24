@@ -27,14 +27,16 @@ export const DisputeResolutionSuite = ({
   );
   const [isSubmittingRuling, setIsSubmittingRuling] = useState(false);
   const [isRulingSettled, setIsRulingSettled] = useState(false);
+  const [arbitrateError, setArbitrateError] = useState<string | null>(null);
 
   const currentUser = appwriteService.getCurrentUser();
   const isArbitrator = currentUser.role === "arbitrator" || currentUser.role === "admin";
 
   const handleArbitrate = async () => {
     setIsSubmittingRuling(true);
+    setArbitrateError(null);
     try {
-      await blockchainEscrowService.executeArbitrationVerdict(dispute.tradeId, 539000, 11000);
+      await blockchainEscrowService.resolveDispute(dispute.tradeId, 539000, 11000);
 
       setDispute((prev) => ({
         ...prev,
@@ -48,6 +50,8 @@ export const DisputeResolutionSuite = ({
         },
       }));
       setIsRulingSettled(true);
+    } catch (err) {
+      setArbitrateError(err instanceof Error ? err.message : "Failed to execute ruling on-chain");
     } finally {
       setIsSubmittingRuling(false);
     }
@@ -182,6 +186,12 @@ export const DisputeResolutionSuite = ({
           >
             {isSubmittingRuling ? "Broadcasting Verdict to EVM..." : "Execute Binding Arbitrator Ruling ($539k / $11k)"}
           </SpecularButton>
+
+          {arbitrateError && (
+            <div className="text-xs font-mono text-red-400 bg-red-950/30 border border-red-500/30 rounded-xl p-2.5">
+              Ruling failed: {arbitrateError}
+            </div>
+          )}
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import express from "express";
 import * as anchor from "./controllers/anchor.controller.js";
+import * as escrow from "./controllers/escrow.controller.js";
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -8,6 +9,15 @@ app.get("/health", anchor.getHealth);
 app.post("/anchor/trade", anchor.postAnchorTrade);
 app.get("/trade/:transactionId", anchor.getTrade);
 app.get("/exporter/:exporterId/reputation", anchor.getExporterReputation);
+
+app.post("/escrow/create", escrow.postCreateEscrow);
+app.post("/escrow/:tradeId/fund", escrow.postFund);
+app.post("/escrow/:tradeId/condition", escrow.postCondition);
+app.post("/escrow/:tradeId/release", escrow.postRelease);
+app.post("/escrow/:tradeId/dispute", escrow.postDispute);
+app.post("/escrow/:tradeId/resolve", escrow.postResolve);
+app.post("/escrow/:tradeId/refund", escrow.postRefund);
+app.get("/escrow/:tradeId", escrow.getEscrowByTradeId);
 
 app.use((_req, res) => {
   res.status(404).json({ ok: false, code: "NOT_FOUND", message: "No such route" });
