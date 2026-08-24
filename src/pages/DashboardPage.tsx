@@ -30,12 +30,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 type DualViewMode = "dual" | "import" | "export";
 
 export const DashboardPage: React.FC = () => {
-  const { user } = useWorkspace();
+  const { user, activeDirection, setActiveDirection, isExporterView, isImporterView } = useWorkspace();
   const navigate = useNavigate();
 
-  const [viewMode, setViewMode] = useState<DualViewMode>("dual");
+  // Sync viewMode with workspace activeDirection
+  const [viewMode, setViewMode] = useState<DualViewMode>(
+    activeDirection === "Import" ? "import" : activeDirection === "Export" ? "export" : "dual"
+  );
   const [selectedHsCode, setSelectedHsCode] = useState("1006.30");
   const [tradeValueCalc, setTradeValueCalc] = useState(500000);
+
+  const handleSelectDirection = (direction: "Export" | "Import") => {
+    setActiveDirection(direction);
+    setViewMode(direction === "Export" ? "export" : "import");
+  };
 
   // Inbound / Import Operational Contracts
   const importTrades = [
@@ -187,6 +195,131 @@ export const DashboardPage: React.FC = () => {
       {/* ── CLAYMORPHIC LIGHT DASHBOARD SURFACE (Soft Rounded Nunito Font ONLY for Dashboard) ── */}
       <div className="min-h-screen bg-[#EEF0F5] rounded-[36px] p-5 sm:p-8 space-y-8 text-slate-900 font-dashboard-rounded shadow-[inset_0_3px_8px_rgba(0,0,0,0.03)] border border-slate-300/90">
         
+        {/* ── START OF DASHBOARD: IMMERSIVE ROLE & WORKFLOW SELECTOR ───────── */}
+        <div className="p-6 sm:p-7 rounded-[32px] bg-white border border-slate-300 shadow-[12px_18px_36px_rgba(0,0,0,0.06),-8px_-8px_24px_rgba(255,255,255,1)] space-y-4 select-none">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+            <div>
+              <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#FF5500] block">
+                Trade Persona & Operating Workflow
+              </span>
+              <h2 className="text-lg font-black text-[#0A0F1D]">
+                Select Your Role: <span className="text-[#FF5500]">{activeDirection === "Export" ? "Exporter (Selling Goods Globally)" : "Importer (Sourcing & Procuring Goods)"}</span>
+              </h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-slate-500">
+                Active Corridor:
+              </span>
+              <span className={cn(
+                "px-2.5 py-1 rounded-full text-[10px] font-mono font-black border",
+                activeDirection === "Export"
+                  ? "bg-orange-100 text-[#FF5500] border-orange-300"
+                  : "bg-sky-100 text-sky-700 border-sky-300"
+              )}>
+                {activeDirection.toUpperCase()} WORKFLOW ACTIVE
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* ── IMPORTER ROLE CARD ────────────────────────────────────────── */}
+            <div
+              onClick={() => handleSelectDirection("Import")}
+              className={cn(
+                "p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-3 relative overflow-hidden",
+                activeDirection === "Import"
+                  ? "bg-gradient-to-br from-sky-50 to-blue-50/60 border-sky-500 shadow-[6px_10px_24px_rgba(14,165,233,0.18)] ring-2 ring-sky-500/20"
+                  : "bg-[#F8FAFC] border-slate-200 hover:border-sky-300 hover:bg-white text-slate-700"
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-11 h-11 rounded-2xl flex items-center justify-center font-bold shrink-0 transition-colors",
+                    activeDirection === "Import"
+                      ? "bg-sky-500 text-white shadow-[2px_4px_12px_rgba(14,165,233,0.4)]"
+                      : "bg-slate-200 text-slate-600"
+                  )}>
+                    <ArrowDownLeft className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-black text-base text-[#0A0F1D]">I am an Importer</h3>
+                      {activeDirection === "Import" && (
+                        <span className="px-2 py-0.5 rounded-full bg-sky-500 text-white font-mono font-black text-[9px] uppercase tracking-wider">
+                          Active Persona
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-bold text-slate-600 font-dashboard-rounded">
+                      Inbound Procurement, RFQs & Landed Customs Duty Relief
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-700 leading-relaxed font-dashboard-rounded">
+                Source verified international commodities, issue purchase requests (RFQs), verify supplier accreditations, calculate landed customs duties, and release cryptographic multi-sig escrow upon port customs clearance.
+              </p>
+
+              <div className="pt-2 border-t border-slate-200/60 flex flex-wrap items-center gap-1.5 text-[10px] font-mono font-bold">
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-sky-700">✓ Browse Supplier Catalogs</span>
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-sky-700">✓ Create Purchase Request (RFQ)</span>
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-sky-700">✓ Landed Duty Calculator</span>
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-300 text-slate-400">✗ No Product Listing Needed</span>
+              </div>
+            </div>
+
+            {/* ── EXPORTER ROLE CARD ────────────────────────────────────────── */}
+            <div
+              onClick={() => handleSelectDirection("Export")}
+              className={cn(
+                "p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-3 relative overflow-hidden",
+                activeDirection === "Export"
+                  ? "bg-gradient-to-br from-orange-50 to-amber-50/60 border-[#FF5500] shadow-[6px_10px_24px_rgba(255,85,0,0.18)] ring-2 ring-orange-500/20"
+                  : "bg-[#F8FAFC] border-slate-200 hover:border-orange-300 hover:bg-white text-slate-700"
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-11 h-11 rounded-2xl flex items-center justify-center font-bold shrink-0 transition-colors",
+                    activeDirection === "Export"
+                      ? "bg-gradient-to-r from-[#FF5500] to-[#FF7700] text-white shadow-[2px_4px_12px_rgba(255,85,0,0.4)]"
+                      : "bg-slate-200 text-slate-600"
+                  )}>
+                    <ArrowUpRight className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-black text-base text-[#0A0F1D]">I am an Exporter</h3>
+                      {activeDirection === "Export" && (
+                        <span className="px-2 py-0.5 rounded-full bg-[#FF5500] text-white font-mono font-black text-[9px] uppercase tracking-wider">
+                          Active Persona
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-bold text-slate-600 font-dashboard-rounded">
+                      Outbound Catalog, Market Discovery & Multi-Sig Vaults
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-700 leading-relaxed font-dashboard-rounded">
+                Publish verified export listings, forecast global destination market demand with TreeSHAP attributions, manage DGFT/APEDA compliance, stage sea manifests, and lock institutional multi-sig escrow collateral.
+              </p>
+
+              <div className="pt-2 border-t border-slate-200/60 flex flex-wrap items-center gap-1.5 text-[10px] font-mono font-bold">
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-orange-700">✓ Publish Export Listings</span>
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-orange-700">✓ Destination Radar (XGB + SHAP)</span>
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-orange-700">✓ CEPA Export Relief (0%)</span>
+                <span className="px-2 py-0.5 rounded-md bg-white border border-slate-300 text-orange-700">✓ Manage Inventory Lots</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ── TOP OPERATIONAL COMMAND BAR (High-Contrast Clay Card) ──────────── */}
         <div
           id="command-center"
@@ -203,15 +336,17 @@ export const DashboardPage: React.FC = () => {
                 <span className="truncate">{user.companyName}</span>
               </span>
               <span className="text-slate-400 hidden sm:inline">•</span>
-              <span className="hidden sm:flex items-center gap-1 text-slate-800 font-bold truncate max-w-[140px]">
-                
-                
+              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[10px] font-bold">
+                {activeDirection === "Export" ? "Outbound Export Workspace" : "Inbound Import Workspace"}
               </span>
-            
             </div>
 
             <h1 className="text-xl sm:text-3xl font-black text-[#0A0F1D] tracking-tight uppercase leading-tight">
-              Global Trade <span className="text-[#FF5500]">Command Center</span>
+              {activeDirection === "Export" ? (
+                <>Exporter <span className="text-[#FF5500]">Command Center</span></>
+              ) : (
+                <>Importer <span className="text-sky-600">Command Center</span></>
+              )}
             </h1>
           </div>
 
@@ -219,35 +354,21 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center p-1 rounded-2xl bg-[#E2E7F0] border border-slate-300 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.08),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] shrink-0 self-start relative z-10">
             <button
               type="button"
-              onClick={() => setViewMode("dual")}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono font-extrabold transition-all cursor-pointer whitespace-nowrap",
-                viewMode === "dual"
-                  ? "bg-gradient-to-r from-[#FF5500] to-[#FF7700] text-white shadow-[4px_6px_16px_rgba(255,85,0,0.38),inset_0_2px_3px_rgba(255,255,255,0.4)]"
-                  : "text-slate-700 hover:text-slate-950"
-              )}
-            >
-              <Columns className="w-3.5 h-3.5 shrink-0" />
-              <span>Dual</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode("import")}
+              onClick={() => handleSelectDirection("Import")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono font-extrabold transition-all cursor-pointer whitespace-nowrap",
                 viewMode === "import"
-                  ? "bg-gradient-to-r from-[#FF5500] to-[#FF7700] text-white shadow-[4px_6px_16px_rgba(255,85,0,0.38),inset_0_2px_3px_rgba(255,255,255,0.4)]"
+                  ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-[4px_6px_16px_rgba(14,165,233,0.38),inset_0_2px_3px_rgba(255,255,255,0.4)]"
                   : "text-slate-700 hover:text-slate-950"
               )}
             >
               <ArrowDownLeft className="w-3.5 h-3.5 shrink-0" />
-              <span>Import</span>
+              <span>Import Flow</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setViewMode("export")}
+              onClick={() => handleSelectDirection("Export")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono font-extrabold transition-all cursor-pointer whitespace-nowrap",
                 viewMode === "export"
@@ -256,7 +377,21 @@ export const DashboardPage: React.FC = () => {
               )}
             >
               <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
-              <span>Export</span>
+              <span>Export Flow</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("dual")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono font-extrabold transition-all cursor-pointer whitespace-nowrap",
+                viewMode === "dual"
+                  ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-[4px_6px_16px_rgba(0,0,0,0.25),inset_0_2px_3px_rgba(255,255,255,0.3)]"
+                  : "text-slate-700 hover:text-slate-950"
+              )}
+            >
+              <Columns className="w-3.5 h-3.5 shrink-0" />
+              <span>Dual View</span>
             </button>
           </div>
         </div>

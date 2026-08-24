@@ -28,7 +28,7 @@ import CommandPalette from "@/components/common/CommandPalette";
 import PillNav, { PillNavItem } from "@/components/ui/PillNav";
 
 export const RoleNavigation: React.FC = () => {
-  const { user, logout } = useWorkspace();
+  const { user, logout, activeDirection, setActiveDirection, isExporterView, isImporterView } = useWorkspace();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -60,28 +60,49 @@ export const RoleNavigation: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Primary Core Navigation Items
-  const pillNavItems: PillNavItem[] = [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Marketplace", href: "/marketplace" },
-    { label: "Create Listing", href: "/create-listing" },
-    { label: "Trade Requests", href: "/trade-requests" },
-    { label: "Active Trades", href: "/trades" },
-    { label: "Documents", href: "/documents" },
-  ];
+  // Primary Core Navigation Items (Direction-Aware: Exporters can Create Listing, Importers create RFQs)
+  const pillNavItems: PillNavItem[] = isExporterView
+    ? [
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Marketplace", href: "/marketplace" },
+        { label: "Create Listing", href: "/create-listing" },
+        { label: "Trade Requests", href: "/trade-requests" },
+        { label: "Active Trades", href: "/trades" },
+        { label: "Documents", href: "/documents" },
+      ]
+    : [
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Marketplace", href: "/marketplace" },
+        { label: "Purchase RFQs", href: "/trade-requests" },
+        { label: "Active Orders", href: "/trades" },
+        { label: "Documents", href: "/documents" },
+        { label: "Escrow Settlement", href: "/escrow" },
+      ];
 
   // Secondary Tools for drawer
-  const secondaryNavItems = [
-    { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add product to global marketplace" },
-    { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Organization export catalog" },
-    { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model analysis of an active trade" },
-    { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of trading partners" },
-    { label: "Smart Escrow Vault", href: "/escrow", icon: Coins, desc: "Programmable multi-sig settlement" },
-    { label: "Shipment Telemetry", href: "/shipments", icon: Ship, desc: "Live AIS satellite tracking" },
-    { label: "Disputes & Arbitration", href: "/disputes", icon: Scale, desc: "Human-in-the-loop dispute resolution" },
-    { label: "Audit Ledger", href: "/blockchain", icon: Database, desc: "On-chain cryptographic evidence" },
-    { label: "System Health", href: "/admin", icon: Layers, desc: "FastAPI, n8n, Appwrite & EVM state" },
-  ];
+  const secondaryNavItems = isExporterView
+    ? [
+        { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add product to global marketplace" },
+        { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Organization export catalog" },
+        { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model analysis of an active trade" },
+        { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of trading partners" },
+        { label: "Smart Escrow Vault", href: "/escrow", icon: Coins, desc: "Programmable multi-sig settlement" },
+        { label: "Shipment Telemetry", href: "/shipments", icon: Ship, desc: "Live AIS satellite tracking" },
+        { label: "Disputes & Arbitration", href: "/disputes", icon: Scale, desc: "Human-in-the-loop dispute resolution" },
+        { label: "Audit Ledger", href: "/blockchain", icon: Database, desc: "On-chain cryptographic evidence" },
+        { label: "System Health", href: "/admin", icon: Layers, desc: "FastAPI, n8n, Appwrite & EVM state" },
+      ]
+    : [
+        { label: "Post Purchase RFQ", href: "/trade-requests", icon: PlusCircle, desc: "Issue new purchase order / RFQ to global suppliers" },
+        { label: "Supplier Discovery", href: "/marketplace", icon: Building2, desc: "Browse verified exporter warehouses" },
+        { label: "Trade & Landed Duty Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Calculate landed customs duty and undervaluation screen" },
+        { label: "Supplier Counterparty Risk", href: "/counterparties", icon: Building2, desc: "Sanctions, trust ratings & supplier audit profiles" },
+        { label: "Smart Escrow Vault", href: "/escrow", icon: Coins, desc: "Programmable multi-sig settlement" },
+        { label: "Shipment Telemetry", href: "/shipments", icon: Ship, desc: "Live AIS satellite tracking" },
+        { label: "Disputes & Arbitration", href: "/disputes", icon: Scale, desc: "Human-in-the-loop dispute resolution" },
+        { label: "Audit Ledger", href: "/blockchain", icon: Database, desc: "On-chain cryptographic evidence" },
+        { label: "System Health", href: "/admin", icon: Layers, desc: "FastAPI, n8n, Appwrite & EVM state" },
+      ];
 
   const handleSignOut = async () => {
     setAccountMenuOpen(false);

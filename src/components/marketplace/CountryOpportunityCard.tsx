@@ -109,25 +109,32 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
 
       {/* ── Key Forecast Metrics Grid ───────────────────────────────── */}
       <div className="grid grid-cols-3 gap-2.5 py-2 border-y border-white/[0.06] text-xs">
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04]">
+        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
           <span className="text-[10px] uppercase text-slate-500 font-mono block">Annual Demand</span>
           <span className="font-mono font-bold text-white text-sm">{annualDemandMT} MT</span>
+          {forecast.demand_interval_80_lower_kg !== undefined && forecast.demand_interval_80_upper_kg !== undefined && (
+            <span className="text-[9px] font-mono text-slate-400 block">
+              80% P10–P90: {Math.round(forecast.demand_interval_80_lower_kg / 1000).toLocaleString()}–{Math.round(forecast.demand_interval_80_upper_kg / 1000).toLocaleString()} MT
+            </span>
+          )}
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04]">
+        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
           <span className="text-[10px] uppercase text-slate-500 font-mono block">Expected FOB</span>
           <span className="font-mono font-bold text-sky-400 text-sm">${fobPrice} / kg</span>
+          <span className="text-[9px] font-mono text-slate-400 block">3-yr median anchor</span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04]">
+        <div className="p-2.5 rounded-xl bg-[#070A0E] border border-white/[0.04] space-y-0.5">
           <span className="text-[10px] uppercase text-slate-500 font-mono block">Est. Revenue ({userQuantityKg.toLocaleString()} kg)</span>
           <span className="font-mono font-bold text-emerald-400 text-sm">${estRevenue}</span>
+          <span className="text-[9px] font-mono text-emerald-400/80 block">Spot volume fit</span>
         </div>
       </div>
 
-      {/* ── Pros & Cons Snapshot ────────────────────────────────────────── */}
-      <div className="space-y-2 text-xs">
-        {/* Top Pro */}
+      {/* ── Pros & Cons Snapshot / TreeSHAP Attribution ─────────────── */}
+      <div className="space-y-1.5 text-xs">
+        {/* Top Pro / SHAP Driver */}
         {pros && pros.length > 0 && (
           <div className="flex items-start gap-2 text-emerald-300/90 font-sans">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
