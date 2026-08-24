@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 export const CreateListingPage: React.FC = () => {
-  const { user, addListing } = useWorkspace();
+  const { user, refreshListings } = useWorkspace();
   const navigate = useNavigate();
 
   // Form State
@@ -78,7 +78,7 @@ export const CreateListingPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const persisted = await aiService.createListing({
+      await aiService.createListing({
         organizationId: user.userId,
         productName: title.trim(),
         productCategory: category,
@@ -88,36 +88,16 @@ export const CreateListingPage: React.FC = () => {
         unit: unit.trim(),
         price: unitPriceUSD,
         incoterms: undefined,
-      });
-
-      // Trust/risk are not fabricated: a listing with no trade history has
-      // no earned score yet. They stay 0/unrated until a real compliance
-      // pass computes them (public.trust_scores).
-      const newListing: Listing = {
-        id: persisted.id,
-        exporterId: user.userId || "comp_01",
-        exporterName: user.companyName || "Acme Exports Ltd",
-        exporterCountry: user.country || "India",
-        exporterCity: "Mumbai",
-        title: title.trim(),
-        category,
-        hsCode: hsCode.trim(),
-        unitPriceUSD,
-        unit: unit.trim(),
-        minimumOrderQuantity,
-        availableQuantity,
         originPort: originPort.trim(),
         certifications: certifications.split(",").map((c) => c.trim()).filter(Boolean),
         leadTimeDays,
-        trustScore: 0,
-        riskScore: 0,
-        aiMatchScore: 0,
-        description: description.trim() || "Premium export grade commodity verified for international maritime trade.",
+        minimumOrderQuantity,
         specs: specRecord,
-        isTopTrusted: false,
-      };
+      });
 
-      addListing(newListing);
+      // The marketplace reads listings back from the database (no local
+      // fabrication) — refetch so the new row shows up immediately.
+      await refreshListings();
       toast.success("Listing published to the marketplace.");
       navigate("/marketplace");
     } catch (err) {

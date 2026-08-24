@@ -2,47 +2,68 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LineSidebar, { LineSidebarItem } from "@/components/ui/LineSidebar";
 import { cn } from "@/lib/utils";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 export interface CoreFlowSidebarProps {
   className?: string;
 }
 
-export const CANONICAL_CORE_FLOW_ITEMS: (LineSidebarItem & { routeKey: string })[] = [
-  {
-    label: "Command Center",
-    href: "/dashboard",
-    routeKey: "dashboard",
-  },
-  {
-    label: "Trade Discovery",
-    href: "/marketplace",
-    routeKey: "discovery",
-  },
-  {
-    label: "Trade Requests",
-    href: "/trade-requests",
-    routeKey: "requests",
-  },
-  {
-    label: "Active Trades",
-    href: "/trades/TRD-IND-UAE-550K",
-    routeKey: "trades",
-  },
-  {
-    label: "Documents",
-    href: "/documents",
-    routeKey: "documents",
-  },
-  {
-    label: "Settlement",
-    href: "/escrow",
-    routeKey: "settlement",
-  },
-];
+/**
+ * The lifecycle is the SAME set of routes for both directions — only the naming
+ * reflects which way goods flow. Forking the route table would duplicate the
+ * direction-agnostic screens (documents, settlement) for no reason.
+ * See docs/product/importer_exporter_flow_design.md section 5.
+ */
+export const buildCoreFlowItems = (
+  direction: "Export" | "Import"
+): (LineSidebarItem & { routeKey: string })[] => {
+  const isExport = direction === "Export";
+  return [
+    {
+      label: "Command Center",
+      href: "/dashboard",
+      routeKey: "dashboard",
+    },
+    {
+      // Exporter: "where should I sell this" (partner_discovery model).
+      // Importer: supplier browsing — the ranking model does not exist yet.
+      label: isExport ? "Market Discovery" : "Supplier Discovery",
+      href: "/marketplace",
+      routeKey: "discovery",
+    },
+    {
+      label: isExport ? "Buyer Requests" : "Purchase Orders",
+      href: "/trade-requests",
+      routeKey: "requests",
+    },
+    {
+      label: isExport ? "Outbound Trades" : "Inbound Trades",
+      href: "/trades",
+      routeKey: "trades",
+    },
+    // Shared, direction-agnostic from here on.
+    {
+      label: "Documents",
+      href: "/documents",
+      routeKey: "documents",
+    },
+    {
+      label: "Settlement",
+      href: "/escrow",
+      routeKey: "settlement",
+    },
+  ];
+};
+
+/** Back-compat export for existing importers of this constant (export-side naming). */
+export const CANONICAL_CORE_FLOW_ITEMS = buildCoreFlowItems("Export");
+
 
 export const CoreFlowSidebar: React.FC<CoreFlowSidebarProps> = ({ className = "" }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { activeDirection } = useWorkspace();
+  const coreFlowItems = buildCoreFlowItems(activeDirection);
 
   // Determine active flow step based on current URL path
   const getActiveIndex = (): number => {
@@ -88,7 +109,7 @@ export const CoreFlowSidebar: React.FC<CoreFlowSidebarProps> = ({ className = ""
   const activeIndex = getActiveIndex();
 
   const handleItemSelect = (item: string | LineSidebarItem, index: number) => {
-    const targetItem = CANONICAL_CORE_FLOW_ITEMS[index];
+    const targetItem = coreFlowItems[index];
     if (targetItem?.href) {
       navigate(targetItem.href);
     }
@@ -108,7 +129,7 @@ export const CoreFlowSidebar: React.FC<CoreFlowSidebarProps> = ({ className = ""
         </div>
 
         <LineSidebar
-          items={CANONICAL_CORE_FLOW_ITEMS}
+          items={coreFlowItems}
           accentColor="#19D3AE"
           textColor="#8FA3B8"
           markerColor="#2A3948"

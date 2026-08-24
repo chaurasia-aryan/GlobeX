@@ -1,0 +1,29 @@
+{
+  "MFN:IND:100630": {
+    "rate_pct": 70.0,
+    "year": "2023",
+    "tariff_type": "MFN",
+    "measure": "SimpleAverage",
+    "reporter_iso3": "IND",
+    "hs6": 100630,
+    "source": "WITS_TRAINS"
+  },
+  "MFN:USA:851712": {
+    "rate_pct": 0.0,
+    "year": "2021",
+    "tariff_type": "MFN",
+    "measure": "SimpleAverage",
+    "reporter_iso3": "USA",
+    "hs6": 851712,
+    "source": "WITS_TRAINS"
+  },
+  "MFN:BRA:100630": {
+    "rate_pct": 11.0,
+    "year": "2023",
+    "tariff_type": "MFN",
+    "measure": "SimpleAverage",
+    "reporter_iso3": "BRA",
+    "hs6": 100630,
+    "source": "WITS_TRAINS"
+  }
+}

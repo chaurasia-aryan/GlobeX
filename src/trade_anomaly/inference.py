@@ -21,6 +21,7 @@ from src.trade_anomaly.feature_pipeline import (
     CATEGORICAL_FEATURES
 )
 from src.trade_anomaly.models import XGBoostAnomalyModel
+from src.trade_anomaly.unsupervised_screen import UnsupervisedScreenBundle, combined_screen
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -55,8 +56,10 @@ class TradeAnomalyInferenceService:
         self.metadata: Dict[str, Any] = {}
         self.historical_data: Optional[pd.DataFrame] = None
         self.coverage_info: Dict[str, Any] = {}
-        
+        self.unsupervised_bundle: Optional[UnsupervisedScreenBundle] = None
+
         self.load_artifacts()
+        self.load_unsupervised_bundle()
         
     def load_artifacts(self):
         """Loads fitted preprocessor, model weights, feature list, and threshold config."""
@@ -87,7 +90,18 @@ class TradeAnomalyInferenceService:
         except Exception as e:
             self.historical_data = None
             self.coverage_info = {}
-            
+
+    def load_unsupervised_bundle(self):
+        """Best-effort load of the honest, non-circular anomaly screen (see
+        src/trade_anomaly/unsupervised_screen.py). If it hasn't been trained
+        yet on this environment, predict() simply omits the field rather than
+        failing — the XGBoost/rule path remains the source of truth for
+        `risk`/`classification` until this replaces it."""
+        try:
+            self.unsupervised_bundle = UnsupervisedScreenBundle.load()
+        except Exception:
+            self.unsupervised_bundle = None
+
     def predict(
         self,
         trade_flow: str,
@@ -298,7 +312,29 @@ class TradeAnomalyInferenceService:
                 "severity": "INFO",
                 "message": "Trade value and volume align with historical corridor seasonal baseline."
             })
-            
+
+        # 7b. Honest unsupervised screen (see unsupervised_screen.py docstring):
+        # the XGBoost score above and the "signals" above it are threshold logic
+        # on the same 3 columns the historical label was defined from, so they
+        # cannot detect anything that rule didn't already encode. This adds a
+        # genuinely trained, non-circular signal — an IsolationForest fit on a
+        # feature set that structurally excludes those columns, plus a
+        # peer-price z-score that can catch under/over-invoicing the rule
+        # cannot see. Reported separately, never blended into `risk.anomaly_score`.
+        if self.unsupervised_bundle is not None:
+            try:
+                unsupervised_result = combined_screen(
+                    current_features_df.iloc[0].to_dict(), self.unsupervised_bundle
+                )
+            except Exception as exc:
+                unsupervised_result = {"status": "UNAVAILABLE", "reason": str(exc)}
+        else:
+            unsupervised_result = {
+                "status": "UNAVAILABLE",
+                "reason": "unsupervised screen bundle not loaded on this instance (train via "
+                          "python -c \"from src.trade_anomaly.unsupervised_screen import train_and_save; train_and_save()\")",
+            }
+
         # 8. Assemble complete response schema
         return {
             "status": "OK",
@@ -331,10 +367,20 @@ class TradeAnomalyInferenceService:
                 "mom_growth_pct": round(trade_growth * 100, 2),
                 "val_to_rolling_ratio": round(val_to_rolling, 2)
             },
+            "unsupervised_screen": unsupervised_result,
             "model": {
                 "name": self.metadata.get("model_name", "xgboost_anomaly_detector"),
                 "version": self.metadata.get("version", "1.0.0"),
                 "label_source": "RULE_BASED_HEURISTIC",
-                "disclaimer": "Statistical trade behaviour anomaly detection; does not constitute legal fraud adjudication."
+                "disclaimer": (
+                    "The `risk`/`classification`/`signals` fields above are threshold "
+                    "logic on 3 columns that also define this model's training label "
+                    "(verified 12,288/12,288 label reproduction, see "
+                    "reports/production/phase5_anomaly_verdict.md) — they cannot detect "
+                    "anything that rule didn't already encode. `unsupervised_screen`, "
+                    "when present, is a genuinely trained, non-circular signal computed "
+                    "on a disjoint feature set. Neither is validated fraud detection; no "
+                    "verified fraud ground truth exists in this dataset."
+                )
             }
         }

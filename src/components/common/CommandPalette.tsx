@@ -24,6 +24,7 @@ import {
   Sparkles,
   Globe2,
   TrendingUp,
+  Building2,
 } from "lucide-react";
 
 interface CommandPaletteProps {
@@ -81,11 +82,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </CommandItem>
 
             <CommandItem
-              onSelect={() => runCommand(() => navigate("/trades/TRD-IND-UAE-550K"))}
+              onSelect={() => runCommand(() => navigate("/trades"))}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-200 hover:bg-white/[0.08] hover:text-white cursor-pointer"
             >
               <Workflow className="w-4 h-4 text-indigo-400" />
-              <span>Active Trade Workspace (#TRD-IND-UAE-550K)</span>
+              <span>Active Trades</span>
             </CommandItem>
 
             <CommandItem
@@ -122,6 +123,22 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             >
               <PlusCircle className="w-4 h-4 text-sky-400" />
               <span>Post New Import RFQ</span>
+            </CommandItem>
+
+            <CommandItem
+              onSelect={() => runCommand(() => navigate("/trade-analysis"))}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-200 hover:bg-white/[0.08] hover:text-white cursor-pointer"
+            >
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span>Trade Analysis</span>
+            </CommandItem>
+
+            <CommandItem
+              onSelect={() => runCommand(() => navigate("/counterparties"))}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-200 hover:bg-white/[0.08] hover:text-white cursor-pointer"
+            >
+              <Building2 className="w-4 h-4 text-sky-400" />
+              <span>Counterparties</span>
             </CommandItem>
           </CommandGroup>
 

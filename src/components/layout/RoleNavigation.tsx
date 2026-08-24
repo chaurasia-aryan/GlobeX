@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import {
   Building2,
   Globe2,
+  TrendingUp,
   Heart,
   ChevronDown,
   Package,
@@ -65,7 +66,7 @@ export const RoleNavigation: React.FC = () => {
     { label: "Marketplace", href: "/marketplace" },
     { label: "Create Listing", href: "/create-listing" },
     { label: "Trade Requests", href: "/trade-requests" },
-    { label: "Active Trades", href: "/trades/TRD-IND-UAE-550K" },
+    { label: "Active Trades", href: "/trades" },
     { label: "Documents", href: "/documents" },
   ];
 
@@ -73,6 +74,8 @@ export const RoleNavigation: React.FC = () => {
   const secondaryNavItems = [
     { label: "Create Export Listing", href: "/create-listing", icon: PlusCircle, desc: "Add product to global marketplace" },
     { label: "My Export Listings", href: "/my-listings", icon: Package, desc: "Organization export catalog" },
+    { label: "Trade Analysis", href: "/trade-analysis", icon: TrendingUp, desc: "Deep multi-model analysis of an active trade" },
+    { label: "Counterparties", href: "/counterparties", icon: Building2, desc: "Trust/risk profiles of trading partners" },
     { label: "Smart Escrow Vault", href: "/escrow", icon: Coins, desc: "Programmable multi-sig settlement" },
     { label: "Shipment Telemetry", href: "/shipments", icon: Ship, desc: "Live AIS satellite tracking" },
     { label: "Disputes & Arbitration", href: "/disputes", icon: Scale, desc: "Human-in-the-loop dispute resolution" },

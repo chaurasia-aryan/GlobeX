@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 
 from src.compliance.entity_screening import screen_transaction_parties
 from src.compliance.transaction_gate import GateInput, evaluate_transaction
+from src.compliance.wits_tariff import fetch_mfn_tariff
 
 logger = logging.getLogger(__name__)
 
@@ -198,18 +199,31 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
     dest = req.destination_country.strip().upper()
 
     corridor_key = (origin, dest)
-    treaty = _TREATY_MAP.get(
-        corridor_key,
-        {
-            "agreement": f"General MFN Tariff Regime ({origin} -> {dest})",
-            "preferential_rate_pct": 5.0,
-            "standard_mfn_rate_pct": 6.5,
+    treaty = _TREATY_MAP.get(corridor_key)
+    tariff_data_unavailable = False
+
+    if treaty is None:
+        # No documented trade agreement for this corridor. MFN rate comes
+        # from the real WITS TRAINS API (World Bank), never a guessed
+        # number. No preferential rate is claimed without a known treaty —
+        # preferential defaults to the same MFN rate (no preference).
+        wits = fetch_mfn_tariff(dest, req.hs6)
+        if wits is not None:
+            mfn_rate = wits["rate_pct"]
+            agreement = f"No Known Trade Agreement — MFN Rate ({dest}, WITS TRAINS {wits['year']})"
+        else:
+            mfn_rate = 0.0
+            tariff_data_unavailable = True
+            agreement = f"No Known Trade Agreement ({origin} -> {dest}) — WITS tariff data unavailable"
+        treaty = {
+            "agreement": agreement,
+            "preferential_rate_pct": mfn_rate,
+            "standard_mfn_rate_pct": mfn_rate,
             "ntm_barriers": [
                 f"Standard {dest} Customs Import Declaration",
                 "Destination Sanitary & Phytosanitary (SPS) Clearance",
             ],
-        },
-    )
+        }
 
     pref_rate = treaty["preferential_rate_pct"]
     mfn_rate = treaty["standard_mfn_rate_pct"]
@@ -226,6 +240,8 @@ def rag_analyze(req: ComplianceRequest) -> Dict[str, Any]:
     score = 90.0
 
     flags: List[str] = []
+    if tariff_data_unavailable:
+        flags.append("TARIFF_DATA_UNAVAILABLE")
     if pref_rate == 0.0 and mfn_rate > 0.0:
         flags.append(f"ZERO_TARIFF_PREFERENCE ({treaty['agreement']})")
         score += 5.0

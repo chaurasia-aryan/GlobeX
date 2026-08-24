@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## 🌐 GLOBEX AI — MASTER TRADE AUTOMATION WORKFLOW\n\n**ZERO-SQL OPERATION:**\nAll 5 business workflows operate 100% in-memory with live FastAPI ML connectors. No PostgreSQL, Supabase, or external database credentials needed.\n\n**5 INTEGRATED SUB-PIPELINES:**\n1. 🧠 **AI Trade Intelligence & Anomaly Engine** (`POST /webhook/analyze-trade` & `/webhook/test-trade-analysis`)\n2. 📄 **Document OCR & Compliance Verification** (`POST /webhook/document-uploaded`)\n3. 🤝 **Marketplace Institutional Buyer Matcher** (`POST /webhook/marketplace-match`)\n4. 🔐 **Trade Lifecycle & Escrow Vault Creation** (`POST /webhook/create-trade`)\n5. 🚢 **Maritime Tracking & Vessel Geofencing** (`POST /webhook/track-shipment`)\n\n**ML DUAL-GRU MODELS CONNECTED:**\n- `PyTorch GRU Forecaster` (Dual-head demand MT & expected FOB price $/kg predictions)\n- `PyTorch GRU Risk Autoencoder` (Corridor trade sequence volatility & anomaly reconstruction)\n- `XGBoost Anomaly Detector` (Historical trade volume & price deviations)\n- `Counterparty Risk Profiler` (Composite trust & dispute scoring)\n- `CEPA & Tariff Rules Engine` (Zero-duty bilateral agreements & NTM checks)\n- `Catalogue HS Code Classifier` (HS6 international tariff resolution)\n- `Document OCR Engine` (Cross-border bill of lading & invoice parser)",
+        "content": "## 🌐 GLOBEX AI — MASTER TRADE AUTOMATION WORKFLOW\n\n**ZERO-SQL OPERATION:**\nAll 5 business workflows operate 100% in-memory with live FastAPI ML connectors. No PostgreSQL, Supabase, or external database credentials needed.\n\n**5 INTEGRATED SUB-PIPELINES:**\n1. 🧠 **AI Trade Intelligence & Anomaly Engine** (`POST /webhook/analyze-trade` & `/webhook/test-trade-analysis`)\n2. 📄 **Document OCR & Compliance Verification** (`POST /webhook/document-uploaded`)\n3. 🤝 **Marketplace Institutional Buyer Matcher** (`POST /webhook/marketplace-match`)\n4. 🔐 **Trade Lifecycle & Escrow Vault Creation** (`POST /webhook/create-trade`)\n5. 🚢 **Maritime Tracking & Vessel Geofencing** (`POST /webhook/track-shipment`)\n\n**MODELS CONNECTED:**\n- `3yr Moving-Average Forecaster` (demand MT & expected FOB price $/kg — walk-forward backtested against a Dual-Head GRU, which was 2x worse and is disabled; see reports/production/phase4b_outputs)\n- `XGBoost Anomaly Detector` + `Unsupervised IsolationForest Screen` (historical trade deviations; two separate, never-blended signals — see src/trade_anomaly/unsupervised_screen.py)\n- `Counterparty Risk Profiler` (composite trust & dispute scoring; real screening against 31,629 OFAC/UN/UK/EU sanctioned entities when DB-backed)\n- `CEPA & Tariff Rules Engine` (documented bilateral agreements; real WITS TRAINS MFN tariff lookup for undocumented corridors)\n- `Catalogue HS Code Classifier` (HS6 international tariff resolution)\n- `Document OCR Engine` (cross-border bill of lading & invoice parser)",
         "height": 540,
         "width": 480,
         "color": 4
@@ -509,6 +509,76 @@
         500,
         1160
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "listing-published",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-master-listing-published",
+      "name": "Webhook — Listing Published",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        40,
+        1400
+      ],
+      "webhookId": "globex-listing-published-001"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/v1/marketplace/match-buyers",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"commodity\": $json.body.product_name ?? 'Basmati Rice', \"quantity\": Number($json.body.quantity_available ?? 500), \"unit\": $json.body.unit ?? 'MT', \"destinationCountry\": $json.body.destinationCountry ?? 'UAE' }) }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "http-master-listing-buyer-match",
+      "name": "HTTP — Buyer Match For New Listing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        280,
+        1400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// New Listing Published — Buyer Notification Pipeline\n// This node runs after a real POST /api/v1/listings insert (see\n// src/api/trades_api.py::create_listing, which calls this webhook\n// fire-and-forget). It does not persist anything itself — the DB write\n// already happened before this workflow ran — it only surfaces candidate\n// buyers for the newly published listing so the exporter isn't left\n// waiting on a marketplace refresh to find out if there's demand.\nconst listing = $('Webhook — Listing Published').first().json.body || {};\nconst match = $('HTTP — Buyer Match For New Listing').first().json;\nconst hasResult = match && Array.isArray(match.recommendations);\n\nreturn [{\n  json: {\n    status: 'LISTING_PUBLISHED',\n    listing_id: listing.id ?? null,\n    product_name: listing.product_name ?? null,\n    candidate_buyer_count: match?.candidateCount ?? null,\n    strong_matches: match?.strongMatchCount ?? null,\n    top_buyers: hasResult ? match.recommendations.slice(0, 5) : [],\n    data_source: match?.data_source ?? null,\n    notified_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "code-master-listing-published-synth",
+      "name": "Code — Synthesize Listing Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        1400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($('Code — Synthesize Listing Notification').item.json) }}",
+        "options": {}
+      },
+      "id": "respond-master-listing-published",
+      "name": "Respond — Listing Published JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        1400
+      ]
     }
   ],
   "pinData": {},
@@ -716,6 +786,39 @@
         [
           {
             "node": "Respond — Trade & Escrow JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook — Listing Published": {
+      "main": [
+        [
+          {
+            "node": "HTTP — Buyer Match For New Listing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP — Buyer Match For New Listing": {
+      "main": [
+        [
+          {
+            "node": "Code — Synthesize Listing Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Synthesize Listing Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond — Listing Published JSON",
             "type": "main",
             "index": 0
           }

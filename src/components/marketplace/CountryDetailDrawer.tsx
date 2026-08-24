@@ -55,7 +55,7 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
   // Sub-scores list
   const subScoreItems = [
     { label: "Revealed Demand Fit", val: scores.score_revealed_demand },
-    { label: "GRU Forecast Momentum", val: scores.score_forecast_demand },
+    { label: "Forecast Momentum", val: scores.score_forecast_demand },
     { label: "Trade Access & Tariffs", val: scores.score_trade_access },
     { label: "Economic Capacity", val: scores.score_economic_capacity },
     { label: "Maritime Logistics & Ports", val: scores.score_logistics },
@@ -112,15 +112,15 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
           </div>
         </div>
 
-        {/* ── PyTorch GRU Neural Network Forecast Panel ───────────────────── */}
+        {/* ── Demand & Revenue Forecast Panel (3yr moving-average model) ──── */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <BarChart3 className="w-4 h-4 text-sky-400" />
-              <span>GRU Neural Network Demand & Revenue Forecast</span>
+              <span>Demand & Revenue Forecast</span>
             </h4>
             <span className="text-[10px] font-mono text-sky-400/80 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-              GRU Model Multi-Output
+              3yr Moving Average
             </span>
           </div>
 

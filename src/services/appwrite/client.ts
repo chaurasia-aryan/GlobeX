@@ -5,6 +5,24 @@
 
 export type OrganizationRole = "admin" | "compliance" | "salesman" | "buyer" | "exporter" | "dual" | "arbitrator";
 
+/**
+ * Which way goods flow for this organization.
+ *
+ * String-identical to the `public.business_type` Postgres enum
+ * (backend/database/supabase/migrations/20260822111809_initial_globex_schema.sql),
+ * so this can be populated directly from `organizations.business_type` once a
+ * live org fetch exists.
+ *
+ * This is ORTHOGONAL to `OrganizationRole`, which is a job title *inside* an
+ * organization (Admin / Compliance Officer / Salesman / Arbitrator). A compliance
+ * officer at an importing firm and one at an exporting firm share a role and have
+ * completely different trade directions — hence two fields, not one.
+ */
+export type BusinessType = "EXPORTER" | "IMPORTER" | "BOTH";
+
+/** The concrete direction of a single trade — the `trade_flow` model parameter. */
+export type TradeDirection = "Export" | "Import";
+
 export interface UploadedDoc {
   id: string;
   name: string;
@@ -19,6 +37,8 @@ export interface UserSession {
   email: string;
   role: OrganizationRole;
   roleTitle: string;
+  /** Which way goods flow. Drives flow differentiation and the `trade_flow` model param. */
+  businessType: BusinessType;
   companyName: string;
   country: string;
   isLoggedIn: boolean;
@@ -31,6 +51,7 @@ const DEFAULT_USER: UserSession = {
   email: "john.doe@acmeglobaltrade.com",
   role: "admin",
   roleTitle: "Admin",
+  businessType: "BOTH",
   companyName: "Acme Global Trading Ltd.",
   country: "India",
   isLoggedIn: true,
@@ -39,6 +60,9 @@ const DEFAULT_USER: UserSession = {
     { id: "doc_2", name: "GSTIN_Incorporation_27AABCA.pdf", size: "1.1 MB", type: "GSTIN Registration", uploadTime: "Just now" },
   ],
 };
+
+const isBusinessType = (value: unknown): value is BusinessType =>
+  value === "EXPORTER" || value === "IMPORTER" || value === "BOTH";
 
 const getRoleTitle = (role: OrganizationRole): string => {
   switch (role) {
@@ -78,7 +102,16 @@ class AppwriteService {
           this.currentUser = DEFAULT_USER;
           localStorage.setItem("globex_user_session", JSON.stringify(DEFAULT_USER));
         } else {
-          this.currentUser = parsed;
+          // Migrate sessions persisted before `businessType` existed. Without this
+          // an older localStorage session yields `undefined`, and every direction
+          // branch silently falls back to its default.
+          this.currentUser = {
+            ...parsed,
+            businessType: isBusinessType(parsed.businessType)
+              ? parsed.businessType
+              : DEFAULT_USER.businessType,
+          };
+          localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
         }
       } catch {
         this.currentUser = DEFAULT_USER;
@@ -104,11 +137,18 @@ class AppwriteService {
     window.dispatchEvent(new Event("storage"));
   }
 
+  public setBusinessType(businessType: BusinessType) {
+    this.currentUser = { ...this.currentUser, businessType };
+    localStorage.setItem("globex_user_session", JSON.stringify(this.currentUser));
+    window.dispatchEvent(new Event("storage"));
+  }
+
   public async register(payload: {
     adminName: string;
     organizationName: string;
     email: string;
     role?: OrganizationRole;
+    businessType?: BusinessType;
     country?: string;
     documents?: UploadedDoc[];
   }): Promise<UserSession> {
@@ -119,6 +159,7 @@ class AppwriteService {
       email: payload.email || "admin@tradecorp.com",
       role: assignedRole,
       roleTitle: getRoleTitle(assignedRole),
+      businessType: payload.businessType || DEFAULT_USER.businessType,
       companyName: payload.organizationName || "Global Trade Enterprise",
       country: payload.country || "India",
       isLoggedIn: true,
@@ -132,13 +173,15 @@ class AppwriteService {
   public async login(
     email: string,
     role: OrganizationRole = "admin",
-    organizationName?: string
+    organizationName?: string,
+    businessType?: BusinessType
   ): Promise<UserSession> {
     this.currentUser = {
       ...this.currentUser,
       email: email || this.currentUser.email,
       role,
       roleTitle: getRoleTitle(role),
+      businessType: businessType || this.currentUser.businessType || DEFAULT_USER.businessType,
       companyName: organizationName || this.currentUser.companyName || "Acme Global Trading Ltd.",
       isLoggedIn: true,
     };

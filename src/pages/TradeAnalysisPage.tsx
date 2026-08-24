@@ -26,14 +26,19 @@ import {
 } from "lucide-react";
 import { CommoditySearchDropdown, CommodityOption } from "@/components/marketplace/CommoditySearchDropdown";
 import { cn } from "@/lib/utils";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 export const TradeAnalysisPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  // Direction comes from the session, never hardcoded. It selects the `trade_flow`
+  // the anomaly model is scored against: an outbound sale vs an inbound purchase.
+  const { activeDirection, isExporterView } = useWorkspace();
   const [selectedLens, setSelectedLens] = useState<
     "synthesis" | "destinations" | "anomaly" | "regulatory" | "risk" | "n8n" | "api"
   >("synthesis");
   const [analysis, setAnalysis] = useState<UnifiedRAGAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   // n8n Live Runner State
   const [n8nUrl, setN8nUrl] = useState("http://localhost:5678/webhook/test-trade-analysis");
@@ -67,7 +72,7 @@ export const TradeAnalysisPage: React.FC = () => {
 
     aiService
       .analyzeTradeIntake({
-        role: "exporter",
+        role: isExporterView ? "exporter" : "importer",
         productName: qProduct,
         hsCode: FLAGSHIP_DEMO_TRADE.hsCode,
         quantity: qQty > 1000 ? qQty / 1000 : qQty,
@@ -85,9 +90,17 @@ export const TradeAnalysisPage: React.FC = () => {
       })
       .then((res) => {
         setAnalysis(res);
+        setAnalysisError(null);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        // No canned analysis on failure — the backend genuinely could not
+        // produce this, so the page must say so, not show stale/fake data.
+        setAnalysis(null);
+        setAnalysisError(err instanceof Error ? err.message : "Trade analysis failed — backend unreachable.");
         setIsLoading(false);
       });
-  }, [searchParams]);
+  }, [searchParams, isExporterView]);
 
   const apiStatus = aiService.getStatus();
 
@@ -108,7 +121,7 @@ export const TradeAnalysisPage: React.FC = () => {
         quantity_kg: testQty,
         target_price_usd: testPrice,
         certifications: ["ISO 22000", "FSSAI", "APEDA", "Halal"],
-        trade_flow: "Export",
+        trade_flow: activeDirection,
         regime: "balanced",
         top_n: 5,
       };
@@ -156,7 +169,7 @@ export const TradeAnalysisPage: React.FC = () => {
         summary: `${data.commodity || testProduct} (${testOrigin} ➔ ${testDest}) · Overall Score: ${data.overall_trade_score || 84}/100 [${data.recommendation || "PROCEED"}]`,
         modelsTriggered: [
           "XGBoost Anomaly Detector",
-          "GRU Forecaster & Opportunity Ranker",
+          "Moving-Average Forecaster & Opportunity Ranker",
           "CEPA & Tariff Rules Engine",
           "Counterparty Risk Engine",
         ],
@@ -215,6 +228,12 @@ export const TradeAnalysisPage: React.FC = () => {
           }
         />
 
+        {analysisError && (
+          <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-500/30 text-rose-300 text-sm">
+            Trade analysis unavailable — {analysisError}
+          </div>
+        )}
+
         {/* 4 Metric KPI Strip */}
         <MetricStrip
           columns={4}
@@ -261,7 +280,12 @@ export const TradeAnalysisPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-1.5">
               {[
                 { id: "synthesis", label: "Supplier Ranking", icon: Award },
-                { id: "destinations", label: "Market Opportunity", icon: Globe2 },
+                // Destination ranking is the exporter-only partner_discovery model
+                // ("where should I sell this?"). It is not an importer question, so it
+                // is not offered in the import view rather than being relabelled.
+                ...(isExporterView
+                  ? [{ id: "destinations", label: "Market Opportunity", icon: Globe2 }]
+                  : []),
                 { id: "anomaly", label: "Trade Anomaly ML", icon: Activity },
                 { id: "regulatory", label: "CEPA & Regulatory RAG", icon: FileCheck2 },
                 { id: "risk", label: "Risk Drivers", icon: AlertTriangle },
@@ -337,11 +361,11 @@ export const TradeAnalysisPage: React.FC = () => {
           )}
 
           {/* Tab 2: Market Opportunity / Destination Ranking */}
-          {!isLoading && selectedLens === "destinations" && (
+          {!isLoading && isExporterView && selectedLens === "destinations" && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-400">
-                <span>Top Promising Export Markets (Partner Discovery Engine · GRU + 26-Year Trade History)</span>
-                <span className="font-mono text-emerald-400">Model: pd-gru-v1.0</span>
+                <span>Top Promising Export Markets (Partner Discovery Engine · 26-Year Trade History)</span>
+                <span className="font-mono text-emerald-400">Model: pd-ma3-v1.0</span>
               </div>
               <div className="space-y-2.5">
                 {(analysis?.marketOpportunity?.top_recommendations || []).map((rec: any, idx: number) => {
@@ -733,7 +757,7 @@ export const TradeAnalysisPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
                   { path: "/predict/hs-code", desc: "Catalogue-driven HS6 Resolution" },
-                  { path: "/predict/market-opportunity", desc: "GRU Forecaster + Multi-Criteria Ranking" },
+                  { path: "/predict/market-opportunity", desc: "Moving-Average Forecaster + Multi-Criteria Ranking" },
                   { path: "/api/trade-anomaly/predict", desc: "XGBoost Historical Anomaly Detection" },
                   { path: "/predict/counterparty-match", desc: "Verified Supplier Matching & Trust Scoring" },
                   { path: "/predict/counterparty-risk", desc: "Composite Org Risk Profiling" },

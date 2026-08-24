@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -40,7 +41,7 @@ interface InboundTradeRequest {
   escrowToken: string;
 }
 
-const INBOUND_REQUESTS_DATA: InboundTradeRequest[] = [
+const DEMO_INBOUND_REQUESTS_DATA: InboundTradeRequest[] = [
   {
     id: "RFQ-2026-8801",
     buyerName: "Example Global Trading Ltd.",
@@ -114,7 +115,7 @@ const INBOUND_REQUESTS_DATA: InboundTradeRequest[] = [
 export const TradeIntentWizardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useWorkspace();
-  const [requests, setRequests] = useState<InboundTradeRequest[]>(INBOUND_REQUESTS_DATA);
+  const [requests, setRequests] = useState<InboundTradeRequest[]>(DEMO_INBOUND_REQUESTS_DATA);
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [selectedReviewRfq, setSelectedReviewRfq] = useState<InboundTradeRequest | null>(null);
 
@@ -129,6 +130,18 @@ export const TradeIntentWizardPage: React.FC = () => {
     );
     if (selectedReviewRfq?.id === id) {
       setSelectedReviewRfq((prev) => prev ? { ...prev, status: newStatus } : null);
+    }
+
+    // NOTE: there is no RFQ persistence backend yet — this only mutates
+    // local React state. Feedback below must not imply durable storage.
+    const feedbackByStatus: Partial<Record<RequestStatus, string>> = {
+      Accepted: "Request accepted (not yet saved — demo mode, local only)",
+      Rejected: "Request declined (not yet saved — demo mode, local only)",
+      Quoted: "Quotation recorded (not yet saved — demo mode, local only)",
+    };
+    const message = feedbackByStatus[newStatus];
+    if (message) {
+      toast(message);
     }
   };
 
@@ -175,6 +188,16 @@ export const TradeIntentWizardPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* ── Demo Data Notice ─────────────────────────────────────────── */}
+      <div className="p-2.5 rounded-xl bg-amber-950/30 border border-amber-800/40 flex items-center gap-2 text-amber-300 text-[11px] font-mono">
+        <span className="px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/50 font-bold shrink-0">
+          DEMO DATA — NOT LIVE
+        </span>
+        <span>
+          These inbound requests are illustrative sample data — not yet connected to a real RFQ backend. Accept/decline actions here only update this screen and are not persisted.
+        </span>
+      </div>
 
       {/* ── Status Filters Row (Quiet, clean horizontal control) ───────── */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm">
@@ -370,7 +393,7 @@ export const TradeIntentWizardPage: React.FC = () => {
                     onClick={() => handleStatusChange(selectedReviewRfq.id, "Accepted")}
                     className="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-colors cursor-pointer"
                   >
-                    Accept & Lock Escrow
+                    Accept Request (Demo)
                   </button>
                   <button
                     type="button"

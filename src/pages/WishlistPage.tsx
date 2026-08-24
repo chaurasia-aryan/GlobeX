@@ -21,7 +21,7 @@ import {
 import { AppShell } from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 
-const INITIAL_ITEMS = [
+const DEMO_WISHLIST_ITEMS = [
   {
     id: "WL-001",
     productName: "Tellicherry Black Pepper (Grade A)",
@@ -131,7 +131,7 @@ const STATUS_CONFIG = {
 };
 
 export const WishlistPage = () => {
-  const [items, setItems] = useState(INITIAL_ITEMS);
+  const [items, setItems] = useState(DEMO_WISHLIST_ITEMS);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "price_alert" | "available">("all");
 
@@ -184,6 +184,14 @@ export const WishlistPage = () => {
               <div className="text-[9px] font-black text-slate-600 uppercase">Drops</div>
             </div>
           </div>
+        </div>
+
+        {/* Demo Data Notice */}
+        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 flex items-center gap-2 text-amber-800 text-xs font-medium">
+          <span className="px-2 py-0.5 rounded bg-amber-200 text-amber-900 border border-amber-400 font-mono font-black text-[10px] shrink-0">
+            DEMO DATA — NOT LIVE
+          </span>
+          <span>These wishlist items are illustrative sample data — not yet connected to your organization's real catalogue.</span>
         </div>
 
         {/* Filter Bar */}
