@@ -83,7 +83,7 @@ def _default_registry_dir() -> str:
     here = os.path.dirname(os.path.abspath(__file__))  # src/compliance
     repo_root = os.path.dirname(os.path.dirname(here))  # repo root
     return os.path.join(
-        repo_root, "backend", "brain", "compliance_data", "sanctions_entities"
+        repo_root, "backend", "brain", "datasets", "final", "compliance_data", "sanctions_entities"
     )
 
 

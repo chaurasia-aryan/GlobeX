@@ -1,16 +1,25 @@
 """
 GlobeXAI Trade OS — Comprehensive Regulatory, Tariff, Sanctions & Forecasting RAG Engine
 
-Indexes and retrieves from GlobeXAI's verified offline datasets and live registry facts:
-  1. Official UNCTAD TRAINS & WTO MFN Tariffs (tariff_features.csv & current_facts/tariffs.json)
-  2. 31,629-Entity Sanctions Registry (sdn.csv, alt.csv, un_consolidated.xml, uk_conlist.csv, eu_consolidated.xml)
-  3. Sovereign Country Sanctions Regimes (current_facts/country_sanctions_status.json)
-  4. DGFT India Export Controls & SCOMET List (current_facts/export_controls.json)
-  5. Rules of Origin & Value Addition Formulas (current_facts/rules_of_origin.json)
-  6. SPS/TBT Phytosanitary & Technical Standards (current_facts/sps_tbt.json)
-  7. Quantile XGBoost Demand Forecasting & TreeSHAP Trajectories (destination_country_ranking_features.csv)
-  8. 26-Year WITS Peer-Price Anomaly & Mispricing Distribution (anomaly_features.csv)
-  9. Bilateral Treaties & Mandatory Trade Document Schedules
+Indexes and retrieves from GlobeXAI's verified offline datasets and live registry facts.
+This is what is actually indexed below — kept in sync with the `_*_passages()`
+functions in this file, not aspirational:
+  1. Official UNCTAD TRAINS & WTO MFN Tariffs (processed/tariff_features.csv)
+  2. Sovereign Country Sanctions Regimes (current_facts/country_sanctions_status.json)
+     — country-level regime status only. Entity-level fuzzy name/alias screening
+     against the OFAC SDN + UN Consolidated List (sdn.csv, alt.csv, un_consolidated.xml,
+     uk_conlist.csv, eu_consolidated.xml) is a separate subsystem —
+     see src/compliance/entity_screening.py — and is NOT part of this RAG corpus.
+  3. DGFT India Export Controls & SCOMET List (current_facts/export_controls.json)
+  4. Rules of Origin & Value Addition Formulas (current_facts/rules_of_origin.json)
+  5. SPS/TBT Phytosanitary & Technical Standards (current_facts/sps_tbt.json)
+  6. Bilateral Treaties & Mandatory Trade Document Schedules (compliance_api._TREATY_MAP
+     and ._PRODUCT_DOCUMENTS/._DEFAULT_DOCUMENTS)
+  7. Destination-Ranking Export/Demand Features — 3yr export-value CAGR, market share,
+     activity ratio (processed/destination_country_ranking_features.csv)
+  8. Trade Anomaly Screening Methodology — a description of how the IsolationForest +
+     peer-price Z-score model works, not per-transaction anomaly data (no
+     `anomaly_features.csv` exists in this repo)
 """
 
 from __future__ import annotations
@@ -67,7 +76,7 @@ def _treaty_passages() -> List[Passage]:
 
 def _tariff_csv_passages() -> List[Passage]:
     csv_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "brain_prev", "data_pipeline", "data", "processed", "tariff_features.csv"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "processed", "tariff_features.csv"
     )
     if not os.path.exists(csv_path):
         return []
@@ -121,7 +130,7 @@ def _tariff_csv_passages() -> List[Passage]:
 
 def _country_sanctions_passages() -> List[Passage]:
     json_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "compliance_data", "current_facts", "country_sanctions_status.json"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "compliance_data", "current_facts", "country_sanctions_status.json"
     )
     if not os.path.exists(json_path):
         return []
@@ -133,7 +142,10 @@ def _country_sanctions_passages() -> List[Passage]:
             facts = data.get("facts", [])
             for fact in facts:
                 dest = fact.get("destination")
-                val = fact.get("value", {})
+                val = fact.get("value")
+                if not val:
+                    # e.g. status=UNSUPPORTED facts with no machine-readable value.
+                    continue
                 regime_present = val.get("un_regime_present", False)
                 entries = val.get("listed_entries_under_regime", 0)
                 auth = fact.get("authority", "United Nations Security Council")
@@ -163,7 +175,7 @@ def _country_sanctions_passages() -> List[Passage]:
 
 def _export_controls_passages() -> List[Passage]:
     json_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "compliance_data", "current_facts", "export_controls.json"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "compliance_data", "current_facts", "export_controls.json"
     )
     if not os.path.exists(json_path):
         return []
@@ -174,7 +186,10 @@ def _export_controls_passages() -> List[Passage]:
             data = json.load(f)
             for fact in data.get("facts", []):
                 hs = fact.get("hs6")
-                val = fact.get("value", {})
+                val = fact.get("value")
+                if not val:
+                    # e.g. status=UNSUPPORTED facts with no machine-readable value.
+                    continue
                 cat = val.get("scomet_category", "General")
                 control_type = val.get("control_type", "Standard Clearance")
                 auth = fact.get("authority", "Directorate General of Foreign Trade (DGFT), India")
@@ -200,7 +215,7 @@ def _export_controls_passages() -> List[Passage]:
 
 def _rules_of_origin_passages() -> List[Passage]:
     json_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "compliance_data", "current_facts", "rules_of_origin.json"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "compliance_data", "current_facts", "rules_of_origin.json"
     )
     if not os.path.exists(json_path):
         return []
@@ -210,23 +225,63 @@ def _rules_of_origin_passages() -> List[Passage]:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             for fact in data.get("facts", []):
-                hs = fact.get("hs6")
-                val = fact.get("value", {})
-                psr = val.get("product_specific_rule", "CTH / Value Addition")
-                rvc = val.get("regional_value_content_pct", 35)
-                treaty = fact.get("jurisdiction", "CEPA/ECTA")
+                # The "rta" category holds early-stage RTA negotiation status
+                # (no PSR/RVC content) — only "rules_of_origin" facts carry
+                # actual origin/value-addition data.
+                if fact.get("category") != "rules_of_origin":
+                    continue
 
-                text = (
-                    f"Rules of Origin & Value Addition Criteria for HS6 {hs} under {treaty}: "
-                    f"Product-Specific Rule (PSR): {psr}. Minimum Regional Value Content (RVC): {rvc}%. "
-                    f"Mandatory Certificate of Origin (CoO) issued by authorized export inspection agency."
-                )
+                value = fact.get("value")
+                if not value:
+                    # e.g. status=UNSUPPORTED facts where the source API had
+                    # no machine-readable rule; nothing retrievable to index.
+                    continue
+
+                fact_type = fact.get("fact_type")
+                jurisdiction = fact.get("jurisdiction", "")
+                origin = fact.get("origin", "")
+                destination = fact.get("destination", "")
+                hs6 = fact.get("hs6")
+
+                if fact_type == "ORIGIN_SCHEME":
+                    text = (
+                        f"Rules of Origin scheme for {origin} exports to {destination} ({jurisdiction}): "
+                        f"{value.get('title') or value.get('scheme_code', 'unnamed scheme')}. "
+                        + ("Unilateral preference scheme. " if value.get("unilateral") else "")
+                        + f"Reference document: {value.get('origin_reference_document', 'not specified')}."
+                    )
+                elif fact_type == "ORIGIN_CRITERIA":
+                    criteria = "; ".join(value.get("criteria", []))
+                    va_methods = "; ".join(value.get("value_addition_methods", []))
+                    text = (
+                        f"Rules of Origin criteria for {origin} to {destination} ({jurisdiction}), "
+                        f"{value.get('article', 'origin criteria')}: {criteria}. "
+                        + (f"Value-addition calculation methods: {va_methods}. " if va_methods else "")
+                        + f"Proof of origin: {value.get('proof_of_origin', 'not specified')}."
+                    )
+                elif fact_type == "PRODUCT_SPECIFIC_RULE":
+                    psr = value.get("product_specific_rule") or value.get("rule")
+                    if not psr:
+                        continue
+                    text = (
+                        f"Product-specific rule of origin for HS6 {hs6} ({origin} to {destination}, "
+                        f"{jurisdiction}): {psr}."
+                    )
+                else:
+                    continue
+
                 passages.append(
                     Passage(
                         text=text,
-                        source="current_facts/rules_of_origin.json",
+                        source=fact.get("source_document", "current_facts/rules_of_origin.json"),
                         category="rules_of_origin",
-                        metadata={"hs6": hs, "psr": psr, "rvc_pct": rvc, "treaty": treaty},
+                        metadata={
+                            "hs6": hs6,
+                            "jurisdiction": jurisdiction,
+                            "fact_type": fact_type,
+                            "origin": origin,
+                            "destination": destination,
+                        },
                     )
                 )
     except Exception as exc:
@@ -237,7 +292,7 @@ def _rules_of_origin_passages() -> List[Passage]:
 
 def _sps_tbt_passages() -> List[Passage]:
     json_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "compliance_data", "current_facts", "sps_tbt.json"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "compliance_data", "current_facts", "sps_tbt.json"
     )
     if not os.path.exists(json_path):
         return []
@@ -248,7 +303,10 @@ def _sps_tbt_passages() -> List[Passage]:
             data = json.load(f)
             for fact in data.get("facts", []):
                 hs = fact.get("hs6")
-                val = fact.get("value", {})
+                val = fact.get("value")
+                if not val:
+                    # e.g. status=UNSUPPORTED facts with no machine-readable value.
+                    continue
                 measure = val.get("measure_description", "Phytosanitary / Quality Compliance")
                 auth = fact.get("authority", "National Plant Protection Organization / FSSAI")
 
@@ -302,7 +360,7 @@ def _document_passages() -> List[Passage]:
 
 def _forecasting_passages() -> List[Passage]:
     csv_path = os.path.join(
-        _REPO_ROOT, "backend", "brain", "brain_prev", "data_pipeline", "data", "processed", "destination_country_ranking_features.csv"
+        _REPO_ROOT, "backend", "brain", "datasets", "final", "processed", "destination_country_ranking_features.csv"
     )
     if not os.path.exists(csv_path):
         return []
@@ -316,19 +374,26 @@ def _forecasting_passages() -> List[Passage]:
                     break
                 imp = row.get("importer_iso3") or ""
                 hs = row.get("hs6") or ""
-                growth = row.get("demand_growth_3yr_pct", "N/A")
-                vol = row.get("demand_volatility_3yr", "N/A")
+                raw_growth = row.get("export_value_cagr_3y")
+                try:
+                    growth = round(float(raw_growth) * 100, 2)  # stored as a fraction, not a percentage
+                except (TypeError, ValueError):
+                    growth = "N/A"
+                share = row.get("destination_market_share_latest", "N/A")  # already stored as a percentage
+                activity = row.get("activity_ratio", "N/A")
                 text = (
-                    f"Market Demand Forecast & Corridor Intelligence: Destination {imp} for HS6 {hs} "
-                    f"exhibits 3-year demand growth momentum of {growth}% with demand volatility index {vol}. "
-                    f"Evaluated via Quantile XGBoost Demand Forecaster (Q10/50/90) with TreeSHAP economic attributions."
+                    f"Market Demand & Corridor Intelligence: Destination {imp} for HS6 {hs} "
+                    f"recorded a 3-year export-value CAGR of {growth}%, holding a {share}% share of the "
+                    f"destination's import market for this product, with an activity ratio of {activity} "
+                    f"across the observed window. Derived from the destination-ranking feature set "
+                    f"(recent_3y export value/weight trends, RTA and tariff context)."
                 )
                 passages.append(
                     Passage(
                         text=text,
                         source="processed/destination_country_ranking_features.csv",
                         category="forecasting",
-                        metadata={"importer": imp, "hs6": hs, "growth": growth, "volatility": vol},
+                        metadata={"importer": imp, "hs6": hs, "export_value_cagr_3y": growth, "market_share": share, "activity_ratio": activity},
                     )
                 )
     except Exception as exc:

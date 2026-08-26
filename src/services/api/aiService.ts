@@ -71,6 +71,32 @@ export interface TradeRiskAnalysis {
   keyDrivers: string[];
 }
 
+export type ScreeningDecision =
+  | "NO_MATCH"
+  | "POTENTIAL_MATCH"
+  | "MATCH_REQUIRES_RESTRICTION"
+  | "UNSUPPORTED";
+
+export interface PartyScreeningRecord {
+  query: { name: string; [key: string]: any };
+  decision: ScreeningDecision;
+  match: { entity_id: string; name: string; score: number; [key: string]: any } | null;
+  ownership_screening: string | null;
+  coverage_gaps: string[];
+  requires_human_review: boolean;
+  registry_available?: boolean;
+  unsupported_reason?: string;
+  disclaimer: string;
+}
+
+export interface SanctionsScreenResult {
+  overall_decision: ScreeningDecision;
+  requires_human_review: boolean;
+  per_role: Record<string, PartyScreeningRecord>;
+  screened_at: string;
+  disclaimer: string;
+}
+
 export interface RAGRetrievedPassage {
   text: string;
   source: string;
@@ -94,6 +120,10 @@ export interface ComplianceAnalysis {
   sourcesCited?: string[];
   disclaimer: string;
   dataSource?: "live" | "fallback";
+  synthesizedAnswer?: string | null;
+  synthesisAvailable?: boolean;
+  synthesisModel?: string | null;
+  synthesisUnavailableReason?: string | null;
 }
 
 // ─────────────────────────────────────────────────
@@ -169,6 +199,31 @@ export interface TradeAnomalyResult {
 // ─────────────────────────────────────────────────
 // Market Opportunity & Country Ranking Response (from POST /predict/market-opportunity)
 // ─────────────────────────────────────────────────
+export interface StructuredPro {
+  category: "DEMAND" | "TARIFF" | "LOGISTICS" | "MARKET" | string;
+  title: string;
+  description: string;
+  impact_score?: number;
+}
+
+export interface StructuredCon {
+  category: "REGULATORY" | "SANCTIONS" | "PRICE" | "VOLATILITY" | string;
+  title: string;
+  description: string;
+  severity: "HIGH" | "MEDIUM" | "LOW" | string;
+  mitigation?: string;
+}
+
+export interface AISynthesis {
+  executive_summary: string;
+  structured_pros: StructuredPro[];
+  structured_cons: StructuredCon[];
+  negotiation_leverage?: string;
+  synthesized_by_llm: boolean;
+  model_used?: string;
+  error?: string;
+}
+
 export interface DestinationCountryInsight {
   destination: {
     iso3: string;
@@ -215,6 +270,7 @@ export interface DestinationCountryInsight {
   };
   pros: string[];
   cons: string[];
+  ai_synthesis?: AISynthesis;
 }
 
 export interface MarketOpportunityResult {
@@ -524,6 +580,47 @@ class AIService {
     return { ...data, dataSource: "live" };
   }
 
+  // 2b. Synthesize and Structure Country Pros & Cons using LLM
+  public async synthesizeCountryProsCons(
+    insightData: DestinationCountryInsight
+  ): Promise<AISynthesis> {
+    try {
+      const res = await fetch(`${this.baseUrl}/predict/market-opportunity/synthesize-pros-cons`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ insight_data: insightData }),
+      });
+      if (!res.ok) {
+        throw new Error(`Synthesis failed with status ${res.status}`);
+      }
+      const data = await res.json();
+      return data.synthesis;
+    } catch (err: any) {
+      // Fallback local structuring if network drops
+      const destName = insightData.destination.country_name;
+      const finalScore = insightData.scores.final_score;
+      return {
+        executive_summary: `${destName} presents a ranked Opportunity Score of ${finalScore.toFixed(1)}/100 for Indian exports with strong demand capacity and established trade settlement channels.`,
+        structured_pros: (insightData.pros || []).map((p) => ({
+          category: p.toLowerCase().includes("tariff") || p.toLowerCase().includes("duty") ? "TARIFF" : "DEMAND",
+          title: p.length > 40 ? p.slice(0, 37) + "..." : p,
+          description: p,
+          impact_score: 85,
+        })),
+        structured_cons: (insightData.cons || []).map((c) => ({
+          category: c.toLowerCase().includes("sanction") || c.toLowerCase().includes("ofac") ? "SANCTIONS" : "REGULATORY",
+          title: c.length > 40 ? c.slice(0, 37) + "..." : c,
+          description: c,
+          severity: c.toLowerCase().includes("sanction") ? "HIGH" : "MEDIUM",
+          mitigation: "Screen all trade documents and counterparties prior to cargo dispatch.",
+        })),
+        negotiation_leverage: "Quote competitive FOB Nhava Sheva / Mundra terms with confirmed LC payment.",
+        synthesized_by_llm: false,
+        model_used: "Client-Side-Fallback",
+      };
+    }
+  }
+
   // 3. Trade Anomaly Detection
   public async predictTradeAnomaly(
     tradeFlow: string,
@@ -688,6 +785,10 @@ class AIService {
       sourcesCited: data.sources_cited || [],
       disclaimer: data.disclaimer || "Rule-based regulatory analysis grounded in official tariff schedules.",
       dataSource: "live",
+      synthesizedAnswer: data.synthesized_answer ?? null,
+      synthesisAvailable: Boolean(data.synthesis_available),
+      synthesisModel: data.synthesis_model ?? null,
+      synthesisUnavailableReason: data.synthesis_unavailable_reason ?? null,
     };
   }
 
@@ -705,6 +806,10 @@ class AIService {
     passages: RAGRetrievedPassage[];
     structuredEvidence: Record<string, any>;
     sourcesCited: string[];
+    synthesizedAnswer: string | null;
+    synthesisAvailable: boolean;
+    synthesisModel: string | null;
+    synthesisUnavailableReason: string | null;
   }> {
     const res = await fetch(`${this.baseUrl}/api/v1/rag/query`, {
       method: "POST",
@@ -726,7 +831,46 @@ class AIService {
       passages: data.passages || [],
       structuredEvidence: data.structured_evidence || {},
       sourcesCited: data.sources_cited || [],
+      synthesizedAnswer: data.synthesized_answer ?? null,
+      synthesisAvailable: Boolean(data.synthesis_available),
+      synthesisModel: data.synthesis_model ?? null,
+      synthesisUnavailableReason: data.synthesis_unavailable_reason ?? null,
     };
+  }
+
+  /**
+   * Restricted-Party / Sanctions Screening (OFAC SDN + UN Security Council
+   * Consolidated List) via POST /compliance/sanctions-screen. Never
+   * fabricates a "cleared" result on failure — throws if backend is
+   * unreachable, so callers must not treat a caught error as NO_MATCH.
+   */
+  public async sanctionsScreen(request: {
+    exporterName?: string;
+    importerName?: string;
+    freightForwarderName?: string;
+    carrierName?: string;
+    consigneeName?: string;
+    endUserName?: string;
+    beneficialOwners?: { name: string; pct_ownership: number }[];
+  }): Promise<SanctionsScreenResult> {
+    const res = await fetch(`${this.baseUrl}/compliance/sanctions-screen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        exporter_name: request.exporterName || null,
+        importer_name: request.importerName || null,
+        freight_forwarder_name: request.freightForwarderName || null,
+        carrier_name: request.carrierName || null,
+        consignee_name: request.consigneeName || null,
+        end_user_name: request.endUserName || null,
+        beneficial_owners: request.beneficialOwners?.length ? request.beneficialOwners : null,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Sanctions screening failed (${res.status}): ${body || res.statusText}`);
+    }
+    return res.json();
   }
 
   /**

@@ -1,0 +1,1 @@
+{"type": "XGBClassifier", "feature_engineering": "lag_roll_mean_unit_price", "feature_selection": "mutual_info_0.01", "dataset": "02_trade_anomaly_dl.csv", "rebuild": "2026-08-26", "selected_features": ["trade_value_usd", "net_weight_kg", "quantity", "unit_price", "value_lag1", "value_roll_mean_3", "reporter_iso3", "partner_iso3", "hs6", "trade_flow"]}

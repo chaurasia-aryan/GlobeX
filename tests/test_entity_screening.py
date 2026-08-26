@@ -2,8 +2,9 @@
 
 No mocks — these exercise src/compliance/entity_screening.py against the
 genuine downloaded sanctions data in
-backend/brain/compliance_data/sanctions_entities/. Requires that registry to
-exist (built by build_registry.py); skipped loudly, not silently, if absent.
+backend/brain/datasets/final/compliance_data/sanctions_entities/. Requires that
+registry to exist (built by build_registry.py); skipped loudly, not silently,
+if absent.
 """
 
 import os
@@ -18,7 +19,7 @@ from src.compliance.entity_screening import (
 
 _REGISTRY_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "backend", "brain", "compliance_data", "sanctions_entities", "normalized_entities.json",
+    "backend", "brain", "datasets", "final", "compliance_data", "sanctions_entities", "normalized_entities.json",
 )
 
 pytestmark = pytest.mark.skipif(

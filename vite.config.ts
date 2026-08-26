@@ -12,12 +12,10 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ["@pierre/diffs", "@pierre/theming", "shiki", "@supabase/phoenix", "@supabase/realtime-js"],
-  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@supabase/phoenix": path.resolve(__dirname, "./node_modules/@supabase/phoenix/priv/static/phoenix.cjs.js"),
     },
   },
   build: {

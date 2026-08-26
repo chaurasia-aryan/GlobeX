@@ -139,7 +139,7 @@ def generate_country_insights(
         'score_stability': float(row.get('score_stability', 0.0))
     }
     
-    return {
+    base_res = {
         'destination': {
             'iso3': iso3,
             'country_name': country_name,
@@ -172,4 +172,13 @@ def generate_country_insights(
         'pros': pros,
         'cons': cons
     }
+
+    try:
+        from src.services.market_opportunity_synthesizer import synthesize_market_pros_cons
+        synthesis = synthesize_market_pros_cons(base_res)
+        base_res['ai_synthesis'] = synthesis.model_dump()
+    except Exception:
+        pass
+
+    return base_res
 

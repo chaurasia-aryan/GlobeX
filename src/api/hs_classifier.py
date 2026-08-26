@@ -70,7 +70,7 @@ def _discover_data_dir() -> Optional[str]:
     """
     candidates = [
         os.path.join("backend", "brain_temporary", "data"),
-        os.path.join("backend", "brain", "data"),
+        os.path.join("backend", "brain", "datasets", "final"),
         "data",
     ]
     for candidate in candidates:
@@ -137,7 +137,7 @@ def classify_hs_code(req: HSClassificationRequest) -> Dict[str, Any]:
                     "Product catalogue could not be loaded. "
                     "Ensure the parquet dataset exists at "
                     "backend/brain_temporary/data/processed/ or "
-                    "backend/brain/processed/."
+                    "backend/brain/datasets/final/processed/."
                 ),
             },
         )

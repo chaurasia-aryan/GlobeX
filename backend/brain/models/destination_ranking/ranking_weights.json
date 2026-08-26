@@ -1,0 +1,26 @@
+{
+  "balanced": {
+    "demand_weight": 0.35,
+    "growth_weight": 0.25,
+    "tariff_weight": 0.25,
+    "risk_penalty_weight": 0.15
+  },
+  "aggressive": {
+    "demand_weight": 0.3,
+    "growth_weight": 0.5,
+    "tariff_weight": 0.1,
+    "risk_penalty_weight": 0.1
+  },
+  "conservative": {
+    "demand_weight": 0.4,
+    "growth_weight": 0.1,
+    "tariff_weight": 0.2,
+    "risk_penalty_weight": 0.3
+  },
+  "risk_averse": {
+    "demand_weight": 0.15,
+    "growth_weight": 0.1,
+    "tariff_weight": 0.25,
+    "risk_penalty_weight": 0.5
+  }
+}

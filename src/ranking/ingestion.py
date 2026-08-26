@@ -6,7 +6,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 def convert_raw_csv_to_parquet(
-    raw_csv_path: str = "data/data/final_csv/01_partner_discovery_india_as_exporter_eda.csv",
+    raw_csv_path: str = "backend/brain/datasets/raw/partner_discovery_source_csv/01_partner_discovery_india_as_exporter_eda.csv",
     output_parquet_paths: list[str] = None
 ) -> pd.DataFrame:
     """
@@ -16,7 +16,7 @@ def convert_raw_csv_to_parquet(
     if output_parquet_paths is None:
         output_parquet_paths = [
             "data/processed/01_partner_discovery_india_as_exporter.parquet",
-            "data_pipeline/data/processed/01_partner_discovery_india_as_exporter.parquet"
+            "backend/brain/datasets/final/processed/01_partner_discovery_india_as_exporter.parquet"
         ]
         
     if not os.path.exists(raw_csv_path):

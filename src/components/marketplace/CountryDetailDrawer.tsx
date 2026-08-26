@@ -63,6 +63,40 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
     { label: "Macro Market Stability", val: scores.score_stability },
   ];
 
+  const [synthesis, setSynthesis] = React.useState<any>(data.ai_synthesis || null);
+  const [isSynthesizing, setIsSynthesizing] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setSynthesis(data.ai_synthesis || null);
+  }, [data]);
+
+  const handleSynthesize = async () => {
+    setIsSynthesizing(true);
+    try {
+      const { aiService } = await import("@/services/api/aiService");
+      const res = await aiService.synthesizeCountryProsCons(data);
+      setSynthesis(res);
+    } catch {
+      // ignore
+    } finally {
+      setIsSynthesizing(false);
+    }
+  };
+
+  const proCategoryColors: Record<string, string> = {
+    DEMAND: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+    TARIFF: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    LOGISTICS: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    MARKET: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  };
+
+  const conCategoryColors: Record<string, string> = {
+    REGULATORY: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    SANCTIONS: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    PRICE: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+    VOLATILITY: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+  };
+
   return (
     <DetailDrawer
       isOpen={isOpen}
@@ -78,6 +112,12 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
               <span className="px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 border border-sky-500/20 text-xs font-mono font-bold">
                 {destination.iso3}
               </span>
+              {synthesis?.synthesized_by_llm && (
+                <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-mono font-bold flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  <span>LLM Synthesized</span>
+                </span>
+              )}
             </div>
             <span className="text-xs text-[var(--text-secondary)] font-sans">
               Global Destination Opportunity Dossier
@@ -92,14 +132,30 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
         {/* ── Top Executive Gist Strip ────────────────────────────────────── */}
         <div className="p-4 rounded-2xl bg-gradient-to-r from-sky-950/40 via-blue-950/20 to-[#0C121D] border border-sky-500/20 relative overflow-hidden">
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-sky-600 uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Executive Verdict</span>
+            <div className="space-y-1.5 flex-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-sky-400 uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Executive AI Strategic Verdict</span>
+                </div>
+                <button
+                  onClick={handleSynthesize}
+                  disabled={isSynthesizing}
+                  className="px-2 py-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/20 text-[10px] font-mono flex items-center gap-1 transition-colors"
+                >
+                  <Sparkles className={cn("w-3 h-3", isSynthesizing && "animate-spin")} />
+                  <span>{isSynthesizing ? "Synthesizing..." : "Re-Synthesize LLM"}</span>
+                </button>
               </div>
-              <p className="text-sm text-[var(--text-primary)] font-sans leading-relaxed">
-                <strong className="text-[var(--text-primary)]">{destination.country_name}</strong> is ranked with an overall score of{" "}
-                <strong className="text-emerald-600">{finalScore.toFixed(1)} / 100</strong>. It presents a strong market absorption opportunity for Indian {userCommodity} with an expected FOB price of <strong className="text-sky-600">${fobPrice} / kg</strong>.
+              <p className="text-xs text-[var(--text-primary)] font-sans leading-relaxed">
+                {synthesis?.executive_summary ? (
+                  synthesis.executive_summary
+                ) : (
+                  <>
+                    <strong className="text-[var(--text-primary)]">{destination.country_name}</strong> is ranked with an overall score of{" "}
+                    <strong className="text-emerald-600">{finalScore.toFixed(1)} / 100</strong>. It presents a strong market absorption opportunity for Indian {userCommodity} with an expected FOB price of <strong className="text-sky-600">${fobPrice} / kg</strong>.
+                  </>
+                )}
               </p>
             </div>
 
@@ -151,15 +207,49 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
           </div>
         </div>
 
-        {/* ── Pros: Why You Should Export Here ─────────────────────────────── */}
+        {/* ── Pros: Structured Advantages & Catalysts (LLM Structured) ──── */}
         <div className="space-y-3">
-          <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Pros & Strategic Advantages</span>
-          </h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <span>Key Strategic Catalysts &amp; Advantages</span>
+            </h4>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              {synthesis?.structured_pros?.length || pros?.length || 0} Catalysts
+            </span>
+          </div>
 
-          <div className="space-y-2">
-            {pros && pros.length > 0 ? (
+          <div className="space-y-2.5">
+            {synthesis?.structured_pros && synthesis.structured_pros.length > 0 ? (
+              synthesis.structured_pros.map((item: any, idx: number) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl bg-[var(--surface-1)] border border-emerald-500/20 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border",
+                        proCategoryColors[item.category] || "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      )}>
+                        {item.category}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-300 font-sans">
+                        {item.title}
+                      </span>
+                    </div>
+                    {item.impact_score && (
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                        {item.impact_score} pts
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed pl-0.5">
+                    {item.description}
+                  </p>
+                </div>
+              ))
+            ) : pros && pros.length > 0 ? (
               pros.map((pro, idx) => (
                 <div
                   key={idx}
@@ -177,15 +267,60 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
           </div>
         </div>
 
-        {/* ── Cons: Trade Barriers & Risks ────────────────────────────────── */}
+        {/* ── Cons: Structured Trade Barriers & Mitigations (LLM Structured) ── */}
         <div className="space-y-3">
-          <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span>Cons & Trade Barriers</span>
-          </h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <span>Trade Barriers, Compliance Risks &amp; Mitigations</span>
+            </h4>
+            <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+              {synthesis?.structured_cons?.length || cons?.length || 0} Risk Factors
+            </span>
+          </div>
 
-          <div className="space-y-2">
-            {cons && cons.length > 0 ? (
+          <div className="space-y-2.5">
+            {synthesis?.structured_cons && synthesis.structured_cons.length > 0 ? (
+              synthesis.structured_cons.map((item: any, idx: number) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl bg-[var(--surface-1)] border border-amber-500/20 space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border",
+                        conCategoryColors[item.category] || "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                      )}>
+                        {item.category}
+                      </span>
+                      <span className="text-xs font-bold text-amber-300 font-sans">
+                        {item.title}
+                      </span>
+                    </div>
+                    {item.severity && (
+                      <span className={cn(
+                        "text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border",
+                        item.severity === "HIGH" ? "bg-rose-500/10 text-rose-400 border-rose-500/30" :
+                        item.severity === "MEDIUM" ? "bg-amber-500/10 text-amber-400 border-amber-500/30" :
+                        "bg-sky-500/10 text-sky-400 border-sky-500/30"
+                      )}>
+                        {item.severity} SEVERITY
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed pl-0.5">
+                    {item.description}
+                  </p>
+                  {item.mitigation && (
+                    <div className="p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--hairline)] flex items-start gap-2 text-[11px] text-amber-200/80 font-sans">
+                      <span className="font-bold text-amber-400 font-mono text-[10px] uppercase flex-shrink-0">Mitigation:</span>
+                      <span>{item.mitigation}</span>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : cons && cons.length > 0 ? (
               cons.map((con, idx) => (
                 <div
                   key={idx}
@@ -202,6 +337,19 @@ export const CountryDetailDrawer: React.FC<CountryDetailDrawerProps> = ({
             )}
           </div>
         </div>
+
+        {/* ── Negotiation & Tactical Leverage Box ──────────────────────── */}
+        {synthesis?.negotiation_leverage && (
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-950/30 via-slate-900 to-[#0C121D] border border-purple-500/20 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-purple-400 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Exporter Commercial Negotiation Leverage</span>
+            </div>
+            <p className="text-xs text-purple-200/90 font-sans leading-relaxed">
+              {synthesis.negotiation_leverage}
+            </p>
+          </div>
+        )}
 
         {/* ── Trade Risk & Sanctions Engine Evaluation ───────────────────── */}
         <div className="space-y-3">

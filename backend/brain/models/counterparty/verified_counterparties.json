@@ -1,0 +1,47 @@
+[
+  {
+    "company_name":"Bharat Basmati Agro Exports Ltd",
+    "country":"IND",
+    "port":"JNPT Port",
+    "total_trades":128,
+    "dispute_rate":"0.0%",
+    "trust_score":95.5,
+    "sanctions_cleared":true
+  },
+  {
+    "company_name":"Emirates Grain & Milling FZCO",
+    "country":"ARE",
+    "port":"Jebel Ali",
+    "total_trades":84,
+    "dispute_rate":"1.0%",
+    "trust_score":93.5,
+    "sanctions_cleared":true
+  },
+  {
+    "company_name":"Al-Rashid Food Commodities LLC",
+    "country":"SAU",
+    "port":"Jeddah Islamic",
+    "total_trades":62,
+    "dispute_rate":"0.0%",
+    "trust_score":91.8,
+    "sanctions_cleared":true
+  },
+  {
+    "company_name":"Vietnam Golden Rice Corp",
+    "country":"VNM",
+    "port":"Ho Chi Minh",
+    "total_trades":45,
+    "dispute_rate":"2.0%",
+    "trust_score":88.1,
+    "sanctions_cleared":true
+  },
+  {
+    "company_name":"Hamburg Grain Import GmbH",
+    "country":"DEU",
+    "port":"Hamburg Port",
+    "total_trades":110,
+    "dispute_rate":"0.0%",
+    "trust_score":97.2,
+    "sanctions_cleared":true
+  }
+]

@@ -5,7 +5,7 @@ Endpoint: https://wits.worldbank.org/API/V1/SDMX/V21/datasource/TRN/reporter/{m4
 
 No API key required. Reporter/partner codes are UN M49 numeric, not ISO3 —
 the ISO3_TO_M49 table below is the same India-export-corridor country set
-already used in backend/brain/processed/01_partner_discovery_india_as_exporter.parquet
+already used in backend/brain/datasets/final/processed/01_partner_discovery_india_as_exporter.parquet
 (importer_iso3 / importer_numeric columns), not a separately invented list.
 
 Fail-closed: a network failure, missing corridor, or unparseable response
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _CACHE_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(_HERE)), "backend", "brain", "compliance_data", "wits_tariff_cache.json"
+    os.path.dirname(os.path.dirname(_HERE)), "backend", "brain", "datasets", "final", "compliance_data", "wits_tariff_cache.json"
 )
 
 # ISO3 -> UN M49 numeric reporter/partner code. Sourced from this repo's own
@@ -57,9 +57,8 @@ _PROCESSED_CSV_PATH = os.path.join(
     os.path.dirname(os.path.dirname(_HERE)),
     "backend",
     "brain",
-    "brain_prev",
-    "data_pipeline",
-    "data",
+    "datasets",
+    "final",
     "processed",
     "tariff_features.csv",
 )

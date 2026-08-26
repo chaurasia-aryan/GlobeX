@@ -41,7 +41,7 @@ class PartnerDataLoader:
             return fallback_path
             
         # Check backend/brain fallback
-        brain_path = os.path.join("backend", "brain", "processed", f"01_partner_discovery_india_as_{dir_key}.parquet")
+        brain_path = os.path.join("backend", "brain", "datasets", "final", "processed", f"01_partner_discovery_india_as_{dir_key}.parquet")
         if os.path.exists(brain_path):
             return brain_path
 

@@ -33,12 +33,15 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(HERE))))
+RAW_SOURCE_DIR = os.path.join(_REPO_ROOT, "backend", "brain", "datasets", "raw", "sanctions_source")
+OUTPUT_DIR = os.path.join(_REPO_ROOT, "backend", "brain", "datasets", "final", "compliance_data", "sanctions_entities")
 
-SDN_CSV = os.path.join(HERE, "sdn.csv")
-ALT_CSV = os.path.join(HERE, "alt.csv")
-UN_XML = os.path.join(HERE, "un_consolidated.xml")
-UK_CSV = os.path.join(HERE, "uk_conlist.csv")
-EU_XML = os.path.join(HERE, "eu_consolidated.xml")
+SDN_CSV = os.path.join(RAW_SOURCE_DIR, "sdn.csv")
+ALT_CSV = os.path.join(RAW_SOURCE_DIR, "alt.csv")
+UN_XML = os.path.join(RAW_SOURCE_DIR, "un_consolidated.xml")
+UK_CSV = os.path.join(RAW_SOURCE_DIR, "uk_conlist.csv")
+EU_XML = os.path.join(RAW_SOURCE_DIR, "eu_consolidated.xml")
 EU_NS = {"e": "http://eu.europa.ec/fpi/fsd/export"}
 
 OFAC_SDN_COLUMNS = [
@@ -282,7 +285,7 @@ def main() -> None:
             "source_ref": e["logical_id"],
         })
 
-    with open(os.path.join(HERE, "normalized_entities.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "normalized_entities.json"), "w", encoding="utf-8") as f:
         json.dump({"generated_at": now, "count": len(all_entities), "entities": all_entities}, f, indent=2)
 
     source_registry = {
@@ -334,7 +337,7 @@ def main() -> None:
             },
         ],
     }
-    with open(os.path.join(HERE, "source_registry.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "source_registry.json"), "w", encoding="utf-8") as f:
         json.dump(source_registry, f, indent=2)
 
     print(f"Wrote {len(all_entities)} normalized entity records "

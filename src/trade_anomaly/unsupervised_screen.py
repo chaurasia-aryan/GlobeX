@@ -92,7 +92,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_MODELS_DIR = PROJECT_ROOT / "backend" / "brain" / "models" / "trade_anomaly_v2"
 DEFAULT_DATASET = (
     PROJECT_ROOT
-    / "backend" / "brain" / "processed" / "trade_anomaly"
+    / "backend" / "brain" / "datasets" / "final" / "processed" / "trade_anomaly"
     / "02_trade_anomaly_featured.parquet"
 )
 

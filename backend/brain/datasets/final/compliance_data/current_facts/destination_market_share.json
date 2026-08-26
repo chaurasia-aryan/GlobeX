@@ -1,0 +1,161 @@
+{
+  "generated_at": "2026-08-26T03:04:34+00:00",
+  "schema": "destination_market_share.v1",
+  "phase": "ranking_bias_correction",
+  "warning": "This file exists because a direct comparison against official Indian government export statistics (APEDA, Tea Board) found the training panel systematically undercounts Gulf-state (Saudi Arabia, UAE, Iran, Iraq) trade volumes for at least basmati rice and black tea. These are targeted corrections for confirmed large gaps, not a comprehensive re-audit of all 33 catalogue products/53 countries.",
+  "category_file": "destination_market_share.json",
+  "record_count": 5,
+  "status_counts": {
+    "CURRENT": 5
+  },
+  "facts": [
+    {
+      "fact_id": "market_share:APEDA:IND-SAU:100630:FY2025_26_PROJECTED",
+      "category": "market_share",
+      "fact_type": "VERIFIED_DESTINATION_SHARE",
+      "value": {
+        "share_pct": 16.6,
+        "estimated_export_value_usd": 986040000.0,
+        "basis_total_export_value_usd": 5940000000.0,
+        "basis_total_period": "FY2024-25"
+      },
+      "unit": "usd_and_pct",
+      "authority": "APEDA (Agricultural and Processed Food Products Export Development Authority)",
+      "source_url": "https://apeda.gov.in/BasmatiRice",
+      "source_document": "APEDA basmati rice export statistics, reported via Indian trade press (FY2025-26 country-share projection)",
+      "retrieved_at": "2026-08-26T03:04:34+00:00",
+      "effective_period": {
+        "start": "2025-04-01",
+        "end": "2026-03-31"
+      },
+      "jurisdiction": "IN",
+      "origin": "IND",
+      "destination": "SAU",
+      "hs6": 100630,
+      "version": "FY2025-26 (provisional/reported)",
+      "status": "CURRENT",
+      "freshness_policy": "REVERIFY_QUARTERLY",
+      "verification_note": "Correction fact: the training panel (01_partner_discovery_india_as_exporter.parquet) records only ~$4.4M for SAU-IND basmati rice at the same period, ~33x below this officially-reported share-implied value. The panel systematically undercounts Gulf-state basmati demand (confirmed pattern, not isolated) — this verified figure should be preferred over the panel value for revealed-demand scoring on this corridor. estimated_export_value_usd is share_pct times the officially-reported FY2024-25 total (.94B), not a directly reported bilateral figure — treat as APEDA-share-derived, not a primary bilateral customs record.",
+      "unsupported_reason": null,
+      "raw": null
+    },
+    {
+      "fact_id": "market_share:APEDA:IND-IRN:100630:FY2025_26_PROJECTED",
+      "category": "market_share",
+      "fact_type": "VERIFIED_DESTINATION_SHARE",
+      "value": {
+        "share_pct": 13.9,
+        "estimated_export_value_usd": 825660000.0,
+        "basis_total_export_value_usd": 5940000000.0,
+        "basis_total_period": "FY2024-25"
+      },
+      "unit": "usd_and_pct",
+      "authority": "APEDA (Agricultural and Processed Food Products Export Development Authority)",
+      "source_url": "https://apeda.gov.in/BasmatiRice",
+      "source_document": "APEDA basmati rice export statistics, reported via Indian trade press (FY2025-26 country-share projection)",
+      "retrieved_at": "2026-08-26T03:04:34+00:00",
+      "effective_period": {
+        "start": "2025-04-01",
+        "end": "2026-03-31"
+      },
+      "jurisdiction": "IN",
+      "origin": "IND",
+      "destination": "IRN",
+      "hs6": 100630,
+      "version": "FY2025-26 (provisional/reported)",
+      "status": "CURRENT",
+      "freshness_policy": "REVERIFY_QUARTERLY",
+      "verification_note": "India is reported to export ~1 million tonnes of basmati to Iran in FY2024-25, its 2nd-largest basmati market. Same undercounting pattern as Saudi Arabia applies here per the training panel.",
+      "unsupported_reason": null,
+      "raw": null
+    },
+    {
+      "fact_id": "market_share:APEDA:IND-IRQ:100630:FY2025_26_PROJECTED",
+      "category": "market_share",
+      "fact_type": "VERIFIED_DESTINATION_SHARE",
+      "value": {
+        "share_pct": 11.2,
+        "estimated_export_value_usd": 665280000.0,
+        "basis_total_export_value_usd": 5940000000.0,
+        "basis_total_period": "FY2024-25"
+      },
+      "unit": "usd_and_pct",
+      "authority": "APEDA (Agricultural and Processed Food Products Export Development Authority)",
+      "source_url": "https://apeda.gov.in/BasmatiRice",
+      "source_document": "APEDA basmati rice export statistics, reported via Indian trade press (FY2025-26 country-share projection)",
+      "retrieved_at": "2026-08-26T03:04:34+00:00",
+      "effective_period": {
+        "start": "2025-04-01",
+        "end": "2026-03-31"
+      },
+      "jurisdiction": "IN",
+      "origin": "IND",
+      "destination": "IRQ",
+      "hs6": 100630,
+      "version": "FY2025-26 (provisional/reported)",
+      "status": "CURRENT",
+      "freshness_policy": "REVERIFY_QUARTERLY",
+      "verification_note": "Iraq (IRQ) is not present as a candidate destination in the training panel (01_partner_discovery_india_as_exporter.parquet) at all — this fact is recorded for RAG/reference completeness but cannot currently be applied as a ranking-engine correction since there is no corridor row to correct. Flagged for future panel-coverage expansion.",
+      "unsupported_reason": null,
+      "raw": null
+    },
+    {
+      "fact_id": "market_share:TeaBoard:IND-ARE:90240:FY2025_26",
+      "category": "market_share",
+      "fact_type": "VERIFIED_DESTINATION_SHARE",
+      "value": {
+        "share_pct": 19.6,
+        "export_volume_kg": 50710000,
+        "basis_period": "FY2025-26 (Apr 2025-Mar 2026)"
+      },
+      "unit": "usd_and_pct",
+      "authority": "Tea Board of India",
+      "source_url": "https://www.teaboard.gov.in/",
+      "source_document": "Tea Board of India provisional export statistics, reported via Indian trade/business press",
+      "retrieved_at": "2026-08-26T03:04:34+00:00",
+      "effective_period": {
+        "start": "2025-04-01",
+        "end": "2026-03-31"
+      },
+      "jurisdiction": "IN",
+      "origin": "IND",
+      "destination": "ARE",
+      "hs6": 90240,
+      "version": "FY2025-26 (provisional/reported)",
+      "status": "CURRENT",
+      "freshness_policy": "REVERIFY_QUARTERLY",
+      "verification_note": "Correction fact: UAE does not appear in the training panel's top-8 countries by export_value_usd for HS 090240 (black tea) at all, despite being the real #1 destination at 19.6% share (50.71M kg in 2025, up from 43.48M kg in 2024). Same Gulf-state undercounting pattern as basmati rice.",
+      "unsupported_reason": null,
+      "raw": null
+    },
+    {
+      "fact_id": "market_share:TeaBoard:IND-IRQ:90240:FY2025_26",
+      "category": "market_share",
+      "fact_type": "VERIFIED_DESTINATION_SHARE",
+      "value": {
+        "share_pct": 10.68,
+        "export_volume_kg": 52590000,
+        "basis_period": "FY2025-26 (Apr 2025-Mar 2026)"
+      },
+      "unit": "usd_and_pct",
+      "authority": "Tea Board of India",
+      "source_url": "https://www.teaboard.gov.in/",
+      "source_document": "Tea Board of India provisional export statistics, reported via Indian trade/business press",
+      "retrieved_at": "2026-08-26T03:04:34+00:00",
+      "effective_period": {
+        "start": "2025-04-01",
+        "end": "2026-03-31"
+      },
+      "jurisdiction": "IN",
+      "origin": "IND",
+      "destination": "IRQ",
+      "hs6": 90240,
+      "version": "FY2025-26 (provisional/reported)",
+      "status": "CURRENT",
+      "freshness_policy": "REVERIFY_QUARTERLY",
+      "verification_note": "Iraq (IRQ) is not present as a candidate destination in the training panel — recorded for RAG/reference completeness, not currently applicable as a ranking-engine correction. Real 2025 volume (52.59M kg) is actually higher than UAE's.",
+      "unsupported_reason": null,
+      "raw": null
+    }
+  ]
+}

@@ -14,7 +14,7 @@ from src.compliance.current_facts import FactStatus
 
 _ENTITY_REGISTRY = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "backend", "brain", "compliance_data", "sanctions_entities", "normalized_entities.json",
+    "backend", "brain", "datasets", "final", "compliance_data", "sanctions_entities", "normalized_entities.json",
 )
 
 pytestmark = pytest.mark.skipif(

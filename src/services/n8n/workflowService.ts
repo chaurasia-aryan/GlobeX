@@ -161,7 +161,7 @@ class N8nWorkflowService {
   }
 
   // ──────────────────────────────────────────────────────────────
-  // Workflow 1: Trade Intelligence / Analyze Trade
+  // Workflow 1: Trade Intelligence / Analyze Trade (Sequential v2)
   // ──────────────────────────────────────────────────────────────
   public async triggerTradeIntelligenceWorkflow(
     payload: AnalyzeTradePayload
@@ -170,12 +170,23 @@ class N8nWorkflowService {
       "globex-analyze-trade-v2",
       payload as unknown as Record<string, unknown>,
       "wf_trade_intelligence_02",
-      "WF-02: GlobeXAI Production Trade Automation OS v2 (Schema-Corrected)"
+      "WF-02: GlobeXAI Production Trade Automation OS v2 (Sequential Master)"
+    );
+  }
+
+  public async triggerTestTradeAnalysisWorkflow(
+    payload: AnalyzeTradePayload
+  ): Promise<WorkflowExecutionResult> {
+    return this.callWebhook(
+      "globex-test-trade-v2",
+      payload as unknown as Record<string, unknown>,
+      "wf_test_trade_intelligence",
+      "WF-Test: GlobeXAI Test Trade Analysis Pipeline"
     );
   }
 
   // ──────────────────────────────────────────────────────────────
-  // Workflow 2: Document Verification
+  // Workflow 2: Document Verification & Blockchain Anchoring
   // ──────────────────────────────────────────────────────────────
   public async triggerDocumentVerificationWorkflow(
     tradeId: string,
@@ -184,23 +195,37 @@ class N8nWorkflowService {
     uploaderOrgId?: string
   ): Promise<WorkflowExecutionResult> {
     return this.callWebhook(
-      "document-uploaded",
+      "globex-doc-anchor",
       { trade_id: tradeId, document_url: documentUrl, document_type: documentType, uploader_org_id: uploaderOrgId },
       "wf_doc_verification_02",
-      "WF-02: Document OCR & Blockchain Verification"
+      "WF-02: Document OCR & Cryptographic Notarization"
     );
   }
 
   // ──────────────────────────────────────────────────────────────
-  // Workflow 3: Trade Creation + Escrow
+  // Workflow 3: Blockchain Escrow Creation & Funding
   // ──────────────────────────────────────────────────────────────
+  public async triggerEscrowCreate(
+    tradeId: string,
+    buyerAddress: string,
+    sellerAddress: string,
+    amountUsdc?: number
+  ): Promise<WorkflowExecutionResult> {
+    return this.callWebhook(
+      "globex-escrow-create",
+      { trade_id: tradeId, buyer_address: buyerAddress, seller_address: sellerAddress, amount_usdc: amountUsdc },
+      "wf_escrow_create_03",
+      "WF-03: On-Chain Escrow Creation & Funding"
+    );
+  }
+
   public async triggerEscrowLifecycleWorkflow(
     tradeId: string,
     counterpartyOrgId: string,
     eventData?: Record<string, unknown>
   ): Promise<WorkflowExecutionResult> {
     return this.callWebhook(
-      "create-trade",
+      "globex-escrow-create",
       { trade_id: tradeId, counterparty_org_id: counterpartyOrgId, ...eventData },
       "wf_escrow_manager_03",
       "WF-03: Trade Creation + Escrow"
@@ -208,16 +233,46 @@ class N8nWorkflowService {
   }
 
   // ──────────────────────────────────────────────────────────────
-  // Workflow 4: Shipment Tracking
+  // Workflow 4: Shipment Event & Milestone Release
   // ──────────────────────────────────────────────────────────────
+  public async triggerShipmentEvent(
+    tradeId: string,
+    conditionIndex: number,
+    voyageNumber?: string,
+    aisData?: Record<string, any>
+  ): Promise<WorkflowExecutionResult> {
+    return this.callWebhook(
+      "globex-shipment-event",
+      { trade_id: tradeId, condition_index: conditionIndex, voyage_number: voyageNumber, ais_data: aisData },
+      "wf_shipment_event_04",
+      "WF-04: Shipment Event & On-Chain Milestone Condition Trigger"
+    );
+  }
+
   public async triggerShipmentIngestionWorkflow(
     voyageNumber: string
   ): Promise<WorkflowExecutionResult> {
     return this.callWebhook(
-      "shipment-status",
+      "globex-shipment-event",
       { voyage_number: voyageNumber },
       "wf_shipment_ingest_04",
       "WF-04: Shipment Tracking & Settlement"
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // Workflow 5: Dispute Escalation & Arbitration
+  // ──────────────────────────────────────────────────────────────
+  public async triggerDispute(
+    tradeId: string,
+    reason: string,
+    raisedBy: string = "BUYER"
+  ): Promise<WorkflowExecutionResult> {
+    return this.callWebhook(
+      "globex-dispute",
+      { trade_id: tradeId, reason, raised_by: raisedBy },
+      "wf_dispute_05",
+      "WF-05: On-Chain Dispute Escalation"
     );
   }
 
@@ -228,13 +283,14 @@ class N8nWorkflowService {
       note: this.isDev
         ? "Development mode — set VITE_N8N_WEBHOOK_URL to enable real n8n calls"
         : "Production mode — calling real n8n instance",
-      activeWorkflowsCount: 5,
+      activeWorkflowsCount: 6,
       workflows: [
-        { id: "wf_01", name: "Trade Intelligence Aggregator", trigger: "POST /analyze-trade", status: "ACTIVE" },
-        { id: "wf_02", name: "Document OCR & Verification", trigger: "POST /document-uploaded", status: "ACTIVE" },
-        { id: "wf_03", name: "Trade Creation + Escrow", trigger: "POST /create-trade", status: "ACTIVE" },
-        { id: "wf_04", name: "Shipment Polling & Settlement", trigger: "Scheduled 6h", status: "ACTIVE" },
-        { id: "wf_05", name: "Trade Data Ingestion", trigger: "Daily 02:00 UTC", status: "ACTIVE" },
+        { id: "wf_01", name: "Sequential Trade OS Master (v2)", trigger: "POST /globex-analyze-trade-v2", status: "ACTIVE" },
+        { id: "wf_02", name: "Test Trade Analysis Pipeline", trigger: "POST /globex-test-trade-v2", status: "ACTIVE" },
+        { id: "wf_03", name: "On-Chain Escrow Create & Fund", trigger: "POST /globex-escrow-create", status: "ACTIVE" },
+        { id: "wf_04", name: "Document Anchor & Verification", trigger: "POST /globex-doc-anchor", status: "ACTIVE" },
+        { id: "wf_05", name: "Shipment Event & Condition Gate", trigger: "POST /globex-shipment-event", status: "ACTIVE" },
+        { id: "wf_06", name: "On-Chain Dispute Escalation", trigger: "POST /globex-dispute", status: "ACTIVE" },
       ],
     };
   }

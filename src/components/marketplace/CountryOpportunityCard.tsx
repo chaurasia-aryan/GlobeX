@@ -125,8 +125,31 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
         </div>
       </div>
 
-      {/* ── Single top signal — whichever matters more, not both ─────── */}
-      {(pros?.length || cons?.length) && (
+      {/* ── Key Signal: AI Structured Pro / Con ──────────────────────── */}
+      {data.ai_synthesis ? (
+        <div className="space-y-1.5 pt-0.5">
+          {data.ai_synthesis.structured_pros && data.ai_synthesis.structured_pros.length > 0 && (
+            <div className="flex items-start gap-2 text-xs font-sans text-[var(--text-secondary)]">
+              <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[9px] font-mono font-bold uppercase tracking-wider flex-shrink-0">
+                {data.ai_synthesis.structured_pros[0].category}
+              </span>
+              <span className="line-clamp-1 font-medium text-emerald-300/90">
+                {data.ai_synthesis.structured_pros[0].title}
+              </span>
+            </div>
+          )}
+          {data.ai_synthesis.structured_cons && data.ai_synthesis.structured_cons.length > 0 && (
+            <div className="flex items-start gap-2 text-xs font-sans text-[var(--text-secondary)]">
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[9px] font-mono font-bold uppercase tracking-wider flex-shrink-0">
+                {data.ai_synthesis.structured_cons[0].category}
+              </span>
+              <span className="line-clamp-1 text-[var(--text-secondary)]">
+                {data.ai_synthesis.structured_cons[0].title}
+              </span>
+            </div>
+          )}
+        </div>
+      ) : (pros?.length || cons?.length) ? (
         <div className="flex items-start gap-2 text-xs font-sans text-[var(--text-secondary)]">
           {cons && cons.length > 0 ? (
             <>
@@ -140,7 +163,7 @@ export const CountryOpportunityCard: React.FC<CountryOpportunityCardProps> = ({
             </>
           )}
         </div>
-      )}
+      ) : null}
 
       {/* ── Card Footer CTA ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between pt-2 border-t border-[var(--hairline)] text-xs font-mono text-[var(--text-secondary)] group-hover:text-sky-600 transition-colors">

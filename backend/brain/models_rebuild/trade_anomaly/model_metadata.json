@@ -1,0 +1,26 @@
+{
+  "model_type": "XGBClassifier",
+  "num_features": [
+    "trade_value_usd",
+    "net_weight_kg",
+    "quantity",
+    "unit_value_usd_per_kg",
+    "price_dev_zscore"
+  ],
+  "cat_features": [
+    "reporter_iso3",
+    "partner_iso3",
+    "hs6",
+    "trade_flow"
+  ],
+  "best_params": {
+    "learning_rate": 0.03,
+    "max_depth": 6,
+    "n_estimators": 200,
+    "scale_pos_weight": 3,
+    "subsample": 1.0
+  },
+  "test_roc_auc": 0.9999875153716986,
+  "test_f1_score": 0.9924812030075187,
+  "rebuild_date": "2026-08-26"
+}

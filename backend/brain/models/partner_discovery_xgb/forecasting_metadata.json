@@ -1,0 +1,16 @@
+{
+  "model_type": "XGBQuantileRegressor",
+  "features": [
+    "lag_1y",
+    "lag_2y",
+    "lag_3y",
+    "rolling_mean_3y",
+    "rolling_std_3y",
+    "yoy_growth"
+  ],
+  "rmse": 250946851224.73544,
+  "mae": 70805874235.59096,
+  "r2": 0.4887232229673347,
+  "picp_pct": 91.09375,
+  "rebuild_date": "2026-08-26"
+}

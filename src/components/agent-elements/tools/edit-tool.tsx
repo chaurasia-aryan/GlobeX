@@ -1,5 +1,4 @@
 import React, { memo } from "react";
-import { MultiFileDiff, type FileContents } from "@pierre/diffs/react";
 import { TextShimmer } from "../text-shimmer";
 import type { TimelineStep, StepState } from "../types/timeline";
 import { useToolComplete } from "../hooks/use-tool-complete";
@@ -35,119 +34,35 @@ export function EditToolDiffCard({
   const fileName = step.filePath?.split("/").pop() ?? step.toolDetail;
   const hasFileName = Boolean(fileName);
   const isWrite = step.toolName === "Write";
-  const [themeType, setThemeType] = React.useState<"light" | "dark">("light");
   const [isExpanded, setIsExpanded] = React.useState(!isCollapsible);
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setThemeType(isDark ? "dark" : "light");
-    };
-    updateTheme();
-
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
 
   React.useEffect(() => {
     setIsExpanded(!isCollapsible);
   }, [isCollapsible]);
 
-  const diffFiles = React.useMemo(() => {
-    const fileLabel = fileName || "file";
-    const oldFromOutput =
-      typeof output?.old_content === "string" ? output.old_content : undefined;
-    const newFromOutput =
-      typeof output?.content === "string" ? output.content : undefined;
-    const oldFromInput =
-      !oldFromOutput && typeof input?.old_string === "string"
-        ? input.old_string
-        : undefined;
-    const newFromInput =
-      !newFromOutput && typeof input?.new_string === "string"
-        ? input.new_string
-        : undefined;
+  const diffLines = React.useMemo(() => {
+    if (step.diffLines && step.diffLines.length > 0) {
+      return step.diffLines;
+    }
+    const oldContent = (input?.old_string || output?.old_content || "") as string;
+    const newContent = (input?.new_string || output?.content || "") as string;
 
-    const fallbackOld = step.diffLines
-      ?.filter((line) => line.type !== "add")
-      .map((line) => line.content)
-      .join("\n");
-    const fallbackNew = step.diffLines
-      ?.filter((line) => line.type !== "remove")
-      .map((line) => line.content)
-      .join("\n");
-
-    const oldContents = oldFromInput ?? oldFromOutput ?? fallbackOld ?? "";
-    const newContents = newFromInput ?? newFromOutput ?? fallbackNew ?? "";
-
-    if (!oldContents && !newContents) return null;
-
-    const oldFile: FileContents = {
-      name: fileLabel,
-      contents: oldContents,
-    };
-    const newFile: FileContents = {
-      name: fileLabel,
-      contents: newContents,
-    };
-
-    return { oldFile, newFile };
-  }, [fileName, input, output, step.diffLines]);
-
-  const diffCssVars = React.useMemo(
-    () =>
-      themeType === "dark"
-        ? ({
-            "--diffs-bg": "#000",
-            "--diffs-bg-buffer-override": "#000",
-            "--diffs-bg-context-override": "#000",
-            "--diffs-bg-hover-override": "#0a0a0a",
-            "--diffs-bg-separator-override": "#0f0f0f",
-          } as React.CSSProperties)
-        : undefined,
-    [themeType],
-  );
-
-  const diffUnsafeCss = React.useMemo(
-    () =>
-      themeType === "dark"
-        ? `
-[data-diff],
-[data-file],
-[data-diffs-header],
-[data-error-wrapper],
-[data-virtualizer-buffer] {
-  --diffs-bg: #000;
-  --diffs-bg-buffer-override: #000;
-  --diffs-bg-context-override: #000;
-  --diffs-bg-hover-override: #0a0a0a;
-  --diffs-bg-separator-override: #0f0f0f;
-}
-`
-        : undefined,
-    [themeType],
-  );
-
-  const diffClassName =
-    "an-edit-diff dark:bg-black dark:[--diffs-bg:#000] dark:[--diffs-bg-buffer-override:#000] dark:[--diffs-bg-context-override:#000] dark:[--diffs-bg-hover-override:#0a0a0a] dark:[--diffs-bg-separator-override:#0f0f0f]";
+    const lines: Array<{ type: "add" | "remove" | "context"; content: string }> = [];
+    if (oldContent) {
+      oldContent.split("\n").slice(0, 8).forEach((l) => lines.push({ type: "remove", content: l }));
+    }
+    if (newContent) {
+      newContent.split("\n").slice(0, 8).forEach((l) => lines.push({ type: "add", content: l }));
+    }
+    return lines;
+  }, [step.diffLines, input, output]);
 
   return (
-    <div className="an-edit-tool-card rounded-an-tool-border-radius border border-an-tool-border-color bg-an-tool-background dark:bg-black overflow-hidden">
+    <div className="an-edit-tool-card rounded-an-tool-border-radius border border-an-tool-border-color bg-an-tool-background dark:bg-black overflow-hidden select-none">
       <div
         className={
-          // Explicit bg-an-tool-background so the header keeps its light-grey
-          // contrast in dark mode — the wrapper forces `dark:bg-black` for the
-          // diff body, which would otherwise bleed into the header.
           "flex items-center justify-between px-2.5 py-0 h-7 bg-an-tool-background " +
-          (isPending && !diffFiles
+          (isPending && diffLines.length === 0
             ? ""
             : "border-b border-an-tool-border-color")
         }
@@ -156,7 +71,7 @@ export function EditToolDiffCard({
           {hasFileName && (
             <FileExtIcon filename={fileName} className="w-3 h-3 shrink-0" />
           )}
-          {isPending && !diffFiles ? (
+          {isPending && diffLines.length === 0 ? (
             <TextShimmer as="span" duration={1.2} className="text-xs">
               Generating...
             </TextShimmer>
@@ -177,10 +92,10 @@ export function EditToolDiffCard({
                 key={token}
                 className={
                   token.startsWith("+")
-                    ? "text-an-diff-added-text"
+                    ? "text-emerald-500 font-bold"
                     : token.startsWith("-")
-                      ? "text-an-diff-removed-text"
-                      : undefined
+                    ? "text-rose-500 font-bold"
+                    : undefined
                 }
               >
                 {token}
@@ -189,58 +104,29 @@ export function EditToolDiffCard({
           </span>
         )}
       </div>
-      {diffFiles ? (
-        <div className={`${diffClassName} text-[12px]`} style={diffCssVars}>
-          <div
-            className={isCollapsible ? "group/edit-diff relative" : "relative"}
-          >
+
+      {diffLines.length > 0 ? (
+        <div className="p-2.5 font-mono text-[11px] leading-relaxed max-h-64 overflow-y-auto bg-black/40 space-y-0.5">
+          {diffLines.map((line, idx) => (
             <div
+              key={idx}
               className={
-                isCollapsible && !isExpanded
-                  ? "max-h-[260px] overflow-hidden"
-                  : undefined
+                line.type === "add"
+                  ? "text-emerald-400 bg-emerald-950/20 px-1 rounded"
+                  : line.type === "remove"
+                  ? "text-rose-400 bg-rose-950/20 px-1 rounded"
+                  : "text-slate-400 px-1"
               }
             >
-              <MultiFileDiff
-                key={themeType}
-                oldFile={diffFiles.oldFile}
-                newFile={diffFiles.newFile}
-                className={diffClassName}
-                style={diffCssVars}
-                options={{
-                  theme: { dark: "github-dark", light: "github-light" },
-                  themeType,
-                  unsafeCSS: diffUnsafeCss,
-                  diffStyle: "unified",
-                  disableFileHeader: true,
-                }}
-              />
+              <span className="select-none text-slate-500 inline-block w-4">
+                {line.type === "add" ? "+" : line.type === "remove" ? "-" : " "}
+              </span>
+              {line.content}
             </div>
-            {isCollapsible && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                  aria-label={isExpanded ? "Hide" : "Show more"}
-                  className={
-                    "group absolute inset-x-0 bottom-0 h-16 flex items-end justify-center pb-2 text-muted-foreground " +
-                    (isExpanded
-                      ? "bg-transparent"
-                      : "bg-linear-to-b from-transparent to-background")
-                  }
-                >
-                  <IconChevronDown
-                    className={
-                      "w-4 h-4 transition-opacity duration-150 opacity-0 group-hover:opacity-100 " +
-                      (isExpanded ? "rotate-180" : "rotate-0")
-                    }
-                  />
-                </button>
-              </>
-            )}
-          </div>
+          ))}
         </div>
       ) : null}
+
       {approval && <ToolApprovalFooter isPending={isPending} {...approval} />}
     </div>
   );
@@ -291,3 +177,5 @@ export const EditTool = memo(function EditTool({
     />
   );
 });
+
+export default EditTool;

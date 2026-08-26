@@ -3,9 +3,9 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## GLOBEX AI - Production Trade Automation OS v2 (Sequential)\n\nSequential linear chain - 0 parallel branches.\nWebhooks: globex-analyze-trade-v2 / globex-test-trade-v2",
-        "height": 340,
-        "width": 500,
+        "content": "## GLOBEX AI - Production Trade Automation OS v2 (Sequential)\n\nSequential linear chain - 0 parallel branches (one IF gate before escrow-adjacent steps).\nWebhooks: globex-analyze-trade-v2 / globex-test-trade-v2\n\n2026-08-26 update: added RAG Query v2 (Ollama-synthesized answers), Sanctions\nScreen, and a real Transaction Gate that BLOCKS the chain before counterparty\nmatch / report generation / escrow if the gate returns BLOCKED. Previously\nthese three compliance-hardening endpoints existed on the backend but were\nnever called by this workflow.",
+        "height": 420,
+        "width": 560,
         "color": 4
       },
       "id": "sticky-v2-seq",
@@ -53,7 +53,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validate and normalize all incoming trade inputs\nvar body = $json.body || $json;\nvar product = body.product || body.productName || body.product_name || body.title || body.commodity || 'Basmati Rice';\nvar origin = String(body.origin_country || body.originCountry || body.origin || 'IND').toUpperCase().slice(0,3);\nvar destination = String(body.destination_country || body.destinationCountry || body.destination || 'ARE').toUpperCase().slice(0,3);\nvar quantity_kg = Number(body.quantity_kg || body.quantity || body.quantityKg || 50000);\nif (quantity_kg <= 0) quantity_kg = 50000;\nvar target_price_usd = Number(body.target_price_usd || body.targetPriceUSD || body.unitPriceUsd || 1100);\nvar trade_flow = body.trade_flow || body.tradeFlow || 'Export';\nvar regime = body.regime || 'balanced';\nvar certifications = body.certifications || [];\nvar correlation_id = 'globex_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);\nreturn [{ json: { product: product, origin_country: origin, destination_country: destination, quantity_kg: quantity_kg, target_price_usd: target_price_usd, trade_flow: trade_flow, regime: regime, certifications: certifications, correlation_id: correlation_id } }];"
+        "jsCode": "// Validate and normalize all incoming trade inputs\nvar body = $json.body || $json;\nvar product = body.product || body.productName || body.product_name || body.title || body.commodity || 'Basmati Rice';\nvar origin = String(body.origin_country || body.originCountry || body.origin || 'IND').toUpperCase().slice(0,3);\nvar destination = String(body.destination_country || body.destinationCountry || body.destination || 'ARE').toUpperCase().slice(0,3);\nvar quantity_kg = Number(body.quantity_kg || body.quantity || body.quantityKg || 50000);\nif (quantity_kg <= 0) quantity_kg = 50000;\nvar target_price_usd = Number(body.target_price_usd || body.targetPriceUSD || body.unitPriceUsd || 1100);\nvar trade_flow = body.trade_flow || body.tradeFlow || 'Export';\nvar regime = body.regime || 'balanced';\nvar certifications = body.certifications || [];\nvar exporter_name = body.exporter_name || body.exporterName || 'Unspecified Exporter';\nvar importer_name = body.importer_name || body.importerName || 'Unspecified Importer';\nvar trade_id = body.trade_id || body.tradeId || ('AUTO-' + Date.now());\n// Only run the Ollama-backed LLM synthesis node when the caller actually\n// wants a narrative answer. Defaults to true (matches prior behavior); pass\n// use_llm:false to skip the ~10-15s local-LLM round trip entirely when the\n// caller only needs structured data (tariffs, sanctions, gate decision).\nvar use_llm = body.use_llm !== undefined ? Boolean(body.use_llm) : true;\nvar correlation_id = 'globex_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);\nreturn [{ json: { product: product, origin_country: origin, destination_country: destination, quantity_kg: quantity_kg, target_price_usd: target_price_usd, trade_flow: trade_flow, regime: regime, certifications: certifications, exporter_name: exporter_name, importer_name: importer_name, trade_id: trade_id, use_llm: use_llm, correlation_id: correlation_id } }];"
       },
       "id": "code-validate",
       "name": "Code - Validate + Normalize Input",
@@ -130,7 +130,7 @@
         "url": "http://host.docker.internal:8000/compliance/rag-analyze",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"hs6\": {{ Number($('HTTP - HS Classifier').item.json.hs6 || 100630) }},\n  \"origin_country\": \"{{ $('Code - Validate + Normalize Input').item.json.origin_country }}\",\n  \"destination_country\": \"{{ $('Code - Validate + Normalize Input').item.json.destination_country }}\",\n  \"trade_value_usd\": {{ $('Code - Validate + Normalize Input').item.json.quantity_kg * ($('Code - Validate + Normalize Input').item.json.target_price_usd / 1000) }}\n}",
+        "jsonBody": "={\n  \"hs6\": {{ Number($('HTTP - HS Classifier').item.json.hs6 || 100630) }},\n  \"origin_country\": \"{{ $('Code - Validate + Normalize Input').item.json.origin_country }}\",\n  \"destination_country\": \"{{ $('Code - Validate + Normalize Input').item.json.destination_country }}\",\n  \"trade_value_usd\": {{ $('Code - Validate + Normalize Input').item.json.quantity_kg * ($('Code - Validate + Normalize Input').item.json.target_price_usd / 1000) }},\n  \"skip_synthesis\": true\n}",
         "options": {
           "timeout": 20000
         }
@@ -142,6 +142,157 @@
       "position": [
         1240,
         300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/v1/rag/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"What are the tariff, non-tariff, and documentation requirements for exporting HS6 {{ Number($('HTTP - HS Classifier').item.json.hs6 || 100630) }} from {{ $('Code - Validate + Normalize Input').item.json.origin_country }} to {{ $('Code - Validate + Normalize Input').item.json.destination_country }}?\",\n  \"origin_country\": \"{{ $('Code - Validate + Normalize Input').item.json.origin_country }}\",\n  \"destination_country\": \"{{ $('Code - Validate + Normalize Input').item.json.destination_country }}\",\n  \"hs6\": {{ Number($('HTTP - HS Classifier').item.json.hs6 || 100630) }},\n  \"top_k\": 6\n}",
+        "options": {
+          "timeout": 40000
+        }
+      },
+      "id": "http-rag-v2",
+      "name": "HTTP - RAG Query v2 + Ollama Synthesis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1720,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "use-llm-cond",
+              "leftValue": "={{ $('Code - Validate + Normalize Input').item.json.use_llm }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-use-llm",
+      "name": "IF - Use LLM?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// use_llm=false for this run — skip the Ollama round trip entirely and\n// return a placeholder in the exact shape /api/v1/rag/query would, so\n// downstream nodes (Aggregate ML Synthesis) don't need to special-case it.\nreturn [{\n  json: {\n    status: 'SKIPPED',\n    passages: [],\n    structured_evidence: {},\n    sources_cited: [],\n    synthesized_answer: null,\n    synthesis_available: false,\n    synthesis_model: null,\n    synthesis_unavailable_reason: 'LLM synthesis skipped — use_llm=false for this run.'\n  }\n}];"
+      },
+      "id": "code-skip-llm",
+      "name": "Code - Skip RAG v2 (LLM Not Requested)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1720,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/compliance/sanctions-screen",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"exporter_name\": \"{{ $('Code - Validate + Normalize Input').item.json.exporter_name }}\",\n  \"importer_name\": \"{{ $('Code - Validate + Normalize Input').item.json.importer_name }}\"\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "http-sanctions",
+      "name": "HTTP - Sanctions Screen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1720,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/compliance/transaction-gate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"trade_id\": \"{{ $('Code - Validate + Normalize Input').item.json.trade_id }}\",\n  \"hs6\": \"{{ Number($('HTTP - HS Classifier').item.json.hs6 || 100630) }}\",\n  \"origin_country\": \"{{ $('Code - Validate + Normalize Input').item.json.origin_country }}\",\n  \"destination_country\": \"{{ $('Code - Validate + Normalize Input').item.json.destination_country }}\",\n  \"exporter_name\": \"{{ $('Code - Validate + Normalize Input').item.json.exporter_name }}\",\n  \"importer_name\": \"{{ $('Code - Validate + Normalize Input').item.json.importer_name }}\"\n}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "http-gate",
+      "name": "HTTP - Transaction Gate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "gate-blocked-cond",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "BLOCKED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-gate-blocked",
+      "name": "IF - Gate Blocked?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The transaction gate returned BLOCKED — stop before counterparty match,\n// report generation, or any escrow-adjacent step. This is the blocking gate\n// that was previously absent from this workflow (repository_audit.md flagged\n// it explicitly: \"no gate/blocking node found\").\nvar inp = $('Code - Validate + Normalize Input').item.json;\nvar gate = $('HTTP - Transaction Gate').item.json;\nreturn [{\n  json: {\n    status: 'BLOCKED',\n    execution_id: 'n8n_exec_' + inp.correlation_id,\n    workflow: {\n      name: 'GlobeXAI Production Trade Automation OS v2 Sequential',\n      nodes_executed: 8,\n      duration_ms: Date.now() % 100000\n    },\n    input: inp,\n    transaction_gate: gate,\n    reasons: gate.reasons || [],\n    message: 'Transaction blocked by the compliance gate before proceeding to counterparty match, report generation, or escrow. See transaction_gate.reasons for the specific restricted-party or compliance finding.',\n    provenance: [\n      'POST /predict/hs-code',\n      'POST /predict/market-opportunity',\n      'POST /api/trade-anomaly/predict',\n      'POST /compliance/rag-analyze',\n      'POST /api/v1/rag/query',\n      'POST /compliance/sanctions-screen',\n      'POST /compliance/transaction-gate'\n    ],\n    executed_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "code-blocked-response",
+      "name": "Code - Build Blocked Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2440,
+        60
       ]
     },
     {
@@ -160,8 +311,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1480,
-        300
+        2440,
+        260
       ]
     },
     {
@@ -180,21 +331,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1720,
-        300
+        2680,
+        260
       ]
     },
     {
       "parameters": {
-        "jsCode": "var inp  = $('Code - Validate + Normalize Input').item.json;\nvar hs   = $('HTTP - HS Classifier').item.json;\nvar xgb  = $('HTTP - XGBoost Demand Forecaster').item.json;\nvar anom = $('HTTP - IsolationForest Anomaly Engine').item.json;\nvar rag  = $('HTTP - Compliance RAG Retriever').item.json;\nvar cp   = $('HTTP - Counterparty Match + Sanctions').item.json;\nvar rpt  = $('HTTP - Multi-Model Report Synthesizer').item.json;\n\nvar stages = {\n  HS_CLASSIFIER:     hs,\n  DEMAND_FORECASTER: xgb,\n  ANOMALY_ENGINE:    anom,\n  COMPLIANCE_RAG:    rag,\n  COUNTERPARTY:      cp,\n  REPORT_SYNTHESIS:  rpt\n};\n\nvar errors = [];\nvar keys = Object.keys(stages);\nfor (var i = 0; i < keys.length; i++) {\n  var stage = keys[i];\n  var data = stages[stage];\n  if (data && (data.detail || data.error)) {\n    errors.push({\n      status: 'FAILED',\n      engine: 'n8n',\n      failed_stage: stage,\n      error: data.detail || data.error,\n      execution_id: 'n8n_exec_' + inp.correlation_id,\n      retryable: true\n    });\n  }\n}\n\nvar overallStatus = errors.length === 0 ? 'SUCCESS' : (errors.length < keys.length ? 'PARTIAL' : 'FAILED');\n\nreturn [{\n  json: {\n    status: overallStatus,\n    execution_id: 'n8n_exec_' + inp.correlation_id,\n    workflow: {\n      name: 'GlobeXAI Production Trade Automation OS v2 Sequential',\n      nodes_executed: 7,\n      duration_ms: Date.now() % 100000\n    },\n    input: inp,\n    results: {\n      hs_classification: hs,\n      market_opportunity: {\n        engine: 'XGBoost Quantile Residual Forecaster Q10/50/90',\n        top_recommendations: xgb.top_recommendations || [],\n        shap_attribution: xgb.shap_attribution || null,\n        raw: xgb\n      },\n      anomaly_risk: anom,\n      compliance_rag: rag,\n      counterparty: cp,\n      report: rpt\n    },\n    provenance: [\n      'POST /predict/hs-code',\n      'POST /predict/market-opportunity',\n      'POST /api/trade-anomaly/predict',\n      'POST /compliance/rag-analyze',\n      'POST /predict/counterparty-match',\n      'POST /api/v1/trade/generate-report'\n    ],\n    errors: errors,\n    executed_at: new Date().toISOString()\n  }\n}];"
+        "jsCode": "var inp  = $('Code - Validate + Normalize Input').item.json;\nvar hs   = $('HTTP - HS Classifier').item.json;\nvar xgb  = $('HTTP - XGBoost Demand Forecaster').item.json;\nvar anom = $('HTTP - IsolationForest Anomaly Engine').item.json;\nvar rag  = $('HTTP - Compliance RAG Retriever').item.json;\n// Only one of these two nodes actually ran this execution (gated by\n// IF - Use LLM?); referencing the one that didn't run throws in n8n, so\n// fall back to whichever is actually available.\nvar ragV2;\ntry { ragV2 = $('HTTP - RAG Query v2 + Ollama Synthesis').item.json; } catch (e) { ragV2 = $('Code - Skip RAG v2 (LLM Not Requested)').item.json; }\nvar sanctions = $('HTTP - Sanctions Screen').item.json;\nvar gate = $('HTTP - Transaction Gate').item.json;\nvar cp   = $('HTTP - Counterparty Match + Sanctions').item.json;\nvar rpt  = $('HTTP - Multi-Model Report Synthesizer').item.json;\n\nvar stages = {\n  HS_CLASSIFIER:     hs,\n  DEMAND_FORECASTER: xgb,\n  ANOMALY_ENGINE:    anom,\n  COMPLIANCE_RAG:    rag,\n  RAG_QUERY_V2:      ragV2,\n  SANCTIONS_SCREEN:  sanctions,\n  TRANSACTION_GATE:  gate,\n  COUNTERPARTY:      cp,\n  REPORT_SYNTHESIS:  rpt\n};\n\nvar errors = [];\nvar keys = Object.keys(stages);\nfor (var i = 0; i < keys.length; i++) {\n  var stage = keys[i];\n  var data = stages[stage];\n  if (data && (data.detail || data.error)) {\n    errors.push({\n      status: 'FAILED',\n      engine: 'n8n',\n      failed_stage: stage,\n      error: data.detail || data.error,\n      execution_id: 'n8n_exec_' + inp.correlation_id,\n      retryable: true\n    });\n  }\n}\n\nvar overallStatus = errors.length === 0 ? 'SUCCESS' : (errors.length < keys.length ? 'PARTIAL' : 'FAILED');\n\nreturn [{\n  json: {\n    status: overallStatus,\n    execution_id: 'n8n_exec_' + inp.correlation_id,\n    workflow: {\n      name: 'GlobeXAI Production Trade Automation OS v2 Sequential',\n      nodes_executed: 9,\n      duration_ms: Date.now() % 100000\n    },\n    input: inp,\n    results: {\n      hs_classification: hs,\n      market_opportunity: {\n        engine: 'XGBoost Quantile Residual Forecaster Q10/50/90 + LLM Strategist',\n        top_recommendations: xgb.top_recommendations || [],\n        shap_attribution: xgb.shap_attribution || null,\n        top_corridor_ai_synthesis: (xgb.top_recommendations && xgb.top_recommendations[0] && xgb.top_recommendations[0].ai_synthesis) ? xgb.top_recommendations[0].ai_synthesis : null,\n        raw: xgb\n      },\n      anomaly_risk: anom,\n      compliance_rag: rag,\n      rag_query_v2: {\n        synthesized_answer: ragV2.synthesized_answer || null,\n        synthesis_available: ragV2.synthesis_available || false,\n        synthesis_model: ragV2.synthesis_model || null,\n        passages: ragV2.passages || [],\n        raw: ragV2\n      },\n      sanctions_screen: sanctions,\n      transaction_gate: gate,\n      counterparty: cp,\n      report: rpt\n    },\n    provenance: [\n      'POST /predict/hs-code',\n      'POST /predict/market-opportunity',\n      'POST /api/trade-anomaly/predict',\n      'POST /compliance/rag-analyze',\n      'POST /api/v1/rag/query',\n      'POST /compliance/sanctions-screen',\n      'POST /compliance/transaction-gate',\n      'POST /predict/counterparty-match',\n      'POST /api/v1/trade/generate-report'\n    ],\n    errors: errors,\n    executed_at: new Date().toISOString()\n  }\n}];"
       },
       "id": "code-aggregate",
       "name": "Code - Aggregate ML Synthesis",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1960,
-        300
+        2920,
+        260
       ]
     },
     {
@@ -206,8 +357,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        2200,
-        300
+        3160,
+        160
       ]
     }
   ],
@@ -282,7 +433,98 @@
       "main": [
         [
           {
+            "node": "IF - Use LLM?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Use LLM?": {
+      "main": [
+        [
+          {
+            "node": "HTTP - RAG Query v2 + Ollama Synthesis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code - Skip RAG v2 (LLM Not Requested)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - RAG Query v2 + Ollama Synthesis": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Sanctions Screen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Skip RAG v2 (LLM Not Requested)": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Sanctions Screen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Sanctions Screen": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Transaction Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Transaction Gate": {
+      "main": [
+        [
+          {
+            "node": "IF - Gate Blocked?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Gate Blocked?": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Blocked Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "HTTP - Counterparty Match + Sanctions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Blocked Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }

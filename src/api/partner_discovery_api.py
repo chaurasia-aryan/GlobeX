@@ -1,4 +1,4 @@
-﻿"""
+"""
 GlobeXAI Trade OS — Partner Discovery / Market Opportunity Router
 Endpoint: POST /predict/market-opportunity
 
@@ -151,3 +151,27 @@ async def market_opportunity(req: MarketOpportunityRequest) -> Dict[str, Any]:
     result["analysis_id"] = analysis_id
 
     return result
+
+
+class SynthesisRequest(BaseModel):
+    insight_data: Dict[str, Any] = Field(..., description="DestinationCountryInsight object to synthesize")
+
+
+@router.post(
+    "/predict/market-opportunity/synthesize-pros-cons",
+    summary="Synthesize & Structure Destination Pros & Cons via LLM",
+    description="Uses LLM (Ollama or deterministic strategist) to transform quantitative trade metrics into structured, categorized Pros, Cons, Executive Verdict, and Negotiation Leverage."
+)
+async def synthesize_country_pros_cons_endpoint(req: SynthesisRequest) -> Dict[str, Any]:
+    from src.services.market_opportunity_synthesizer import synthesize_market_pros_cons
+
+    loop = asyncio.get_event_loop()
+    try:
+        res = await loop.run_in_executor(None, synthesize_market_pros_cons, req.insight_data)
+        return {
+            "status": "success",
+            "synthesis": res.model_dump()
+        }
+    except Exception as exc:
+        logger.exception("Synthesis endpoint error: %s", exc)
+        raise HTTPException(status_code=500, detail={"status": "error", "message": str(exc)})
