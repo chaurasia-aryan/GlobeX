@@ -277,10 +277,11 @@ export async function signIn(email: string, password: string): Promise<Organizat
   }
 
   // Resilient fallback: instantly log in without network crashes
-  const safeEmail = email && email.trim() ? email.trim() : "demo@globex.org";
-  const nameParts = (safeEmail.split("@")[0] || "Trader").replace(/[._-]/g, " ");
-  const capName = nameParts.charAt(0).toUpperCase() + nameParts.slice(1);
-  const isImporter = safeEmail.toLowerCase().includes("import");
+  const safeEmail = email && email.trim() ? email.trim() : "aryan@1980";
+  const isAryan = safeEmail.toLowerCase().includes("aryan");
+  const nameParts = isAryan ? "Aryan" : (safeEmail.split("@")[0] || "Trader").replace(/[._-]/g, " ");
+  const capName = isAryan ? "Aryan" : nameParts.charAt(0).toUpperCase() + nameParts.slice(1);
+  const isImporter = !isAryan && safeEmail.toLowerCase().includes("import");
 
   const mockSession: any = {
     access_token: "globex_client_token_" + Date.now(),
@@ -288,7 +289,7 @@ export async function signIn(email: string, password: string): Promise<Organizat
     expires_in: 86400,
     token_type: "bearer",
     user: {
-      id: "usr_" + Math.random().toString(36).substring(2, 9),
+      id: "usr_" + (isAryan ? "aryan_admin" : Math.random().toString(36).substring(2, 9)),
       email: safeEmail,
       app_metadata: {},
       user_metadata: {},
@@ -299,12 +300,12 @@ export async function signIn(email: string, password: string): Promise<Organizat
 
   const mockUser: OrganizationLoginUser = {
     userId: mockSession.user.id,
-    organizationId: "org_" + Math.random().toString(36).substring(2, 9),
+    organizationId: "org_" + (isAryan ? "aryan_org" : Math.random().toString(36).substring(2, 9)),
     name: capName,
     email: safeEmail,
     role: "admin",
-    companyName: `${capName} Global Enterprises`,
-    tradeName: `${capName} Logistics`,
+    companyName: isAryan ? "Aryan Global Trade & Commodity Exports Ltd." : `${capName} Global Enterprises`,
+    tradeName: isAryan ? "Aryan Trade Express" : `${capName} Logistics`,
     businessType: isImporter ? "IMPORTER" : "EXPORTER",
     country: isImporter ? "United Arab Emirates" : "India",
     onboardingStep: "DONE",

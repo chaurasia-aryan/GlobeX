@@ -182,11 +182,28 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
               </div>
 
               {/* ⚡ Quick 1-Click Demo Profiles */}
-              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Zap className="w-3 h-3" />
-                  Instant Portfolio Demo Access
-                </span>
+              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                    <Zap className="w-3 h-3" />
+                    Instant Portfolio Sample Access
+                  </span>
+                  <span className="text-[9px] font-mono text-slate-500">1-Click Auto Login</span>
+                </div>
+
+                {/* Primary Aryan Credential Button */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoSignIn("aryan@1980")}
+                  className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-mono font-bold text-xs transition flex items-center justify-between shadow-md cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>👑</span>
+                    <span>Sign In as Aryan</span>
+                  </span>
+                  <span className="text-[10px] bg-black/20 px-2 py-0.5 rounded font-mono">aryan@1980</span>
+                </button>
+
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -207,24 +224,30 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
 
               <form onSubmit={handleSignInSubmit} className="space-y-3 text-xs">
                 <div className="space-y-1">
-                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
-                    <Mail className="w-3 h-3 text-[var(--text-tertiary)]" />
-                    <span>Email</span>
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center justify-between font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <Mail className="w-3 h-3 text-[var(--text-tertiary)]" />
+                      <span>Username / Email</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400">Sample: aryan@1980</span>
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@organization.com"
+                    placeholder="aryan@1980 or name@organization.com"
                     className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center gap-1.5 font-medium">
-                    <Lock className="w-3 h-3 text-[var(--text-tertiary)]" />
-                    <span>Password</span>
+                  <label className="text-[var(--text-secondary)] text-[11px] flex items-center justify-between font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="w-3 h-3 text-[var(--text-tertiary)]" />
+                      <span>Password</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500">Sample: password123</span>
                   </label>
                   <div className="relative">
                     <input
