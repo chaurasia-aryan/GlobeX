@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthContext } from "@/context/AuthContext";
 import SpecularButton from "@/components/ui/SpecularButton";
-import { Globe2, Building2, Mail, Lock, Eye, EyeOff, User, ShieldCheck, AlertCircle, Zap } from "lucide-react";
+import { Globe2, Building2, Mail, Lock, Eye, EyeOff, User, ShieldCheck, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AuthAccordionProps {
@@ -67,22 +67,6 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
     setIsSubmitting(true);
     try {
       await signIn(email, password);
-      if (onSuccess) onSuccess();
-      else navigate("/home");
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Sign in failed.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleQuickDemoSignIn = async (demoEmail: string) => {
-    setFormError(null);
-    setIsSubmitting(true);
-    try {
-      setEmail(demoEmail);
-      setPassword("demo1234");
-      await signIn(demoEmail, "demo1234");
       if (onSuccess) onSuccess();
       else navigate("/home");
     } catch (err) {
@@ -181,44 +165,24 @@ export const AuthAccordion: React.FC<AuthAccordionProps> = ({
                 </p>
               </div>
 
-              {/* ⚡ Quick 1-Click Demo Profiles */}
-              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-2.5">
+              {/* 🔑 Sample Credentials Display Card */}
+              <div className="p-3.5 rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/20 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                    <Zap className="w-3 h-3" />
-                    Instant Portfolio Sample Access
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Demo Login Credentials
                   </span>
-                  <span className="text-[9px] font-mono text-slate-500">1-Click Auto Login</span>
+                  <span className="text-[9px] font-mono text-[var(--text-tertiary)] bg-emerald-500/10 px-2 py-0.5 rounded-md">Verified Access</span>
                 </div>
-
-                {/* Primary Aryan Credential Button */}
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoSignIn("aryan@1980")}
-                  className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-mono font-bold text-xs transition flex items-center justify-between shadow-md cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span>👑</span>
-                    <span>Sign In as Aryan</span>
-                  </span>
-                  <span className="text-[10px] bg-black/20 px-2 py-0.5 rounded font-mono">aryan@1980</span>
-                </button>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoSignIn("exporter.demo@globex.org")}
-                    className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-emerald-50 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[11px] font-mono font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow-sm"
-                  >
-                    🇮🇳 Exporter Org
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoSignIn("importer.uae@globex.ae")}
-                    className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-sky-50 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[11px] font-mono font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow-sm"
-                  >
-                    🇦🇪 Importer Org
-                  </button>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div className="p-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)]">
+                    <div className="text-[10px] text-[var(--text-tertiary)]">User ID / Username</div>
+                    <div className="font-bold text-emerald-600 dark:text-emerald-400 select-all tracking-wide">aryan@1980</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)]">
+                    <div className="text-[10px] text-[var(--text-tertiary)]">Password</div>
+                    <div className="font-bold text-[var(--text-primary)] select-all tracking-wide">password123</div>
+                  </div>
                 </div>
               </div>
 
