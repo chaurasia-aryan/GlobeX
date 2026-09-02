@@ -135,7 +135,9 @@ export const ExportDiscoverPage: React.FC = () => {
       .finally(() => setPartnerMatchesLoading(false));
   };
 
-  const allCountries = result?.top_recommendations || [];
+  const allCountries = (result?.top_recommendations && result.top_recommendations.length > 0)
+    ? result.top_recommendations
+    : ((result as any)?.destinations || []);
   const visibleCountries = allCountries.slice(0, visibleCount);
   const hasMoreToLoad = visibleCount < allCountries.length;
 
