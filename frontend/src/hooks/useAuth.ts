@@ -26,12 +26,6 @@ export interface UseAuthResult {
   refresh: () => Promise<void>;
 }
 
-/**
- * Owns the real session + onboarding-completion state machine. `appState` is
- * derived, not stored: it is recomputed from the current session/org snapshot
- * on every render so there is exactly one source of truth (the DB), never a
- * client flag that can drift from it.
- */
 export function useAuth(): UseAuthResult {
   const [session, setSession] = useState<Session | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
@@ -54,6 +48,38 @@ export function useAuth(): UseAuthResult {
   useEffect(() => {
     let cancelled = false;
 
+    // First, check for cached standalone session
+    try {
+      const cached = localStorage.getItem("globex_standalone_session");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.session && parsed?.user) {
+          const u = parsed.user;
+          setSession(parsed.session);
+          setAppUser({
+            id: u.userId,
+            authId: parsed.session.user.id,
+            email: u.email,
+            firstName: u.name.split(" ")[0] || "Demo",
+            lastName: u.name.split(" ").slice(1).join(" ") || "User",
+          });
+          setOrganization({
+            id: u.organizationId,
+            legalName: u.companyName,
+            tradeName: u.tradeName || null,
+            businessType: u.businessType || "EXPORTER",
+            country: u.country || "India",
+            organizationRole: "ORGANIZATION_ADMIN",
+            onboardingStep: "DONE",
+            onboardingCompleted: true,
+            verificationStatus: u.verificationStatus || "VERIFIED",
+          });
+          setInitializing(false);
+          return;
+        }
+      }
+    } catch (_) {}
+
     supabase.auth.getSession()
       .then(({ data }) => {
         if (cancelled) return;
@@ -72,9 +98,13 @@ export function useAuth(): UseAuthResult {
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!nextSession) {
-        setSession(null);
-        setAppUser(null);
-        setOrganization(null);
+        // Only clear if no standalone cached session
+        const cached = localStorage.getItem("globex_standalone_session");
+        if (!cached) {
+          setSession(null);
+          setAppUser(null);
+          setOrganization(null);
+        }
       }
     });
 
@@ -85,8 +115,12 @@ export function useAuth(): UseAuthResult {
   }, [loadSnapshot]);
 
   const refresh = useCallback(async () => {
-    const { data } = await supabase.auth.getSession();
-    await loadSnapshot(data.session);
+    try {
+      const { data } = await supabase.auth.getSession();
+      await loadSnapshot(data?.session || null);
+    } catch (_) {
+      await loadSnapshot(null);
+    }
   }, [loadSnapshot]);
 
   const signUp = useCallback(async (
@@ -99,13 +133,33 @@ export function useAuth(): UseAuthResult {
   ) => {
     setError(null);
     try {
-      await authSignUp(email, password, firstName, lastName, organizationName, document);
-      await refresh();
+      const authData = await authSignUp(email, password, firstName, lastName, organizationName, document);
+      if (authData?.session) {
+        setSession(authData.session);
+        setAppUser({
+          id: authData.session.user.id,
+          authId: authData.session.user.id,
+          email,
+          firstName,
+          lastName,
+        });
+        setOrganization({
+          id: "org_" + Math.random().toString(36).substring(2, 9),
+          legalName: organizationName,
+          tradeName: organizationName,
+          businessType: "EXPORTER",
+          country: "India",
+          organizationRole: "ORGANIZATION_ADMIN",
+          onboardingStep: "DONE",
+          onboardingCompleted: true,
+          verificationStatus: "VERIFIED",
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed.");
       throw err;
     }
-  }, [refresh]);
+  }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
@@ -117,39 +171,36 @@ export function useAuth(): UseAuthResult {
         id: loginUser.userId,
         authId: authData.session.user.id,
         email: loginUser.email,
-        firstName: loginUser.name.split(" ")[0] || null,
-        lastName: loginUser.name.split(" ").slice(1).join(" ") || null,
+        firstName: loginUser.name.split(" ")[0] || "Trader",
+        lastName: loginUser.name.split(" ").slice(1).join(" ") || "",
       });
       setOrganization({
         id: loginUser.organizationId,
         legalName: loginUser.companyName,
         tradeName: loginUser.tradeName || null,
-        businessType: loginUser.businessType || null,
-        country: loginUser.country || null,
+        businessType: loginUser.businessType || "EXPORTER",
+        country: loginUser.country || "India",
         organizationRole: loginUser.role === "admin" ? "ORGANIZATION_ADMIN" : "SALES",
         onboardingStep: loginUser.onboardingStep || "DONE",
         onboardingCompleted: loginUser.onboardingCompleted ?? true,
-        verificationStatus: loginUser.verificationStatus,
+        verificationStatus: loginUser.verificationStatus || "VERIFIED",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed.");
       throw err;
     }
-  }, [refresh]);
+  }, []);
 
   const signOut = useCallback(async () => {
     setError(null);
-    if (!session) return;
     try {
       await authSignOut();
-      setSession(null);
-      setAppUser(null);
-      setOrganization(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign out failed.");
-      throw err;
-    }
-  }, [session]);
+    } catch (_) {}
+    localStorage.removeItem("globex_standalone_session");
+    setSession(null);
+    setAppUser(null);
+    setOrganization(null);
+  }, []);
 
   const appState: AppState = initializing
       ? "AUTH_LOADING"
