@@ -1,5 +1,34 @@
-# Logs
-logs
+# ==============================================================================
+# GlobeX Trade OS — Production Git Ignore Rules
+# ==============================================================================
+
+# ── Datasets & Large Data Files (Stored in datasets/) ─────────────────────────
+datasets/
+**/datasets/
+*.parquet
+*.parquet.gzip
+*.csv.gz
+*.tar.gz
+*.zip
+*.h5
+*.hdf5
+*.pkl
+*.pt
+*.pth
+*.onnx
+
+# Allow small seed fixtures in frontend/src/data and backend seeds
+!frontend/src/data/*.json
+!backend/brain/data/final_csv/*.csv
+
+# ── Large Model Checkpoints & Serialized Binaries ─────────────────────────────
+# Note: Lightweight metadata & scalers (<500KB) can be tracked, large binaries excluded
+*.joblib
+*.bin
+*.model
+
+# ── Logs & Runtime Artefacts ──────────────────────────────────────────────────
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,7 +36,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Node / Dependencies
+# ── Node & Package Manager Dependencies ───────────────────────────────────────
 node_modules/
 **/node_modules/
 dist/
@@ -15,8 +44,7 @@ dist/
 dist-ssr/
 *.local
 
-# Python / Virtualenv / Cache
-/backend/brain/datasets/
+# ── Python / Virtualenv / Pytest Cache ────────────────────────────────────────
 __pycache__/
 **/__pycache__/
 *.py[cod]
@@ -30,8 +58,15 @@ venv/
 **/.pytest_cache/
 .coverage
 htmlcov/
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
 
-# Hardhat & Blockchain Artifacts
+# ── Frontend & Vite ───────────────────────────────────────────────────────────
+.vite/
+**/.vite/
+coverage/
+
+# ── Hardhat & Smart Contracts ─────────────────────────────────────────────────
 artifacts/
 **/artifacts/
 cache/
@@ -39,32 +74,26 @@ cache/
 typechain-types/
 **/typechain-types/
 
-# Frontend / Vite
-.vite/
-**/.vite/
-coverage/
-
-# Editor directories and files
+# ── IDEs, OS & Editor Artifacts ───────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Agent & Claude Traces
-.agents/
-.claude/
-*claude*
-.*claude*
-Claude_Blockchain_Design_Integration_Pack/
-
-# Env
+# ── Environment & Secrets ─────────────────────────────────────────────────────
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# ── AI Agents & Temporary Traces ──────────────────────────────────────────────
+.agents/
+.claude/
+.system_generated/

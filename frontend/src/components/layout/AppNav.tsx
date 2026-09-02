@@ -12,6 +12,8 @@ import {
   X,
   LogOut,
   ArrowLeftRight,
+  BrainCircuit,
+  Sparkles,
 } from "lucide-react";
 import ImportSidebar from "@/components/layout/ImportSidebar";
 import ExportSidebar from "@/components/layout/ExportSidebar";
@@ -135,8 +137,17 @@ export const AppNav: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: direction, account */}
+          {/* Right: ML Hub, direction, account */}
           <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              to="/ml-research"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-md)] bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-indigo-500/10 border border-emerald-500/30 hover:border-emerald-500/60 text-xs font-mono font-bold text-emerald-800 hover:text-emerald-900 transition-all shadow-sm cursor-pointer"
+              title="GlobeX Applied Machine Learning & Deep Learning Architecture Hub"
+            >
+              <BrainCircuit className="w-3.5 h-3.5 text-emerald-600" />
+              <span>AI / ML Lab</span>
+            </Link>
+
             <DirectionControl />
 
             <div className="relative" ref={accountMenuRef}>

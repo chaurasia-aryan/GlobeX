@@ -1,0 +1,38 @@
+<svg width='800' height='420' viewBox='0 0 800 420' xmlns='http://www.w3.org/2000/svg' style='background:#0F172A;font-family:system-ui,-apple-system,sans-serif;'>
+  <defs>
+    <linearGradient id='coneGrad' x1='0' y1='0' x2='0' y2='1'>
+      <stop offset='0%' stop-color='#10B981' stop-opacity='0.4'/>
+      <stop offset='100%' stop-color='#10B981' stop-opacity='0.05'/>
+    </linearGradient>
+  </defs>
+  <rect width='800' height='420' fill='#0F172A' rx='16'/>
+  <text x='40' y='42' fill='#FFFFFF' font-size='18' font-weight='bold'>GlobeX Deep GRU Bilateral Demand Forecaster</text>
+  <text x='40' y='64' fill='#94A3B8' font-size='12' font-family='monospace'>Quantile Pinball Loss Calibration (P10 · P50 · P90 Intervals)</text>
+  
+  <!-- Grid Lines -->
+  <line x1='80' y1='100' x2='740' y2='100' stroke='#334155' stroke-dasharray='4' stroke-width='1'/>
+  <line x1='80' y1='170' x2='740' y2='170' stroke='#334155' stroke-dasharray='4' stroke-width='1'/>
+  <line x1='80' y1='240' x2='740' y2='240' stroke='#334155' stroke-dasharray='4' stroke-width='1'/>
+  <line x1='80' y1='310' x2='740' y2='310' stroke='#334155' stroke-dasharray='4' stroke-width='1'/>
+  
+  <text x='70' y='104' fill='#64748B' font-size='10' font-family='monospace' text-anchor='end'>100k</text>
+  <text x='70' y='174' fill='#64748B' font-size='10' font-family='monospace' text-anchor='end'>75k</text>
+  <text x='70' y='244' fill='#64748B' font-size='10' font-family='monospace' text-anchor='end'>50k</text>
+  <text x='70' y='314' fill='#64748B' font-size='10' font-family='monospace' text-anchor='end'>25k</text>
+  
+  <!-- Uncertainty Shaded Cone -->
+  <polygon points='100,260 160,248 220,230 280,215 340,190 400,175 460,185 520,160 580,135 640,118 700,95 700,165 640,185 580,205 520,230 460,250 400,240 340,255 280,270 220,285 160,295 100,300' fill='url(#coneGrad)'/>
+  
+  <!-- P50 Median Line -->
+  <polyline points='100,280 160,272 220,258 280,242 340,222 400,208 460,218 520,195 580,170 640,152 700,130' fill='none' stroke='#10B981' stroke-width='3.5'/>
+  
+  <!-- Realized Demand Points -->
+  <polyline points='100,278 160,275 220,252 280,246 340,218 400,212 460,224 520,190 580,165 640,158 700,126' fill='none' stroke='#38BDF8' stroke-width='2' stroke-dasharray='5,3'/>
+  
+  <!-- Legend -->
+  <rect x='480' y='360' width='260' height='40' fill='#1E293B' rx='8' stroke='#334155'/>
+  <line x1='495' y1='380' x2='515' y2='380' stroke='#10B981' stroke-width='3'/>
+  <text x='525' y='384' fill='#E2E8F0' font-size='11'>P50 Forecast</text>
+  <line x1='610' y1='380' x2='630' y2='380' stroke='#38BDF8' stroke-width='2' stroke-dasharray='4'/>
+  <text x='640' y='384' fill='#E2E8F0' font-size='11'>Realized (UN)</text>
+</svg>

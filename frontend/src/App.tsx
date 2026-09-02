@@ -39,6 +39,7 @@ const DisputesPage = lazy(() => import("@/pages/DisputesPage"));
 const BlockchainLedgerPage = lazy(() => import("@/pages/BlockchainLedgerPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const AdminSystemPage = lazy(() => import("@/pages/AdminSystemPage"));
+const MLResearchPage = lazy(() => import("@/pages/MLResearchPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -124,7 +125,9 @@ const AnimatedRoutes = () => {
           <Route path="/disputes" element={<ProtectedRoute><PageTransition><DisputesPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ledger" element={<ProtectedRoute><PageTransition><BlockchainLedgerPage /></PageTransition></ProtectedRoute>} />
 
-          {/* SYSTEM */}
+          {/* SYSTEM & ML RESEARCH */}
+          <Route path="/ml-research" element={<ProtectedRoute><PageTransition><MLResearchPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/model-benchmarks" element={<Navigate to="/ml-research" replace />} />
           <Route path="/settings" element={<ProtectedRoute><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminSystemPage /></PageTransition></ProtectedRoute>} />
 
