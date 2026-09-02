@@ -1,0 +1,828 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1.9cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{pifont}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{rotating}
+
+\definecolor{gxteal}{HTML}{0F766E}
+\definecolor{gxcyan}{HTML}{0284C7}
+\definecolor{gxslate}{HTML}{334155}
+\definecolor{gxamber}{HTML}{B45309}
+\definecolor{gxred}{HTML}{B91C1C}
+\definecolor{gxgreen}{HTML}{15803D}
+\definecolor{gxviolet}{HTML}{6D28D9}
+
+\hypersetup{colorlinks=true, linkcolor=gxteal, urlcolor=gxcyan,
+  pdftitle={GlobeX SIH 2026 Final Problem Statement Report}, pdfauthor={GlobeX Team}}
+
+\titleformat{\section}{\large\bfseries\color{gxteal}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{gxslate}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.7em}{0.7em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{gxslate}GlobeX --- SIH 2026 Problem Statement Report}
+\fancyhead[R]{\small\color{gxslate}Final}
+\fancyfoot[C]{\small\thepage}
+
+% ---- tick symbols (visual, no text) ----
+\newcommand{\yes}{{\color{gxgreen}\ding{108}}}      % full use
+\newcommand{\pmid}{{\color{gxcyan}\ding{109}}}      % partial use
+\newcommand{\non}{{\color{black!22}\ding{109}}}     % unused
+\newcommand{\bld}{{\color{gxamber}\ding{53}}}       % must be built
+
+\newtcolorbox{callout}[1]{colback=gxteal!5, colframe=gxteal!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxteal, title={#1}}
+\newtcolorbox{uspbox}[1]{colback=gxviolet!5, colframe=gxviolet!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxviolet, title={#1}}
+\newtcolorbox{warnbox}[1]{colback=gxamber!6, colframe=gxamber!65, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxamber, title={#1}}
+
+\newcommand{\psbanner}[6]{%
+  \vspace{0.2em}
+  {\footnotesize\color{gxslate}\textbf{Org:} #1 \ $\vert$ \ \textbf{Theme:} #2 \ $\vert$ \ \textbf{Category:} #3 \ $\vert$ \ \textbf{Similarity rank:} #4 \ $\vert$ \ \textbf{Coverage:} #5 \ $\vert$ \ \textbf{Deadline:} #6}
+  \par\vspace{0.6em}
+}
+
+\begin{document}
+
+% ================= TITLE =================
+\begin{titlepage}
+\centering
+\vspace*{1.6cm}
+{\Huge\bfseries\color{gxteal} SIH 2026 --- Final Problem}\\[0.4em]
+{\Huge\bfseries\color{gxteal} Statement Report for GlobeX}\\[1.8em]
+{\Large\color{gxslate} Six candidates, measured against what GlobeX actually is}\\[2.6em]
+{\large\color{gxslate} Why each one fits \ $\vert$ \ How we would build it \ $\vert$ \ What makes us win}\\[3em]
+{\normalsize\color{gxslate} 26132 \ \ 26100 \ \ 26102 \ \ 26021 \ \ 26002 \ \ 26090}\\[2.4em]
+{\normalsize\color{gxslate} Prepared: 1 September 2026}\\[0.3em]
+{\normalsize\color{gxslate} All 229 published problem statements searched}
+\vfill
+{\small\color{gxslate} Candidate selection was not done by keyword. A profile of GlobeX's verified
+architecture was scored against all 229 problem statements using TF-IDF cosine similarity --- the same
+retrieval method GlobeX's own RAG engine uses --- and the ranking is reported in Section~2.\\
+One problem statement came out a clear outlier at the top.}
+\end{titlepage}
+
+% ================= SUMMARY =================
+\section{The short version}
+
+\begin{callout}{What the search found}
+\textbf{PS 26132 (Strengthening market linkages and price discovery for farmers)} ranked \textbf{first out
+of all 229} problem statements, and not narrowly --- its similarity score is \textbf{65\% higher than the
+second-placed statement}. Reading it confirms why: it asks for market intelligence, price forecasting,
+verified buyer matching, lot creation, logistics coordination, payment tracking, dispute handling and
+transparent transaction records. That is GlobeX's pipeline, moved from cross-border trade to domestic
+agriculture. It is the closest thing to "GlobeX, restated as a problem statement" in the entire dataset.
+\end{callout}
+
+\vspace{0.4em}
+\renewcommand{\arraystretch}{1.45}
+\noindent\begin{longtable}{@{}p{1.15cm}p{4.6cm}p{1.5cm}p{1.7cm}p{6.6cm}@{}}
+\toprule
+\textbf{PS} & \textbf{Short title} & \textbf{Sim.\ rank} & \textbf{Coverage} & \textbf{The one-line case} \\
+\midrule
+\endhead
+\rowcolor{gxteal!8}
+26132 & Market linkage \& price discovery for farmers & \textbf{1 / 229} & 9 of 9 & Our product, restated for agriculture. Escrow answers a problem the PS names out loud. \\
+26100 & GeM bid compliance verification & 4 / 229 & 14 of 14 & Uses the most of GlobeX at once; the PS itself demands an audit trail. \\
+26102 & MPLAD anomaly \& fraud detection & 31 / 229 & 9 of 9 & Our strongest trained model, transferred almost unchanged. \\
+26021 & Honey Chain traceability & 30 / 229 & 7 of 8 & Blockchain provenance at the centre, with escrow as the twist. \\
+26002 & NER smart logistics platform & 40 / 229 & 6 of 8 & Strong analytics fit; live GPS is new build. \\
+26125 & Blockchain identity, access \& asset platform & \textbf{1 / 229}\newline{\scriptsize(chain profile)} & 6 of 8 & The pure blockchain twin --- deepest chain fit in the dataset, but zero ML content. \\
+\rowcolor{gxcyan!7}
+26130 & Industrial approvals \& compliance single window & 9 / 229\newline{\scriptsize(compliance)} & 8 of 8 & \textbf{New find.} 26100's mirror image, from the applicant's side. \\
+\rowcolor{gxcyan!7}
+26045 & IP-SAKTI: multilingual source-cited RAG assistant & 4 / 229\newline{\scriptsize(compliance)} & 6 of 7 & \textbf{New find.} The closest twin to our citation-enforced RAG engine. \\
+26090 & Artisan market linkage app & 15 / 229 & 6 of 9 & Marketplace core fits; generative AI and mobile are new. \\
+\bottomrule
+\end{longtable}
+
+% ================= SIMILARITY =================
+\section{Finding GlobeX's twin among 229 problem statements}
+
+A profile of GlobeX's verified capabilities --- market discovery, demand and price forecasting,
+multi-criteria ranking, counterparty matching and trust scoring, risk and anomaly detection, compliance
+retrieval, document verification, blockchain evidence, escrow with disputes, logistics estimation ---
+was vectorised alongside all 229 problem statements and scored by cosine similarity.
+
+\vspace{0.5em}
+\noindent\begin{minipage}[t]{0.55\textwidth}
+\renewcommand{\arraystretch}{1.25}
+{\footnotesize
+\begin{tabular}{@{}p{0.6cm}p{1.15cm}p{1.1cm}p{4.6cm}@{}}
+\toprule
+\textbf{\#} & \textbf{PS} & \textbf{Score} & \textbf{Title (short)} \\
+\midrule
+\rowcolor{gxteal!12}
+1 & 26132 & \textbf{0.076} & Farmer market linkage \& price discovery \\
+2 & 26188 & 0.046 & Fake identity \& document screening \\
+3 & 26006 & 0.042 & Freight forecasting, vessel chartering \\
+4 & 26100 & 0.041 & GeM bid compliance verification \\
+5 & 26089 & 0.037 & Cooperative gig services platform \\
+6 & 26229 & 0.034 & Kabadiwala Connect recycling chain \\
+7 & 26182 & 0.033 & Crypto wallet attribution \\
+8 & 26228 & 0.033 & CV integrity assurance \\
+9 & 26033 & 0.032 & Farmer/consumer marketplace \\
+10 & 26018 & 0.032 & Land record digitisation \\
+11 & 26108 & 0.032 & Applicable-standards recommender \\
+12 & 26099 & 0.031 & Material code harmonisation \\
+13 & 26046 & 0.031 & Clinical trials dashboard \\
+14 & 26024 & 0.031 & Coal mine governance \\
+15 & 26090 & 0.030 & Artisan market linkage app \\
+\bottomrule
+\end{tabular}}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\textwidth}
+\vspace{0pt}
+\begin{callout}{Reading the numbers}
+Absolute cosine values are low for everything --- a short capability profile against long
+problem-statement prose produces sparse overlap. What matters is the \emph{ordering} and the
+\emph{gap}, and the gap at the top is decisive: 26132 sits 65\% above second place, while ranks 2--15
+are packed within a narrow band of each other.
+
+\vspace{0.5em}
+Note also rank 9: PS 26033 is the thin, three-line version of the same farmer-marketplace idea that
+26132 states properly. Where two statements describe the same problem, take the one with the
+detail --- the rubric rewards root-cause understanding, and 26132 gives us material to work with.
+\end{callout}
+\end{minipage}
+
+\vspace{0.8em}
+\noindent\textbf{Verdict on "is there a project like GlobeX in here?"} Yes --- one. PS 26132 is a genuine
+product-level twin. Everything below it matches on \emph{technology} rather than on \emph{product shape}.
+
+\subsection*{Extended sweep: four profiles, not one}
+A single product-shaped query favours marketplace problem statements and can miss a statement that is a
+deep match to one \emph{part} of GlobeX. The search was therefore re-run with four separate capability
+profiles across all 229 statements. Each column below is an independent ranking.
+
+\vspace{0.6em}
+\renewcommand{\arraystretch}{1.3}
+\noindent{\footnotesize
+\begin{tabular}{@{}p{0.5cm}p{3.55cm}p{3.55cm}p{3.55cm}p{3.55cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Product shape} & \textbf{Blockchain / trust} & \textbf{ML / anomaly / risk} & \textbf{Compliance / RAG} \\
+\midrule
+1 & \cellcolor{gxteal!14}\textbf{26132} farmer market linkage & \cellcolor{gxviolet!14}\textbf{26125} blockchain identity \& assets & 26170 component burn-in anomaly (ISRO) & \cellcolor{gxteal!10}\textbf{26100} GeM bid compliance \\
+2 & 26033 farmer marketplace (thin) & 26194 student innovation (open brief) & 26070 AI/ML general & 26107 BIS standards assistant \\
+3 & 26089 cooperative gig platform & 26211 student innovation (hardware) & 26071 rainfall early warning & 26188 fake identity screening \\
+4 & 26229 Kabadiwala recycling & \textbf{26021} Honey Chain & 26017 land acquisition delay & \cellcolor{gxcyan!14}\textbf{26045} IP-SAKTI RAG assistant \\
+5 & 26006 freight forecasting & 26141 digital signature security & \textbf{26103} project monitoring & \textbf{26024} coal mine governance \\
+6 & \textbf{26090} artisan linkage & 26018 land record digitisation & 26178 environmental monitoring & \textbf{26190} legal document management \\
+7 & \textbf{26136} startup procurement & 26228 CV integrity assurance & 26025 mine subsidence & 26018 land record digitisation \\
+8 & 26028 railway dynamic ETA & 26046 clinical trials dashboard & 26073 weather station anomaly & 26035 test report generation \\
+9 & 26164 cryptographic discovery & \textbf{26190} legal document management & \textbf{26102} MPLAD anomaly & \cellcolor{gxcyan!14}\textbf{26130} industrial approvals \\
+10 & 26146 bitcoin traffic analysis & \textbf{26100} GeM bid compliance & 26183 crypto fraud exchanges & 26036 metrology verification \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.9em}
+\noindent\textbf{What the extended sweep changed.} Three things.
+
+\vspace{0.4em}
+\noindent\textbf{1. PS 26125 is the blockchain twin, and it is not close.} It ranks \textbf{first of 229}
+on the chain/trust profile with a score roughly \emph{70\% above} second place --- the same kind of
+decisive gap 26132 shows on product shape. Between them, the two statements bracket GlobeX: 26132 matches
+what the product \emph{is}, 26125 matches what the chain layer \emph{does}. Note the mirror-image
+weakness though: 26125 ranks \textbf{200th of 229} on the ML profile, because it contains essentially no
+machine learning at all.
+
+\vspace{0.4em}
+\noindent\textbf{2. Two genuinely new candidates surfaced} --- PS 26130 and PS 26045, both invisible to
+the original product-shaped query and both strong enough to earn a place in the comparison (Section~10).
+
+\vspace{0.4em}
+\noindent\textbf{3. Nothing better was found on the ML axis.} The ML profile's top hits are real anomaly
+problems, but they sit in domains we have no data for and no product story in --- component burn-in
+testing at ISRO, rainfall inundation, weather-station telemetry, mine subsidence. PS 26102 remains the
+best ML pick because it combines the same modelling shape with published data and a defensible
+blockchain angle.
+
+% ================= TICK MATRIX =================
+\section{Which parts of GlobeX each problem statement actually uses}
+
+\vspace{-0.3em}
+\noindent{\footnotesize
+\yes\ = core to the solution \quad
+\pmid\ = partially used \quad
+\non\ = not used \quad
+\bld\ = must be built new}
+
+\vspace{0.8em}
+\renewcommand{\arraystretch}{1.6}
+\setlength{\tabcolsep}{4pt}
+\hspace*{-0.2cm}\begin{tabular}{@{}m{1.15cm}*{13}{>{\centering\arraybackslash}m{0.72cm}}@{}}
+\toprule
+& \rotatebox[origin=lb]{60}{\footnotesize AI / ML} & \rotatebox[origin=lb]{60}{\footnotesize Deep learning}
+& \rotatebox[origin=lb]{60}{\footnotesize Forecasting} & \rotatebox[origin=lb]{60}{\footnotesize Anomaly / risk}
+& \rotatebox[origin=lb]{60}{\footnotesize NLP / RAG} & \rotatebox[origin=lb]{60}{\footnotesize OCR / docs}
+& \rotatebox[origin=lb]{60}{\footnotesize Blockchain} & \rotatebox[origin=lb]{60}{\footnotesize Escrow}
+& \rotatebox[origin=lb]{60}{\footnotesize Marketplace} & \rotatebox[origin=lb]{60}{\footnotesize Ranking / MCDA}
+& \rotatebox[origin=lb]{60}{\footnotesize Geo / GIS} & \rotatebox[origin=lb]{60}{\footnotesize Workflow} & \rotatebox[origin=lb]{60}{\footnotesize Dashboards} \\[1.9em]
+\midrule
+\rowcolor{gxteal!8}
+\textbf{26132} & \yes & \pmid & \yes & \pmid & \pmid & \pmid & \yes & \yes & \yes & \yes & \pmid & \yes & \yes \\
+\textbf{26100} & \yes & \non  & \non & \yes  & \yes  & \yes  & \yes & \pmid& \non & \pmid& \non & \yes & \yes \\
+\textbf{26102} & \yes & \yes  & \pmid& \yes  & \pmid & \non  & \yes & \non & \non & \pmid& \pmid& \yes & \yes \\
+\textbf{26021} & \yes & \pmid & \yes & \yes  & \non  & \pmid & \yes & \yes & \yes & \pmid& \non & \yes & \yes \\
+\textbf{26002} & \yes & \yes  & \yes & \yes  & \non  & \pmid & \non & \non & \non & \yes & \yes & \yes & \yes \\
+\textbf{26125} & \pmid& \non  & \non & \non  & \non  & \pmid & \yes & \yes & \non & \non & \non & \yes & \yes \\
+\rowcolor{gxcyan!7}
+\textbf{26130} & \yes & \non  & \non & \pmid  & \yes  & \yes  & \pmid& \non & \non & \pmid& \non & \yes & \yes \\
+\rowcolor{gxcyan!7}
+\textbf{26045} & \yes & \non  & \non & \non  & \yes  & \pmid & \non & \non & \non & \pmid& \non & \yes & \pmid \\
+\textbf{26090} & \yes & \pmid & \yes & \non  & \yes  & \non  & \pmid& \pmid& \yes & \pmid& \non & \yes & \yes \\
+\bottomrule
+\end{tabular}
+
+\vspace{1.2em}
+\noindent\textbf{What each one still needs built}
+
+\vspace{0.3em}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{tabular}{@{}m{1.15cm}m{14.3cm}@{}}
+\toprule
+\textbf{PS} & \textbf{Net-new work} \\
+\midrule
+\rowcolor{gxteal!8}
+26132 & \bld\ mandi price feed ingestion \quad \bld\ quality-grading capture \\
+26100 & \emph{none} --- every stated requirement lands on existing capability \\
+26102 & \emph{none} --- public scheme data is already published \\
+26021 & \bld\ IoT hive sensor ingestion \quad \bld\ farmer mobile app \\
+26002 & \bld\ live GPS telemetry \quad \bld\ offline sync \quad \bld\ multilingual notifications \\
+26125 & \bld\ DID / verifiable credentials \quad \bld\ NFT minting \quad \bld\ on-chain RBAC \\
+\rowcolor{gxcyan!7}
+26130 & \bld\ department workflow connectors \\
+\rowcolor{gxcyan!7}
+26045 & \bld\ IP/GI corpus ingestion \quad \bld\ multilingual answering \\
+26090 & \bld\ generative image enhancement \quad \bld\ voice-to-catalogue NLP \quad \bld\ native mobile app \\
+\bottomrule
+\end{tabular}
+
+\clearpage
+% ================= 26132 =================
+\section{PS 26132 --- Market linkages and price discovery for farmers}
+\psbanner{Government of Maharashtra (MSInS)}{Agriculture, FoodTech \& Rural Development}{Software}{\textbf{1 / 229}}{9 of 9}{20 Sep 2026}
+
+\subsection*{Why this one}
+Smallholders and producer groups cannot see current or expected prices across nearby mandis, processors
+and institutional buyers. Information on quality specifications, demand, logistics, storage, payment
+reliability and buyer credentials is scattered. Farmers sell immediately at harvest because they lack
+storage and liquidity, and they negotiate from a weak position. Buyers, on the other side, cannot
+aggregate consistent volumes or verify quality.
+
+That is an information-asymmetry problem wrapped around a trust problem --- which is exactly the problem
+GlobeX was built to solve, one market up. An exporter who cannot see which country will pay best, cannot
+tell a reliable buyer from an unreliable one, and cannot be sure of getting paid, is the same person as a
+farmer at a mandi gate. We already built: price and demand forecasting to answer \emph{when and where to
+sell}, a multi-criteria ranking engine to turn many signals into one recommendation, counterparty matching
+with trust scoring to answer \emph{who to sell to}, escrow with milestone conditions and dispute handling
+to answer \emph{will I actually get paid}, and a tamper-evident ledger to make the record of it all
+independently checkable.
+
+The problem statement then asks, in its own words, for "transparent transaction records", "payment
+reliability", "buyer credentials", "dispute or grievance processes" and "sale-window recommendations". We
+have a working implementation of every one of those ideas. Nothing here has to be invented; it has to be
+re-pointed.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Aggregate mandi prices, buyer demand, arrival volumes & Ingestion + feature pipeline & Point the existing trade-panel ingestion at Agmarknet/eNAM mandi feeds. Same shape of data: a price series per commodity per market per day, instead of per corridor per month. \\
+2 & Localised price trends and \textbf{sale-window recommendations} & Forecasting (F1/F2) & The dual-head forecaster already predicts demand \emph{and} price together --- which is precisely what a "hold or sell now" recommendation needs. Use the quantile forecaster for the confidence band around the advice. \\
+3 & Match farmers/FPOs with \textbf{verified} buyers & Matching + trust score & Semantic matching over commodity, grade, volume and location, then the composite trust score --- built for exactly this "is this counterparty credible" question. \\
+4 & Quality specifications and grading & Document intelligence & Grade certificates and lot records go through the existing extraction and reconciliation path; grade claims are checked against the lot record rather than taken on trust. \\
+5 & Lot creation and digital offers & Marketplace & Listings, offers and catalogue pages already exist; the seller becomes an FPO and the unit becomes a lot. \\
+6 & Logistics and storage coordination & ETA + cost estimator & The distance/time and landed-cost model transfers directly; road transport constants replace ocean-freight ones. \\
+7 & \textbf{Payment tracking} & Escrow lifecycle & Buyer funds escrow on offer acceptance; release is conditioned on delivery and grading, exactly like the existing DOCS / SHIPMENT / INSPECTION conditions. \\
+8 & \textbf{Dispute or grievance process} & Dispute + resolve states & Already implemented as first-class states in the escrow contract, with the funds held rather than lost while a dispute is open. \\
+9 & \textbf{Transparent transaction records} & Evidence ledger & Every offer, acceptance, grading and settlement is hash-anchored, so the record a farmer sees is the record the buyer sees and neither can quietly edit it. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26132 --- escrow answers a problem the PS names out loud}
+Most teams will build a price dashboard with a buyer directory. A price dashboard does not fix the
+farmer's actual fear, which the problem statement states plainly: \textbf{payment reliability}. Our
+differentiator is that the transaction is protected, not just informed --- the buyer's money is committed
+into escrow before the lot moves, release is conditioned on delivery and grading, a dispute freezes the
+funds instead of losing them, and the whole sequence is anchored so it can be audited later. That
+converts "here is a better price signal" into "here is a trade you can safely complete", which is a
+categorically stronger answer to the same problem statement. It is also the hardest part for another team
+to build in a hackathon window --- and we already have it running.
+\end{uspbox}
+
+\begin{warnbox}{Risks to manage}
+Mandi price data is public but messy --- inconsistent commodity naming across markets, missing days,
+and units that vary by state; budget real time for the ingestion clean-up. Avoid over-claiming on the
+forecaster: use the quantile model and present a range with a confidence band rather than a single
+number, and never show a sale-window recommendation without the uncertainty around it.
+\end{warnbox}
+
+\clearpage
+% ================= 26100 =================
+\section{PS 26100 --- AI bid compliance verification for GeM procurement}
+\psbanner{Ministry of Petroleum \& Natural Gas (CPCL)}{Smart Automation}{Software}{4 / 229}{14 of 14}{20 Sep 2026}
+
+\subsection*{Why this one}
+Procurement officers verify every bidder by hand across a dozen government registries --- Udyam, GSTN,
+PAN, EPFO/ESIC, DigiLocker, debarment lists --- then decide whether the bid qualifies. It is slow,
+inconsistent, and error-prone, and the consequence of getting it wrong is a contract awarded to an
+ineligible vendor.
+
+Strip the domain away and this is the problem GlobeX solves before every trade: take an entity, check it
+against many authorities, reconcile the documents it submitted, score what came back, and give a human a
+defensible recommendation with the evidence attached. All fourteen numbered requirements in the problem
+statement land on something we have already built --- there is no net-new capability in it at all, which
+is true of no other candidate except 26102.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Registry verification: Udyam, GSTN, PAN, EPFO, NSIC, Startup India & Entity screening & The screening engine already resolves an entity against a 31{,}629-record registry with fuzzy name matching; the registries swap, the matching logic does not. \\
+2 & Blacklisting / debarment status & Denied-party screening & A debarment list \emph{is} a denied-party list. This is the same check, unmodified. \\
+3 & Make in India / local content & Rules-of-origin logic & Local-content percentage thresholds are computationally identical to value-addition rules of origin, which the compliance store already encodes. \\
+4 & Document verification and DigiLocker checks & OCR + reconciliation & Field extraction and cross-document consistency checking, already running over trade documents. \\
+5 & Identify missing or inconsistent information & Reconciliation & The routine that catches an invoice quantity disagreeing with a bill of lading catches a turnover figure disagreeing with a filed return. \\
+6 & Compliance score and bidder risk level & Composite scoring & Multi-factor scoring with banding, blending registry results and behavioural signals. \\
+7 & AI recommendation, officer keeps the decision & Transaction gate + dossier & A human-in-the-loop decision gate with a machine recommendation and a written justification --- already how trade approval works. \\
+8 & \textbf{Auditable record of every check} & Evidence ledger & Each verification is hash-anchored with its result and timestamp. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26100 --- an audit trail that cannot be edited after the fact}
+Requirement 14 asks for an auditable record. Most teams will satisfy that with a database log --- which
+the awarding authority can edit. Ours is cryptographically anchored, so a tender decision made in March
+can be proved in November to have been based on exactly the evidence shown at the time. In public
+procurement, where the dispute is usually \emph{"what did you actually check before you awarded this?"},
+that is the difference between a log and proof. This is the one candidate where blockchain is demanded by
+the problem statement rather than added by us, so it cannot be dismissed as decoration.
+\end{uspbox}
+
+\begin{warnbox}{Risks to manage}
+Live portal credentials (GSTN, DigiLocker) will not be issued to a student team --- demo against the dummy
+bidder and tender datasets the problem statement itself offers, and draw the integration boundary
+explicitly in the architecture slide rather than implying live access.
+\end{warnbox}
+
+\clearpage
+% ================= 26102 =================
+\section{PS 26102 --- Anomaly, fraud and inefficiency detection in MPLADS}
+\psbanner{MoSPI --- Data Informatics \& Innovation Division}{Smart Automation}{Software}{31 / 229}{9 of 9}{20 Sep 2026}
+
+\subsection*{Why this one}
+Thousands of local works are funded through many implementing agencies, producing large volumes of
+expenditure and execution data that nobody can review manually. The problem statement asks for ML that
+surfaces anomalies in expenditure, fund utilisation, cost estimates and work execution, so irregularity is
+caught early.
+
+This is the closest match in the dataset to our strongest asset. The trade anomaly classifier is trained,
+chronologically validated and performing at 0.98 F1, and the unsupervised risk ensemble exists precisely
+because trade data has \emph{no labelled fraud} --- the same condition public-fund data is in. Most teams
+attacking this PS will have to invent an approach for unlabelled irregularity detection during the
+hackathon. We already have one, with attribution behind every flag.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Anomalies in expenditure patterns & XGBoost anomaly + features & Sanctioned-work expenditure records are the same object as trade transactions: an amount, a date, a category, a counterparty. The rolling-statistics and growth features transfer directly. \\
+2 & Irregularity without labelled fraud & Isolation Forest + autoencoder & The unsupervised ensemble runs unchanged. Reconstruction error over a work's spending sequence flags what does not resemble normal execution. \\
+3 & Cost-estimate deviation & Unit-value deviation & Our peer-price deviation feature becomes cost-per-unit against comparable works in comparable districts. \\
+4 & Duplicate or overlapping works & TF-IDF similarity & Near-duplicate work descriptions across constituencies are caught the same way near-equivalent company records are. \\
+5 & Risk scoring and prioritisation & Composite score & Ranks works and agencies so limited audit capacity goes where the signal is strongest. \\
+6 & Explainable flags & TreeSHAP attribution & Every flag carries its contributing factors --- non-negotiable when the subject is public money. \\
+7 & Monitoring dashboard and alerts & Dashboards + n8n & Existing charting stack and resilient workflow orchestration. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26102 --- blockchain as the accountability layer, not decoration}
+Here is the move most teams will miss. An anomaly-detection tool that accuses an implementing agency
+creates a new problem: who flagged this, on what evidence, and did anyone quietly change it afterwards?
+We anchor \textbf{the flag itself} --- the model version, the input snapshot hash, the score and the
+officer's disposition --- to the evidence ledger. That makes the oversight trail as tamper-evident as the
+spending it oversees, protects agencies from silently altered accusations, and protects auditors from
+claims of tampering.
+
+\vspace{0.5em}
+Paired with our second differentiator --- we do \textbf{not} claim the model detects fraud. Our own risk
+documentation refuses to equate an anomaly with fraud because there is no ground truth for it, so the
+output is "this pattern is unusual and warrants review", feeding a human investigation. In a domain where
+a false public accusation is a real harm, that restraint plus an immutable audit trail is a far stronger
+pitch than a higher accuracy number.
+\end{uspbox}
+
+\begin{warnbox}{Risks to manage}
+Do not present the 0.98 F1 from trade data as a result on MPLADS data --- it is evidence the method works,
+not a claim about this domain, and a judge who catches that conflation will discount everything else.
+Retrain and report honestly on the scheme's own published data.
+\end{warnbox}
+
+\clearpage
+% ================= 26021 =================
+\section{PS 26021 --- Honey Chain: blockchain traceability and smart beekeeping}
+\psbanner{Ministry of MSME (KVIC Honey Mission)}{Agriculture, FoodTech \& Rural Development}{Software}{30 / 229}{7 of 8}{20 Sep 2026}
+
+\subsection*{Why this one}
+KVIC-supported beekeepers face counterfeit honey diluting their market, weak buyer linkage, and no way to
+prove their product is what they say it is. The problem statement asks for blockchain-based batch
+traceability with QR consumer verification, plus AI/IoT support for disease detection and yield
+prediction.
+
+Structurally this is GlobeX's spine with a different commodity: producers listed in a marketplace,
+provenance anchored on-chain, forecasting on the supply side, anomaly detection on the operational side.
+The chain layer here is not bolted on --- authenticity \emph{is} the problem, which makes it the most
+natural home for our blockchain work of any candidate except 26100.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Batch traceability, hive to shelf & Chain anchor + ledger & Each batch event (harvest, extraction, packing, dispatch) is hash-anchored using the existing write-intent-then-confirm pattern --- the payload changes, the guarantee does not. \\
+2 & QR consumer verification & Hash re-verification & Scanning re-computes the hash and compares it against the anchored record: our document integrity check, exposed through a QR code. \\
+3 & Market linkage for producers & Marketplace + matching & Listings and buyer matching already exist; sellers become beekeeper collectives. \\
+4 & Productivity / yield prediction & Quantile forecaster & Per-cluster yield forecasting with confidence bands. Use the quantile model, not the GRU. \\
+5 & Disease and environmental monitoring & Anomaly detection & Anomaly detection over hive sensor series is the same problem as over trade series; only the ingestion path is new. \\
+6 & Authenticity and market credibility & Escrow & See USP below. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26021 --- payment released against verified quality}
+"Blockchain + AI + QR for traceability" is the most crowded pattern in any hackathon; assume several
+teams present it. What they will not have is the second half of the trust problem. Traceability proves
+where honey came from but does nothing about whether the beekeeper actually gets paid fairly for it. We
+add \textbf{quality-conditioned escrow}: the buyer commits funds when the batch is listed, release is
+conditioned on the inspection result recorded against that batch, and a dispute holds the money rather
+than leaving the producer to chase it. Provenance plus guaranteed settlement is a complete answer to
+"why does counterfeit honey persist" --- provenance alone is only half of it.
+\end{uspbox}
+
+\begin{warnbox}{Risks to manage}
+There is no hive sensor dataset available --- the IoT layer must be demonstrated on simulated or public
+apiary data, stated openly. And because the pattern is crowded, the pitch must lead with root cause (why
+existing certification has failed to stop dilution) rather than with the technology stack.
+\end{warnbox}
+
+\clearpage
+% ================= 26125 =================
+\section{PS 26125 --- Blockchain identity, access control and digital asset management}
+\psbanner{Bharat Electronics Limited}{Blockchain \& Cybersecurity}{Software}{\textbf{1 / 229} on the chain profile}{6 of 8}{20 Sep 2026}
+
+\subsection*{Why this one}
+Centralised identity and access management is a single point of failure: vulnerable to breach, identity
+theft and unauthorised access, and it leaves asset ownership scattered across disconnected systems where
+authenticity and ownership history cannot be reliably verified. The problem statement asks for a
+decentralised alternative --- self-sovereign identifiers authenticated by cryptographic proof, digital
+assets issued as NFTs bound permanently to those identities, smart contracts enforcing who may mint,
+allocate and transfer, role-based access control enforced on-chain rather than in application code, and
+every operation immutably recorded as an audit trail.
+
+This is the deepest chain-layer match in the dataset --- first of 229 on the blockchain profile, roughly
+70\% clear of second place. The reason is that GlobeX's escrow contract already embodies the exact
+discipline this statement is asking for: state transitions governed by a contract rather than by
+application code, actions permitted only to authorised parties, and a rule that no consequential state is
+ever written without a confirmed on-chain receipt behind it. That last point is the difference between a
+system that \emph{uses} a blockchain and one that can actually be \emph{trusted} because of it, and we
+already enforce it in production code.
+
+\vspace{0.4em}
+\noindent The honest counterweight: this problem statement contains \textbf{almost no machine learning}
+--- it ranks 200th of 229 on the ML profile. Choosing it means our forecasting, anomaly detection, risk
+ensemble and ranking work --- the majority of the engineering behind GlobeX --- does not appear in the
+solution at all. It is the exact mirror image of PS 26102's trade-off.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Smart contracts governing all operations & Escrow contract + adapter & We already run a lifecycle contract with guarded state transitions through a dedicated chain-adapter service; the contract's subject changes from a trade to an identity and its assets. \\
+2 & Immutable audit trail of every operation & Evidence ledger & Identity creation, minting, allocation, transfer and permission changes are anchored exactly as document and trade events are anchored today. \\
+3 & Ownership and authenticity verification & Hash verification & Re-deriving a hash and comparing it against the anchored record is our existing integrity check. \\
+4 & Controlled issuance --- only authorised admins may mint & Role-gated operations & The escrow contract already restricts who may fund, release and resolve; the same authorisation pattern governs minting. \\
+5 & Ownership history & Ledger query + UI & The blockchain ledger screen already renders anchored event history for a trade; here it renders it for an asset. \\
+6 & Transaction confirmation discipline & Write-intent pattern & Our submit-then-confirm rule (never record a final state on an unconfirmed transaction) transfers wholesale, and is the single most valuable thing we bring. \\
+7 & Decentralised identifiers \& verifiable credentials & \bld\ new & DID issuance and cryptographic proof verification is new contract and client work. \\
+8 & NFT minting and on-chain RBAC & \bld\ new & Token standard implementation and on-chain role enforcement go beyond our current escrow contract. \\
+\bottomrule
+\end{longtable}
+
+\vspace{-0.4em}
+\noindent{\small\textbf{Coverage: 6 of 8 asks land on existing capability}; 2 require new Solidity work.}
+
+\begin{uspbox}{Our USP on 26125 --- the discipline, not the buzzwords}
+Every team attempting this problem statement will demo a contract that mints an NFT. Most will also,
+somewhere in the stack, write "transferred" into a database before the chain has confirmed it --- because
+that is the shortcut that makes a demo work on a flaky testnet. Our differentiator is the failure
+handling nobody else will have thought about: we already write a pending intent record \emph{before} the
+chain call, patch it to confirmed with the real transaction hash on success or to failed with the real
+error on failure, and never let the application claim an ownership change the chain has not
+acknowledged. In a problem statement whose entire premise is trustworthiness, being the one team whose
+system cannot lie about its own state is a far stronger position than having the fanciest token design.
+\end{uspbox}
+
+\begin{warnbox}{The trade-off to weigh}
+This is the narrowest of the nine candidates. It exercises our chain layer more deeply than anything
+else, and nothing else at all --- no forecasting, no anomaly detection, no risk scoring, no ranking, no
+compliance retrieval. If the team's judgement is that GlobeX's identity is the blockchain work, this is
+the strongest possible showcase for it. If the ML work is the identity, this is the weakest of the nine.
+\end{warnbox}
+
+\clearpage
+% ================= 26002 =================
+\section{PS 26002 --- AI smart logistics and accessibility platform (NER)}
+\psbanner{Ministry of Development of North Eastern Region}{Transportation \& Logistics}{Software}{40 / 229}{6 of 8}{20 Sep 2026}
+
+\subsection*{Why this one}
+Landslides, floods and fragile terrain cut road links to remote NER districts, delaying medicines, food
+and produce. The problem statement asks for a platform that monitors accessibility, predicts disruptions,
+recommends alternate routes, tracks vehicles, alerts authorities, accepts geo-tagged field reports and
+presents district-level dashboards.
+
+The analytical core maps well, and one mapping is genuinely elegant: \textbf{ranking alternate routes is
+the same problem as ranking destination markets}. Our multi-criteria engine already turns eight weighted,
+explainable signals into one ranked recommendation --- point it at route options scored on rainfall risk,
+slope, incident history, detour cost and time, and it does the same job. Corridor-level risk scoring is
+also already implemented; today the corridors are trade lanes, here they are road segments.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Predict route disruptions & Forecast + anomaly + risk & The same three-model shape we run on trade corridors, with rainfall, slope and incident history replacing trade features. \\
+2 & Alternate route ranking + travel delay & MCDA ranking + ETA & Weighted, explainable route scoring; delay estimated by the distance-over-speed method with terrain and condition penalties. \\
+3 & High-risk corridor identification & Risk ensemble & Corridor-level risk scoring, already implemented --- the object the PS calls a "high-risk transport corridor" is the object K1 already produces. \\
+4 & Automated alerts & n8n workflows & Resilient multi-step alerting with per-step status, already built. \\
+5 & District connectivity dashboards & Dashboards + geo view & Existing charting and geospatial visualisation stack. \\
+6 & Geo-tagged field reports & Document intake & Upload, extraction and persistence exist; geo-tagging and image handling are additions. \\
+7 & GPS vehicle tracking & \bld\ new & Live telemetry ingestion, position storage and streaming. Our ETA service is a static estimator, not tracking. \\
+8 & Offline sync + multilingual alerts & \bld\ new & Offline-first synchronisation for low-network areas is a discipline we have not built. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26002 --- explainable route decisions, not a black box}
+Most teams will produce a map with a shortest-path line on it. Ours ranks routes on weighted criteria and
+\emph{shows why} --- this route scores lower because of slope-adjusted landslide risk and recent incident
+density, not merely because it is longer. For a district officer deciding whether to send a medicine
+convoy, an explainable, auditable recommendation is the difference between a tool they trust and one they
+override. Our backtested ranking methodology is the credible core here.
+\end{uspbox}
+
+\begin{warnbox}{Be honest about two things}
+Live GPS tracking is a headline feature of this platform and we would be building it from zero --- say so
+rather than implying we have it. And the chain and escrow half of GlobeX has no natural role here; forcing
+it in reads as technology for its own sake, which the first-round rubric penalises. This is the one
+candidate where our blockchain work is a spectator.
+\end{warnbox}
+
+\clearpage
+% ================= 26090 =================
+\section{PS 26090 --- AI market linkage and smart cataloging for artisans}
+\psbanner{Ministry of Social Justice and Empowerment}{Heritage \& Culture}{Software}{15 / 229}{6 of 9}{20 Sep 2026}
+
+\subsection*{Why this one}
+Marginalised artisans and weavers get a sales bump from physical exhibitions but have no year-round
+digital channel, blocked by low digital literacy, language barriers and the practical difficulty of
+photographing, pricing and cataloguing products to e-commerce standards. The ask is a mobile app acting as
+a "virtual business manager": AI image enhancement, voice-to-catalogue in regional languages, and a
+dynamic pricing assistant, connecting artisans to B2B buyers and government e-marketplaces.
+
+The commercial half of this is our marketplace: catalogue and listing creation, buyer discovery and
+matching, and price recommendation --- all of which exist, including the listing and catalogue editor
+screens. The reason it sits below the others is the other half: generative image enhancement,
+speech-to-text in regional languages and generated product copy are capabilities we have not built, and
+the deliverable is explicitly a native mobile app rather than a web platform.
+
+\subsection*{How we would build it}
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.5cm}p{2.0cm}p{8.6cm}@{}}
+\toprule
+& \textbf{PS asks for} & \textbf{GlobeX} & \textbf{How it is built} \\
+\midrule
+\endhead
+1 & Dynamic pricing assistant & Forecasting + ranking & Price recommendation from comparable-product signals with a confidence band --- our forecasting and scoring path, applied to craft categories. \\
+2 & Connect artisans to B2B buyers / GeM & Marketplace + matching & Listings, buyer discovery, semantic matching and trust scoring already exist. \\
+3 & Product cataloguing and inventory & Catalogue editor & Catalogue and listing creation screens are already built. \\
+4 & Buyer credibility for vulnerable sellers & Trust scoring + escrow & See USP below. \\
+5 & AI image enhancement studio & \bld\ new & Background removal and lighting correction --- a generative/CV capability we do not have. \\
+6 & Voice-to-catalogue in regional languages & \bld\ new & Speech recognition plus generated multilingual product copy. \\
+7 & Native cross-platform mobile app & \bld\ new & Our frontend is web; this PS explicitly wants mobile-first for low-literacy users. \\
+\bottomrule
+\end{longtable}
+
+\begin{uspbox}{Our USP on 26090 --- protecting the seller, not just listing them}
+Every team will build the camera and the auto-description; those features are the obvious reading of this
+problem statement. The risk nobody addresses is that a low-literacy artisan, newly exposed to B2B buyers,
+is the party most vulnerable to non-payment and exploitative terms. Our differentiator is
+\textbf{verified buyers plus protected payment} --- trust-scored buyer credentials and escrowed settlement
+so the artisan ships against committed funds rather than a promise. For a Ministry of Social Justice
+problem statement, protecting the beneficiary from the market they are being introduced to is a
+substantially more thoughtful answer than a prettier product photo.
+\end{uspbox}
+
+\begin{warnbox}{Why it is ranked sixth}
+Three of the nine asks are net-new capability, and two of them (generative imaging, multilingual speech)
+are the features the problem statement leads with. We would be strongest on the half of the problem the
+judges may treat as secondary --- a real risk of a mismatch between our strength and the rubric's weight.
+\end{warnbox}
+
+\clearpage
+% ================= NEW FINDS =================
+\section{New finds from the extended sweep}
+\textit{Neither of these appeared in the original product-shaped search. Both were surfaced by the
+compliance/RAG profile, and both are strong enough to sit in the main comparison. The problem-statement
+Excel was checked row by row against the searched dataset first --- 229 IDs, no differences in title,
+description, category or theme --- so this sweep covers the complete published set.}
+
+\subsection*{PS 26130 --- Streamlining industrial approvals, compliance and support services}
+\psbanner{Government of Maharashtra (MSInS)}{Miscellaneous}{Software}{9 / 229 on the compliance profile}{8 of 8}{20 Sep 2026}
+
+\noindent\textbf{Why.} Entrepreneurs setting up an industrial unit must obtain registrations, licences,
+NOCs, inspections and renewals from many authorities, and the requirements vary by sector, location,
+project size and stage of operation. Applicants cannot work out which approvals apply to them; departments
+receive incomplete applications and cannot see where the bottlenecks are.
+
+This is PS 26100 seen from the other side of the counter. Where 26100 asks us to verify a bidder against
+authorities, 26130 asks us to tell an applicant which authorities apply and walk them through it --- and
+the core of that request, \emph{"generate a customised approval checklist"}, is precisely what our
+required-document matrix does today: take an item's classification plus its origin and destination, and
+return the exact set of documents and clearances that apply to it. Swap HS6 code and trade lane for sector
+and location and the function is unchanged.
+
+\vspace{0.5em}
+\noindent\textbf{How.} The applicable-approval checklist comes from the document matrix; documentation
+guidance comes from the citation-backed retrieval engine; pre-validation of submissions reuses the
+extraction and inconsistency-detection path; "reuse verified data" is our verified-entity record; parallel
+departmental coordination, inspection scheduling and SLA timers are n8n workflows with per-step status
+already built for exactly that failure-isolation reason; bottleneck visibility is the dashboard layer.
+All eight stated outcomes land on existing capability --- only the department-side connectors are new.
+
+\begin{uspbox}{USP on 26130 --- the checklist is the hard part, and we already built it}
+Most teams will build a portal: forms, uploads, a status tracker. The genuinely difficult piece is the one
+the problem statement leads with --- correctly deriving \emph{which} approvals apply to a given unit, when
+the answer depends on four interacting variables. That is a rules-and-retrieval problem we have already
+solved once for trade compliance. Adding chain-anchored approval records on top means an issued clearance
+cannot be quietly back-dated or altered, which matters in exactly the environment where approvals are
+contested.
+\end{uspbox}
+
+\subsection*{PS 26045 --- IP-SAKTI Sahayak: multilingual, source-cited RAG assistant}
+\psbanner{Ministry of Ayush}{MedTech / BioTech / HealthTech}{Software}{4 / 229 on the compliance profile}{6 of 7}{20 Sep 2026}
+
+\noindent\textbf{Why.} Protecting and commercialising an Ayurvedic product means navigating several
+overlapping legal regimes simultaneously --- patents, geographical indications, trademarks, copyright,
+designs, trade secrets, plant-variety rights, access-and-benefit-sharing duties over biological resources,
+and a drug-regulatory framework that decides whether a formulation counts as a classical medicine, a
+proprietary medicine, a new drug, a phytopharmaceutical, a food or a cosmetic. The ask is a multilingual
+assistant that answers in plain language \textbf{with citations to the specific source}.
+
+That is a closer description of our RAG engine's actual job than any other statement in the dataset,
+including PS 26107. Our retriever already spans multiple overlapping regulatory corpora at once --- tariff
+schedules, a sanctions registry, export-control lists, rules of origin, SPS/TBT standards --- and answers
+against them with provenance attached. The classification question is familiar too: deciding whether a
+formulation is a classical medicine or a phytopharmaceutical, and therefore which pathway applies, is the
+same shape as deciding an HS6 code and therefore which document set applies.
+
+\vspace{0.5em}
+\noindent\textbf{How.} Retrieval, ranking and citation enforcement transfer directly. The versioned
+current-facts store matters more here than anywhere else, because this domain moved recently --- the 2024
+patent and biodiversity rules and the 2024 WIPO treaty --- and an assistant citing superseded law is worse
+than no assistant. New work: ingesting the IP, GI and AYUSH regulatory corpora, and answering in multiple
+languages.
+
+\begin{uspbox}{USP on 26045 --- we already refuse to answer without a source}
+The obvious build here is a chatbot over some documents, and the obvious failure is a confident answer
+with an invented citation --- which, in a legal and regulatory domain, is not a glitch but a liability for
+the person who acted on it. Our engine is built the other way round: provenance is mandatory and
+fabricated citations are prohibited by design. Leading with \emph{refusal behaviour} --- what the
+assistant does when it does not have a source, and how it shows which clause an answer rests on --- is a
+credibility argument almost no competing team will make, and it is the argument that matters most to a
+ministry putting its name on legal guidance.
+\end{uspbox}
+
+\clearpage
+% ================= DECISION =================
+\section{Recommendation}
+
+\renewcommand{\arraystretch}{1.5}
+\noindent\begin{tabular}{@{}p{1.2cm}p{3.6cm}p{2.3cm}p{2.6cm}p{5.6cm}@{}}
+\toprule
+\textbf{PS} & \textbf{Best when the team wants to lead with} & \textbf{Net-new work} & \textbf{Blockchain role} & \textbf{Headline USP} \\
+\midrule
+\rowcolor{gxteal!10}
+26132 & The whole product & Low & Central & Escrow answers "payment reliability", named in the PS \\
+26100 & Compliance \& verification & \textbf{None} & Demanded by PS & Audit trail that cannot be edited afterwards \\
+26102 & The trained ML core & \textbf{None} & Added by us & Tamper-evident record of the flags themselves \\
+26021 & Blockchain \& traceability & Medium & Central & Payment released against verified quality \\
+26002 & Analytics \& geospatial & \textbf{High} & \cellcolor{gxamber!12}None honest & Explainable route ranking, not a black box \\
+26125 & Blockchain, purely & Medium & \cellcolor{gxviolet!12}Everything & Escrow-grade contract discipline: no state written without a confirmed receipt \\
+\rowcolor{gxcyan!7}
+26130 & Compliance, applicant side & Low & Optional & Approval checklist generation --- our required-document matrix, re-pointed \\
+\rowcolor{gxcyan!7}
+26045 & RAG with citations & Medium & None & Refusing to answer without a source --- already enforced in our engine \\
+26090 & Marketplace \& social impact & \textbf{High} & Light & Verified buyers + protected payment for artisans \\
+\bottomrule
+\end{tabular}
+
+\vspace{1.4em}
+\begin{callout}{The recommendation}
+\textbf{Lead with PS 26132.} It is the measured closest match to GlobeX in the entire dataset by a wide
+margin, every one of its nine asks lands on something we have built, and the differentiator is not a
+technology we are showing off but the direct answer to a problem the statement itself raises --- farmers
+selling into a market where payment is not reliable. It also lets us present the full platform story
+(intelligence $\rightarrow$ matching $\rightarrow$ transaction $\rightarrow$ settlement $\rightarrow$
+dispute) as one coherent solution rather than a collection of features.
+
+\vspace{0.6em}
+\textbf{Keep PS 26100 as the strong second.} It is the only other candidate with zero net-new work, and
+it is the one where blockchain is required by the problem statement rather than offered by us --- the
+safest possible ground for defending that part of the stack under questioning.
+
+\vspace{0.6em}
+\textbf{PS 26102 is the pick if the team would rather lead with the models}, and the blockchain angle
+(anchoring the flags themselves) turns what looked like an unused half of GlobeX into that submission's
+sharpest idea.
+
+\vspace{0.6em}
+\textbf{PS 26002 remains viable} and the route-ranking insight is real, but it carries the most net-new
+work of the six and leaves our most distinctive asset on the bench.
+\end{callout}
+
+\vspace{0.9em}
+\noindent\textbf{Where the three additions land.} \textbf{PS 26125} is the strongest showcase for the
+chain layer specifically --- first of 229 on that profile --- but it is the narrowest option on the table,
+using none of the ML work. \textbf{PS 26130} is the most interesting of the two new finds: it matches
+26100's low-drift profile from the applicant's side, all eight of its outcomes land on existing
+capability, and its hardest requirement is a function we have already built. \textbf{PS 26045} is the
+truest match to the RAG engine and displaces 26107 as the retrieval-led option, though its corpus
+ingestion is real work. None of the three displaces 26132 at the top.
+
+\vspace{0.9em}
+\noindent\textbf{One practical note.} 26132, 26021 and 26090 all exercise the same marketplace, matching,
+escrow and ledger path, so preparation for any one transfers substantially to the others. 26100, 26130 and
+26045 share the screening, retrieval, document and evidence path --- that cluster is now three statements
+deep, which makes it the safest area to invest preparation in. 26102 shares the scoring half of it. The
+two outliers are 26002 (its telemetry work transfers nowhere) and 26125 (its contract work transfers only
+to 26021), so both should be decided on early rather than prepared in parallel.
+
+\vspace{0.9em}
+\noindent\textbf{A note on the search itself.} The problem-statement Excel supplied by the team was
+verified against the dataset used here before this sweep was run: 229 rows, 229 unique IDs, and no
+difference in any title, description, category or theme. Every candidate in this report was therefore
+drawn from the complete published set, scored under four independent capability profiles.
+
+\vspace{1.2em}
+\begin{warnbox}{Unrelated to PS choice, but worth fixing before any submission}
+The repository's new \path{README.md} advertises a demand-forecast error of \textbf{MAPE 8.42\%}
+("Deep GRU + Quantile Loss"). The benchmark artifact still sitting in both model folders,
+\path{benchmark_comparison.csv}, reports the Dual-Head GRU at \textbf{54.49\% MAPE, R² 0.399} --- worse
+than a three-year moving average on the same data. Either a newer quantile model exists and the benchmark
+file is stale, or the headline figure is not backed by the artifact. Whichever it is, the two should be
+reconciled before that number appears in a submission, because it is the first thing a technical judge
+would check.
+\end{warnbox}
+
+\vspace{1.5em}
+{\footnotesize\color{gxslate}\textit{Candidates selected by TF-IDF cosine similarity of a GlobeX
+capability profile against all 229 problem statements from \url{https://www.sih.gov.in/sih2026PS}, then
+mapped against verified backend modules, trained model artifacts and frontend screens. GlobeX is an
+in-flight build --- this maps capability direction, not final code. All six share a 20 September 2026
+idea-submission deadline.}}
+
+\end{document}

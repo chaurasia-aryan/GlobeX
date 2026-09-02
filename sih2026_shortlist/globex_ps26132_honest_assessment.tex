@@ -1,0 +1,317 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1.9cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{pifont}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{gxteal}{HTML}{0F766E}
+\definecolor{gxcyan}{HTML}{0284C7}
+\definecolor{gxslate}{HTML}{334155}
+\definecolor{gxamber}{HTML}{B45309}
+\definecolor{gxred}{HTML}{B91C1C}
+\definecolor{gxgreen}{HTML}{15803D}
+\definecolor{gxviolet}{HTML}{6D28D9}
+
+\hypersetup{colorlinks=true, linkcolor=gxteal, urlcolor=gxcyan,
+  pdftitle={GlobeX -- PS 26132 and PS 26102 Honest Build Assessment}, pdfauthor={GlobeX Team}}
+
+\titleformat{\section}{\large\bfseries\color{gxteal}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{gxslate}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.7em}{0.7em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{gxslate}GlobeX --- PS 26132 \& PS 26102 Honest Assessment}
+\fancyhead[R]{\small\color{gxslate}SIH 2026}
+\fancyfoot[C]{\small\thepage}
+
+\newcommand{\yes}{{\color{gxgreen}\ding{108}}}
+\newcommand{\pmid}{{\color{gxcyan}\ding{109}}}
+\newcommand{\non}{{\color{black!22}\ding{109}}}
+\newcommand{\bld}{{\color{gxamber}\ding{53}}}
+
+\newtcolorbox{callout}[1]{colback=gxteal!5, colframe=gxteal!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxteal, title={#1}}
+\newtcolorbox{uspbox}[1]{colback=gxviolet!5, colframe=gxviolet!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxviolet, title={#1}}
+\newtcolorbox{warnbox}[1]{colback=gxamber!6, colframe=gxamber!65, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxamber, title={#1}}
+\newtcolorbox{redbox}[1]{colback=gxred!6, colframe=gxred!65, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxred, title={#1}}
+
+\begin{document}
+
+% ================= TITLE =================
+\begin{titlepage}
+\centering
+\vspace*{1.6cm}
+{\Huge\bfseries\color{gxteal} PS 26132 \& PS 26102}\\[0.4em]
+{\Huge\bfseries\color{gxteal} The Honest Build Assessment}\\[1.8em]
+{\Large\color{gxslate} What's genuinely strong, what's genuinely weak,}\\[0.3em]
+{\Large\color{gxslate} what could sink the demo, and how much is realistically buildable}\\[2.6em]
+{\normalsize\color{gxslate} 26132 --- Market linkages \& price discovery for farmers (Govt.\ of Maharashtra / MSInS)}\\[0.2em]
+{\normalsize\color{gxslate} 26102 --- Anomaly, fraud \& inefficiency detection in MPLADS (MoSPI)}\\[0.5em]
+{\normalsize\color{gxslate} Prepared for GlobeX --- 2 September 2026}\\[2.2em]
+\begin{tabular}{cc}
+\textbf{\color{gxteal}\Large 26132} & \textbf{\color{gxteal}\Large 26102} \\
+{\small fit rank 1 / 229 \ \ coverage 9/9} & {\small fit rank 31 / 229 \ \ coverage 9/9} \\[0.3em]
+{\small 4 gaps to close} & {\small 3 gaps to close} \\
+\end{tabular}
+\vfill
+{\footnotesize\color{gxslate} Internal working document --- not for external distribution as-is}
+\end{titlepage}
+
+% ================= VERDICT =================
+\section*{The one-line verdict on each}
+\begin{callout}{26132 --- build it, but close the gaps first}
+The best-measured fit GlobeX has against any of the 229 statements, and the escrow layer answers the exact
+fear (``payment reliability'') the problem statement names in its own text. Three specific things are not
+demo-ready yet: a stub data path inside counterparty matching, a forecaster whose headline number
+contradicts its own benchmark file, and an escrow flag that is off by default.
+\end{callout}
+\begin{callout}{26102 --- the strongest match to our best-validated asset, with one hard rule}
+Ranks 31st on raw similarity but is the closest match in the whole dataset to GlobeX's single strongest,
+most rigorously validated component: the anomaly/risk stack. The entire pitch stands or falls on one
+discipline: never present the 0.98 F1 trained on trade data as a result on MPLADS data. Retrain on the
+scheme's own public data and report that number, whatever it is.
+\end{callout}
+
+% ================= GOOD =================
+\clearpage
+\section{What's genuinely good}
+
+\subsection*{PS 26132 --- Market linkages \& price discovery}
+Across a four-profile TF-IDF similarity sweep run against all 229 statements, 26132 ranks first on the
+profile that matters most --- product shape --- by a wide margin: 65\% clear of whatever sits second. Every
+one of the nine things the problem statement asks for (price visibility, sale-window advice, verified
+matching, quality/grading, lot creation, logistics, payment tracking, dispute handling, transparent
+records) maps to something GlobeX already has a working implementation of.
+
+Most competing teams will build a price dashboard with a buyer directory. The problem statement itself
+names ``payment reliability'' as the thing farmers actually fear, and a dashboard does not fix that ---
+protecting the transaction does. The escrow contract already implements fund-on-acceptance, condition-gated
+release, a dispute state that freezes funds instead of losing them, and a write-intent-before-chain pattern
+that never marks a transfer complete without a confirmed on-chain receipt --- the kind of engineering
+discipline a technical judge notices.
+
+The MCDA destination-ranking engine (explainable, 8 weighted dimensions, backtested at $\rho = 0.884$,
+precision@5 of 0.8 on a real 48{,}445-row dataset) becomes the sale-window recommender almost without
+modification. And the one dataset this idea absolutely needs --- mandi price and arrival data --- is
+genuinely public and reachable today through a documented API (data.gov.in / AIKosh), not locked behind a
+request form.
+
+\subsection*{PS 26102 --- Anomaly detection in MPLADS}
+This is the closest match in the entire dataset to GlobeX's strongest asset. The trade anomaly classifier
+is trained, chronologically validated, and performing at 0.98 F1; the unsupervised risk ensemble (Isolation
+Forest + GRU autoencoder) exists precisely because trade data has no labelled fraud --- exactly the
+condition public-fund irregularity data is in. Sanctioned-work expenditure records are structurally the
+same object as trade transactions (an amount, a date, a category, a counterparty), so the rolling-statistics
+and peer-deviation features transfer with minimal rework, and TreeSHAP already attaches an explanation to
+every flag --- non-negotiable when the subject is public money.
+
+The USP here is unusually strong and hard to copy: anchoring the flag itself (model version, input snapshot
+hash, score, officer disposition) to the evidence ledger, so the oversight trail is as tamper-evident as the
+spending it oversees. Paired with a deliberate refusal to equate ``anomalous'' with ``fraudulent'' --- the
+existing risk documentation already makes this distinction --- the pitch is restrained in exactly the way a
+domain involving public accusation needs it to be.
+
+MPLADS data is also genuinely public: the scheme runs its own dashboard (mplads.gov.in, and a newer MoSPI
+dashboard at mplads.mospi.gov.in --- run by the same division that owns this PS), data.gov.in carries
+MPLADS-tagged datasets, and third-party aggregators like Dataful publish cleaned state/constituency-wise
+fund-release and expenditure figures. Getting real numbers to train and demo against is not the blocker
+here.
+
+% ================= BAD =================
+\clearpage
+\section{What's genuinely weak}
+
+\subsection*{PS 26132}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{@{}p{4.1cm}p{7.6cm}p{3.6cm}@{}}
+\toprule
+\textbf{Weakness} & \textbf{What's actually true} & \textbf{Why it matters} \\
+\midrule
+\endhead
+Counterparty matching has a stub path & \texttt{counterparty\_controller.py} still contains an
+\texttt{hashlib.md5}-seeded fake-data generator on at least part of its matching path. A separate, genuine
+endpoint (company directory: TF-IDF + cosine + valuation blending) is real but not what ``verified buyers''
+would naturally route through. & A judge who asks for a live match on real-looking data can hit the fake
+path by accident. \\[0.4em]
+No public dataset for FPOs or buyer credentials & No equivalent of the Agmarknet price feed exists for
+farmer-producer-organisation directories or buyer verification records. & The matching engine's ``ground
+truth'' has to be synthesised, and unlabelled synthetic data looks exactly like a stub-data accusation from
+the outside. \\[0.4em]
+Forecaster headline number contradicts its own benchmark & The README claims 8.42\% MAPE; the repo's own
+\texttt{benchmark\_comparison.csv} shows the deployed Dual-Head GRU actually scoring 54.49\% MAPE on demand
+--- worse than a plain moving average (29.42\%). & The single most dangerous line in the project if a judge
+cross-reads the README against the repo. \\[0.4em]
+Escrow is off by default & \texttt{ESCROW\_ENABLED} defaults to \texttt{false}, and only one migration file
+exists in the whole repository --- the schema is not version-controlled. & The best differentiator in the
+project is a flag flip and an untested schema away from actually running live. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{PS 26102}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{@{}p{4.1cm}p{7.6cm}p{3.6cm}@{}}
+\toprule
+\textbf{Weakness} & \textbf{What's actually true} & \textbf{Why it matters} \\
+\midrule
+\endhead
+The headline accuracy is from the wrong domain & 0.98 F1 was measured on trade-anomaly data, never on
+MPLADS expenditure data. There is currently no retrained result on the actual scheme data. & This is the
+single biggest risk on this PS. Presenting 0.98 as if it were an MPLADS result is a conflation a judge will
+catch immediately, and it will discount everything else in the pitch. \\[0.4em]
+Work-level detail is not cleanly structured & The public dashboards give fund-release and expenditure
+totals well; individual sanctioned-work records with cost estimates and execution status are less uniformly
+structured and partly locked in per-constituency HTML tables rather than a clean bulk API. & Several of the
+PS's specific asks (cost-estimate deviation, duplicate/overlapping works) need work-level granularity, which
+takes real scraping/cleaning effort to get to. \\[0.4em]
+No ground truth for fraud, by design & There is no labelled ``this was fraud'' dataset for public works,
+just as there is none for trade --- which is why the unsupervised ensemble exists, but it also means there
+is no way to report a precision/recall number against real fraud, only against synthetic or proxy labels. &
+Anomaly $\neq$ fraud has to be said out loud in the pitch, not discovered by the judges; otherwise it reads
+as an accuracy gap rather than a deliberate, defensible design choice. \\
+\bottomrule
+\end{longtable}
+
+\begin{redbox}{The two things to fix before anyone else sees either pitch}
+For 26132: correct the README's forecasting claim now --- either retrain and report honestly, or switch the
+headline number to the XGBoost quantile forecaster's real performance and drop the GRU MAPE figure entirely.
+For 26102: retrain the anomaly/risk stack on real MPLADS data (even a modest slice) before finals, and
+report that number as the headline, not the 0.98 trade figure. Both are a handful of focused hours, not new
+capability.
+\end{redbox}
+
+% ================= CHALLENGES =================
+\clearpage
+\section{Challenges, and exactly how to tackle each one}
+
+\subsection*{PS 26132}
+\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{@{}p{3.7cm}p{4.1cm}p{7.0cm}@{}}
+\toprule
+\textbf{Challenge} & \textbf{Risk if left alone} & \textbf{How to tackle it} \\
+\midrule
+\endhead
+Government price data is messy --- inconsistent commodity names, missing days, non-standard units & Dirty
+ingestion makes the forecaster look wrong live & Build a normalisation layer early: canonical
+commodity/unit mapping, a gap-fill policy, a validation pass that flags suspicious jumps before they reach
+the forecaster. \\[0.4em]
+Stub logic inside counterparty matching & Live demo can hit fake data by accident & Route ``verified
+buyer'' explicitly through the real company-directory endpoint; if the stub path stays for anything, label
+it unmistakably as a placeholder. \\[0.4em]
+No real FPO/buyer directory & Matching demo runs on synthetic data that looks bad if presented as real &
+Build a clearly-labelled pilot seed set (50--150 records styled on real APMC/cooperation structures) and
+say so in the pitch: ``pilot seed data; onboarding real FPOs is the first 90-day milestone.'' \\[0.4em]
+Forecaster overclaiming / domain shift & GRU was validated on trade-corridor data, not mandi series &
+Lead with the XGBoost quantile forecaster (F2), recalibrated on actual ingested mandi series; present every
+recommendation as a range with a confidence band, never a bare number. \\[0.4em]
+Escrow reliability under demo conditions & A live chain call failing in front of judges is worse than never
+having built it & Flip \texttt{ESCROW\_ENABLED} on, dry-run the happy path and dispute path repeatedly on
+testnet, add schema migrations now, keep a recorded fallback run. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{PS 26102}
+\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{@{}p{3.7cm}p{4.1cm}p{7.0cm}@{}}
+\toprule
+\textbf{Challenge} & \textbf{Risk if left alone} & \textbf{How to tackle it} \\
+\midrule
+\endhead
+No MPLADS-trained result yet & The only number in hand (0.98 F1) is from the wrong domain & Pull a real
+slice of MPLADS expenditure/works data (mplads.gov.in, MoSPI dashboard, data.gov.in, Dataful), engineer the
+same rolling-stats/peer-deviation features, retrain, and report whatever number results --- even if it is
+far lower than 0.98. A modest honest number here beats a borrowed impressive one. \\[0.4em]
+Work-level records are semi-structured & Cost-estimate deviation and duplicate-work detection need
+per-work granularity that isn't cleanly exposed in bulk & Scope the demo to a small number of constituencies
+where per-work detail can realistically be scraped and cleaned in the time available, rather than
+attempting national coverage. \\[0.4em]
+Anomaly vs.\ fraud framing & An unprepared team either overclaims (``we detect fraud'') or looks weak when
+pressed on accuracy against real fraud & State the distinction proactively in the pitch: the system flags
+statistical irregularity for human review; it does not accuse. This is a documented design position, not an
+improvised excuse. \\[0.4em]
+Sensitivity of accusing public officials/agencies & A false or careless flag against a real MP's fund or
+agency is reputationally serious, unlike a commercial trade anomaly & Keep every flag routed to a
+human-in-the-loop disposition step, never auto-publish a flag, and make the evidence-ledger anchoring cover
+the review decision too, not just the raw score. \\
+\bottomrule
+\end{longtable}
+
+% ================= SCOPE =================
+\clearpage
+\section{How much can realistically be built --- a scope plan}
+
+\subsection*{PS 26132}
+\textbf{Must-have:} ingestion of Agmarknet/AIKosh mandi data for 2--3 states and a handful of commodities,
+cleaned and normalised; sale-window recommendation via the XGBoost quantile forecaster presented as a price
+band; buyer matching through the real (non-stub) endpoint against the pilot seed dataset, with a visible
+trust score; escrow happy path live on testnet with the evidence-ledger entry visible; a clickable front-end
+flow start to finish.
+
+\textbf{Should-have:} dispute path demoed live, not just described; document/grading verification against a
+sample certificate and lot record; the audit trail exposed in the UI; coverage widened to 4--5 states once
+the core flow is solid.
+
+\textbf{Could-have (genuine stretch, do not commit):} an image-based grade classifier if a labelled photo
+dataset can be assembled in time; a vernacular or WhatsApp-bot front end; multi-buyer competitive offers.
+
+\textbf{Won't-have --- say so upfront:} live eNAM transaction data or GSTN/bank payment-rail integration;
+nationwide coverage at launch; a trained (rather than rules-based) grading model unless the stretch goal is
+actually reached.
+
+\subsection*{PS 26102}
+\textbf{Must-have:} a real, cleaned MPLADS dataset for a handful of constituencies (fund release,
+expenditure, work-level records where scrapeable); the anomaly classifier and unsupervised risk ensemble
+retrained on that data with an honestly reported score; TreeSHAP-style explanation attached to every flag; a
+monitoring dashboard showing flagged works with their contributing factors; the flag-anchoring-to-ledger
+mechanism working end to end for at least one flagged case.
+
+\textbf{Should-have:} duplicate/overlapping-work detection via TF-IDF similarity across constituencies;
+cost-estimate peer-deviation scoring; a human disposition workflow (reviewer marks a flag reviewed/dismissed,
+and that decision is itself anchored).
+
+\textbf{Could-have (genuine stretch):} coverage extended across more states/constituencies; a
+trend/early-warning view that aggregates flags by implementing agency over time.
+
+\textbf{Won't-have --- say so upfront:} any claim of detecting or proving fraud (only irregularity worth
+review); real-time ingestion tied to live government systems rather than periodically refreshed public data;
+national-scale coverage at launch.
+
+\begin{warnbox}{On ``how much can we make'' as a competitive question, for both}
+Conditional on closing the gaps listed above, both are top-tier entries on paper: 26132 for the measured
+\#1 fit and a differentiator the problem statement names outright; 26102 for pairing GlobeX's single
+best-validated component with an accountability mechanism (ledger-anchored flags) that is genuinely hard to
+copy in a hackathon window. Left unfixed, in both cases the failure mode is identical --- a sharp judge finds
+the domain-mismatched number or the stub path in the first ten minutes of questions, and a top-tier
+submission reads as an average one. The idea and the fit do not change; the trust does. In both cases the
+gap between those two outcomes is single-digit hours of focused, unglamorous work, not new capability.
+\end{warnbox}
+
+\section*{Bottom line}
+26132 is the stronger overall submission --- best fit in the dataset, and a differentiator the PS names in
+its own text. 26102 is the stronger showcase for GlobeX's actual ML rigor and pairs unusually well with the
+blockchain layer through ledger-anchored flags, but it carries one hard, non-negotiable discipline: never
+show the trade-trained 0.98 F1 as an MPLADS result. Whichever is filed, walk in having already fixed the
+domain-mismatched numbers, rerouted matching or retrained on real data as applicable, and turned on and
+tested the chain layer --- before touching a single new feature.
+
+\end{document}

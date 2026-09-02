@@ -1,0 +1,282 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1.9cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{pifont}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{gxteal}{HTML}{0F766E}
+\definecolor{gxcyan}{HTML}{0284C7}
+\definecolor{gxslate}{HTML}{334155}
+\definecolor{gxamber}{HTML}{B45309}
+\definecolor{gxred}{HTML}{B91C1C}
+\definecolor{gxgreen}{HTML}{15803D}
+\definecolor{gxviolet}{HTML}{6D28D9}
+
+\hypersetup{colorlinks=true, linkcolor=gxteal, urlcolor=gxcyan,
+  pdftitle={GlobeX -- PS 26132 Public Dataset Landscape}, pdfauthor={GlobeX Team}}
+
+\titleformat{\section}{\large\bfseries\color{gxteal}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{gxslate}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.7em}{0.7em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{gxslate}GlobeX --- PS 26132 Dataset Landscape}
+\fancyhead[R]{\small\color{gxslate}SIH 2026}
+\fancyfoot[C]{\small\thepage}
+
+\newcommand{\yes}{{\color{gxgreen}\ding{108}}}
+\newcommand{\pmid}{{\color{gxcyan}\ding{109}}}
+\newcommand{\non}{{\color{black!22}\ding{109}}}
+\newcommand{\bld}{{\color{gxamber}\ding{53}}}
+
+\newtcolorbox{callout}[1]{colback=gxteal!5, colframe=gxteal!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxteal, title={#1}}
+\newtcolorbox{uspbox}[1]{colback=gxviolet!5, colframe=gxviolet!55, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxviolet, title={#1}}
+\newtcolorbox{warnbox}[1]{colback=gxamber!6, colframe=gxamber!65, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxamber, title={#1}}
+\newtcolorbox{redbox}[1]{colback=gxred!6, colframe=gxred!65, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=gxred, title={#1}}
+\newtcolorbox{codebox}{colback=gxslate!5, colframe=gxslate!40, boxrule=0.5pt, arc=1pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt, fontupper=\ttfamily\footnotesize}
+
+\begin{document}
+
+% ================= TITLE =================
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{gxteal} PS 26132 --- Public}\\[0.4em]
+{\Huge\bfseries\color{gxteal} Dataset Landscape}\\[1.8em]
+{\Large\color{gxslate} Every source, what it actually contains, how to pull it,}\\[0.3em]
+{\Large\color{gxslate} and exactly where the public data runs out}\\[3em]
+{\normalsize\color{gxslate} Market linkages \& price discovery for farmers --- Govt.\ of Maharashtra (MSInS)}\\[0.3em]
+{\normalsize\color{gxslate} Prepared for GlobeX --- 2 September 2026}\\[2.6em]
+\begin{tabular}{cccc}
+\textbf{\color{gxgreen}\Large \yes} & \textbf{\color{gxcyan}\Large \pmid} & \textbf{\color{gxamber}\Large \bld} & \\
+{\small prices \& arrivals} & {\small quality standards} & {\small FPO/buyer \& storage data} & \\
+{\small genuinely public} & {\small published, not dataset-ified} & {\small does not exist publicly} & \\
+\end{tabular}
+\vfill
+{\footnotesize\color{gxslate} Internal working document --- not for external distribution as-is}
+\end{titlepage}
+
+% ================= WHAT'S NEEDED =================
+\section{What this problem statement actually needs data for}
+26132 asks for six things, and public-data coverage is wildly uneven across them. This report goes
+source-by-source only for what's real --- no dataset is listed here without a link and a description of
+what's actually in it.
+
+\renewcommand{\arraystretch}{1.3}
+\noindent\begin{longtable}{@{}p{0.5cm}p{4.6cm}p{2.6cm}p{7.3cm}@{}}
+\toprule
+& \textbf{Data need} & \textbf{Public GoI coverage} & \textbf{Verdict} \\
+\midrule
+\endhead
+1 & Mandi prices (min/modal/max) & \yes\ Strong & Daily, national, years of history, documented API. \\
+2 & Arrival volumes & \yes\ Strong & Same source, same access path as prices. \\
+3 & Quality/grading standards & \pmid\ Partial & The AGMARK grade specifications themselves are public; there is no dataset of actual graded lots. \\
+4 & FPO directory \& buyer credentials & \bld\ Absent & No structured, complete public dataset exists anywhere in government data. \\
+5 & Storage/warehouse options & \bld\ Mostly absent & WDRA publishes a registered-warehouse list; no public capacity or pricing data. \\
+6 & Weather / yield signals (optional enrichment) & \pmid\ Partial & IMD and Bhuvan/ISRO data exist but need separate integration; not core to the MVP. \\
+\bottomrule
+\end{longtable}
+
+% ================= PRIMARY SOURCES =================
+\clearpage
+\section{Primary Government of India sources --- prices \& arrivals}
+
+\subsection*{Agmarknet, via the Open Government Data (OGD) platform}
+Agmarknet itself (\path{agmarknet.gov.in}) is the Directorate of Marketing \& Inspection's public
+dashboard for mandi prices, but the portal has no clean bulk API of its own --- integrations go through its
+official mirror on \path{data.gov.in}. Two resources matter here:
+
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{``Current daily price of various commodities from various markets (Mandi)''} --- state,
+district and market-level daily records: commodity, variety, min/modal/max price (Rs./quintal) and arrival
+date. This is the workhorse dataset for the price-trend and sale-window features.
+\item \textbf{``Variety-wise Daily Market Prices Data of Commodity''} --- the same data broken out at
+variety granularity (e.g.\ not just ``Wheat'' but the specific variety traded), useful when the grading
+layer needs to match a specific variety's price rather than a commodity average.
+\end{itemize}
+
+\begin{codebox}
+GET https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070\\
+    ?api-key=\{your\_key\}\&format=json\&offset=0\&limit=100\\
+    \&filters[state]=Maharashtra\&filters[commodity]=Onion
+\end{codebox}
+
+\textbf{Coverage:} national, state-wise and market-wise; several years of daily history. \textbf{Update
+frequency:} daily. \textbf{Access:} free API key from a \path{data.gov.in} account (register with a Google
+or government email); a shared public demo key exists for prototyping but carries tighter rate limits and
+should not be relied on for a live demo. \textbf{Format:} JSON or CSV via the \texttt{format} parameter,
+though some older resources ignore the request and always return CSV --- check the response
+\texttt{Content-Type} rather than assuming. \textbf{License:} Government Open Data License -- India.
+
+\subsection*{AIKosh --- the IndiaAI Mission's dataset repository}
+\path{aikosh.indiaai.gov.in} is a newer GoI platform, run under the IndiaAI Mission (MeitY), whose explicit
+purpose is hosting datasets curated for AI training and use --- as distinct from data.gov.in's general
+open-data mandate. It carries a packaged version of the variety-wise mandi price dataset. Citing AIKosh
+alongside data.gov.in is worth doing deliberately in the pitch: it is the government's own ``data curated for
+AI'' platform, which answers a judge's ``is this real AI on real data'' question about as directly as a
+citation can.
+
+\begin{warnbox}{Don't over-rely on any single mirror}
+All three of Agmarknet, its data.gov.in mirror, and its AIKosh repackaging trace back to the same underlying
+DMI/Ministry of Agriculture source. They are not independent datasets --- treat them as one source with three
+access points, and validate whichever one you build the ingestion pipeline against.
+\end{warnbox}
+
+% ================= MIRRORS =================
+\clearpage
+\section{Non-official mirrors --- faster to prototype against}
+
+\renewcommand{\arraystretch}{1.35}
+\noindent\begin{longtable}{@{}p{3.6cm}p{7.4cm}p{3.6cm}@{}}
+\toprule
+\textbf{Source} & \textbf{What it actually offers} & \textbf{Best use} \\
+\midrule
+\endhead
+CEDA Agri Market Data (Ashoka University CEDA) --- \path{agmarknet.ceda.ashoka.edu.in} & Repackages the same
+DMI source with cleaner state/district-level exports, Census-2011-mapped boundaries, and built-in
+timeseries/heatmap visualisation and comparison tools. & Fast exploratory analysis and sanity-checking
+before writing the live ingestion pipeline. \\[0.4em]
+India Data Portal --- APMC arrivals and prices (Agmarknet) dataset & A cleaned, versioned CKAN-hosted copy
+of the arrivals-and-prices data with a documented resource page. & A stable fallback if the live
+data.gov.in API misbehaves during development or demo prep. \\[0.4em]
+Kaggle mirrors (e.g.\ ``Indian Agricultural Mandi Prices'', ``Daily Wholesale Commodity Prices -- India
+Mandis'') & Community-maintained CSV snapshots of the same underlying data, already flattened. & Offline
+development and model prototyping before the live API integration is wired up. \\
+\bottomrule
+\end{longtable}
+
+% ================= ENAM =================
+\section{eNAM --- what it is, and what it is not}
+\begin{redbox}{eNAM is a dashboard, not a data source}
+\path{enam.gov.in} is the National Agriculture Market trading platform, and its price dashboard
+(\path{enam.gov.in/web/dashboard/agmarknet}) simply re-displays the same Agmarknet/DMI data described above
+--- it is not an independent feed. eNAM does not expose transaction-level trading data or an open API to
+third parties. Any pitch claiming ``eNAM integration'' as a built feature will not survive a judge asking to
+see the integration; the honest framing is a future partnership/onboarding target, not a current data
+source.
+\end{redbox}
+
+% ================= GAPS =================
+\clearpage
+\section{The real gaps --- where public data simply does not exist}
+
+\subsection*{FPO and verified-buyer directories}
+There is no government dataset --- structured or otherwise --- listing farmer producer organisations with
+verifiable attributes (registration status, commodity focus, aggregation capacity) or buyer credentials
+(procurement history, payment reliability) in a form usable for matching. NABARD publishes some FPO
+programme information and individual state cooperation departments maintain scattered registers, but none
+of it is complete, structured, or centrally accessible. \textbf{This has to be self-built}: a small,
+clearly-labelled pilot seed dataset (real-structure, synthetic-content) is the honest path, not a claim of
+sourced data.
+
+\subsection*{Quality grading}
+AGMARK grade specifications (the standards themselves --- moisture content, size, foreign matter thresholds,
+etc.\ per commodity) are published and public. What does not exist is a dataset of \emph{actual graded
+lots} --- no public record of ``this specific batch was graded X.'' Document/OCR verification against the
+published standard is honest engineering; claiming a trained grading model would require a labelled dataset
+that has to be built from scratch, most plausibly by photographing and grading a small sample set during
+prototyping.
+
+\subsection*{Storage and logistics}
+The Warehousing Development \& Regulatory Authority (WDRA) publishes a list of registered warehouses, which
+gives location and registration status, but not live capacity, current occupancy, or storage pricing.
+Transport/freight cost data is likewise not published in a usable open form. The existing GlobeX
+ETA/landed-cost estimator can supply distance and time; storage-cost and live-capacity inputs will need to
+be assumption-based or manually sourced for the demo, not pulled from a live feed.
+
+% ================= DATA QUALITY =================
+\clearpage
+\section{Data quality risks --- and the cleaning checklist that avoids them}
+
+\renewcommand{\arraystretch}{1.3}
+\noindent\begin{longtable}{@{}p{4.4cm}p{5.4cm}p{4.8cm}@{}}
+\toprule
+\textbf{Known issue} & \textbf{Why it happens} & \textbf{Cleaning step} \\
+\midrule
+\endhead
+Inconsistent commodity/variety naming across states & Each state market board enters its own free-text
+labels into the same national schema & Build a canonical commodity/variety lookup table; fuzzy-match
+incoming labels against it before ingestion. \\[0.4em]
+Missing days / gaps in the series & Not every market reports every day, and reporting reliability varies by
+state & Define an explicit gap-fill policy (carry-forward with a flag, or interpolate) rather than letting
+gaps silently become zeros or nulls the forecaster misreads. \\[0.4em]
+Non-standard units & Prices are per quintal in most records, but not guaranteed consistent across every
+state/market entry & Normalise to one unit at ingestion and validate the conversion, don't assume. \\[0.4em]
+API pagination edge case & The API can return an empty \texttt{records} array before the reported
+\texttt{total} count is reached & Stop pagination on the first empty response rather than trusting the
+total-count arithmetic. \\[0.4em]
+Format parameter sometimes ignored & Some older data.gov.in resources always return CSV regardless of the
+requested \texttt{format} & Check the response \texttt{Content-Type} header and branch the parser
+accordingly, rather than assuming JSON. \\[0.4em]
+Field-name case sensitivity in filters & \texttt{filters[State]} works, \texttt{filters[state]} silently
+returns nothing on some resources & Confirm exact field casing per resource before relying on server-side
+filtering; don't assume a naming convention holds across datasets. \\
+\bottomrule
+\end{longtable}
+
+\begin{warnbox}{Budget real time for this, not model time}
+None of the issues above are modeling problems. They are exactly the unglamorous data-engineering work that
+decides whether a live demo works in front of judges. Treat the ingestion/cleaning layer as its own
+work item with its own time budget, not an afterthought bolted onto the forecasting task.
+\end{warnbox}
+
+% ================= FIELD MAPPING =================
+\clearpage
+\section{Recommended field mapping into GlobeX's existing schema}
+The ingestion pipeline's job is to make mandi records look like the trade-panel records the forecaster and
+ranking engine already expect --- same shape, different domain.
+
+\renewcommand{\arraystretch}{1.3}
+\noindent\begin{longtable}{@{}p{4.6cm}p{4.6cm}p{5.4cm}@{}}
+\toprule
+\textbf{Agmarknet/OGD field} & \textbf{Maps to (GlobeX)} & \textbf{Notes} \\
+\midrule
+\endhead
+State, District, Market & Corridor origin (region/market level) & A ``corridor'' becomes a market; no
+schema change needed, only relabeling. \\[0.3em]
+Commodity, Variety & Product/commodity identifier & Requires the canonical lookup table described above
+before it can join cleanly to other tables. \\[0.3em]
+Arrival Date & Transaction date / time-series index & Same role it plays for trade data --- the axis the
+forecaster runs against. \\[0.3em]
+Min/Modal/Max Price & Price features (point + spread) & The min--max spread is a genuinely useful extra
+feature the trade-corridor data didn't have --- it's a built-in volatility signal, worth keeping rather than
+collapsing to modal price alone. \\[0.3em]
+Arrival Quantity & Volume feature & Feeds both the forecaster (demand proxy) and the ranking engine
+(glut-risk dimension). \\
+\bottomrule
+\end{longtable}
+
+\section*{Bottom line}
+The one dataset this problem statement structurally cannot exist without --- mandi prices and arrivals --- is
+genuinely, solidly public: documented, API-accessible, updated daily, with GoI-run mirrors (AIKosh) as well
+as faster third-party ones (CEDA, India Data Portal) for prototyping. Everything else the PS asks for ---
+verified buyers, FPO directories, quality-graded lots, storage capacity --- has no public dataset behind it
+at all, and needs to be honestly scoped as pilot/seed data or a stated roadmap item rather than implied as
+already sourced. That split is exactly what should drive the build order: ingestion and forecasting first,
+because the data to do them well actually exists; matching and grading second, built openly on small,
+labelled seed data rather than quietly on synthetic data dressed up as real.
+
+\end{document}
