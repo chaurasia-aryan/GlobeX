@@ -48,12 +48,12 @@ export function toUiStatus(status: TradeRecord["status"] | ExportTradeStatus | s
 }
 
 const STATUS_STYLE: Record<UiStatus, string> = {
-  Requested: "bg-amber-50 text-amber-800 border-amber-200/90",
-  Negotiating: "bg-violet-50 text-violet-800 border-violet-200/90",
-  Confirmed: "bg-sky-50 text-sky-800 border-sky-200/90",
-  "In Progress": "bg-indigo-50 text-indigo-800 border-indigo-200/90",
-  Done: "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold",
-  Rejected: "bg-rose-50 text-rose-800 border-rose-200/90",
+  Requested: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  Negotiating: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  Confirmed: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+  "In Progress": "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+  Done: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-bold",
+  Rejected: "bg-rose-500/10 text-rose-400 border-rose-500/20",
 };
 
 const STATUS_CTA: Record<UiStatus, string> = {
@@ -347,16 +347,16 @@ export const TradesIndexPage: React.FC = () => {
   });
 
   return (
-    <AppShell maxWidth="lg">
+    <AppShell maxWidth="full">
       <div className="space-y-6 select-none font-sans">
         <PageHeader
-          breadcrumbs={[{ label: "Dashboard", href: "/home" }, { label: "Trades" }]}
-          title="All Trades"
-          subtitle="View all your requested, confirmed, in-progress, completed, and rejected trades."
+          breadcrumbs={[{ label: "Command Center", href: "/home" }, { label: "All Trades Pipeline" }]}
+          title="All Trades Pipeline"
+          subtitle="Real-time multi-stage trade lifecycle: requested, negotiating, confirmed, in-progress, and settled."
         />
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto scrollbar-thin">
           {TABS.map((tab) => {
             const count = allTrades.filter((t) => {
               if (tab === "All") return true;
@@ -370,13 +370,15 @@ export const TradesIndexPage: React.FC = () => {
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                  isActive ? "bg-slate-900 text-white shadow-xs" : "bg-slate-100/80 hover:bg-slate-200/80 text-slate-600"
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+                  isActive
+                    ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                    : "bg-[#151E33] hover:bg-[#1B263E] text-slate-400 border border-white/[0.05]"
                 }`}
               >
                 {tab === "Wishlist" ? (
                   <span className="flex items-center gap-1">
-                    <Heart className={`w-3.5 h-3.5 ${isActive ? "fill-rose-400 text-rose-400" : "fill-rose-500 text-rose-500"}`} />
+                    <Heart className={`w-3.5 h-3.5 ${isActive ? "fill-slate-950 text-slate-950" : "fill-rose-400 text-rose-400"}`} />
                     <span>Wishlist</span>
                   </span>
                 ) : tab === "In Progress" ? (
@@ -393,7 +395,7 @@ export const TradesIndexPage: React.FC = () => {
                   <span>{tab === "All" ? "All Trades" : tab}</span>
                 )}
 
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${isActive ? "bg-slate-950/20 text-slate-950 font-bold" : "bg-[#0E1422] text-slate-400"}`}>
                   {count}
                 </span>
               </button>
@@ -415,15 +417,15 @@ export const TradesIndexPage: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {filtered.length === 0 ? (
-              <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl space-y-3">
+              <div className="p-12 text-center bg-[#0E1422] border border-white/[0.08] rounded-2xl space-y-3">
                 <Heart className="w-10 h-10 text-rose-400 mx-auto" />
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-white">
                   {activeTab === "Wishlist" ? "No Wishlisted Trades Found" : "No Trades Yet"}
                 </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
                   {activeTab === "Wishlist"
                     ? "Click the heart icon on any trade card to save it to your Wishlist."
-                    : "Trades you make as an importer will show up here."}
+                    : "Trades you make will show up here."}
                 </p>
               </div>
             ) : (
@@ -434,47 +436,47 @@ export const TradesIndexPage: React.FC = () => {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-2xs hover:shadow-md transition-all group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
+                  className="bg-[#0E1422] border border-white/[0.08] rounded-2xl p-5 shadow-lg hover:border-white/20 transition-all group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
                 >
                   <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-50 border border-slate-200/80 p-2 flex items-center justify-center shrink-0 relative text-slate-300 text-2xl font-black">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#151E33] border border-white/[0.08] flex items-center justify-center shrink-0 relative text-emerald-400 text-xl font-bold font-mono">
                       {t.title.charAt(0)}
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${STATUS_STYLE[t.uiStatus]}`}>
+                        <span className={`px-2 py-0.5 rounded-md border text-[10px] font-mono font-semibold ${STATUS_STYLE[t.uiStatus]}`}>
                           {t.uiStatus}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-medium">{t.record.status}</span>
+                        <span className="text-[11px] text-slate-400 font-mono">{t.record.status}</span>
                       </div>
 
                       <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-base font-bold text-slate-900 truncate">{t.title}</h3>
+                        <h3 className="text-base font-bold text-white truncate">{t.title}</h3>
                         <button
                           type="button"
                           onClick={(e) => toggleWishlist(t.record.id, e, t.title)}
-                          className={`p-1.5 rounded-full border transition-all cursor-pointer shrink-0 ${
+                          className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                             t.isWishlisted
-                              ? "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
-                              : "bg-slate-50 border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50"
+                              ? "bg-rose-500/10 border-rose-500/30 text-rose-400"
+                              : "bg-[#151E33] border-white/10 text-slate-400 hover:text-rose-400"
                           }`}
                           title={t.isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                         >
-                          <Heart className={`w-4 h-4 ${t.isWishlisted ? "fill-rose-600" : ""}`} />
+                          <Heart className={`w-4 h-4 ${t.isWishlisted ? "fill-rose-400" : ""}`} />
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-slate-500 font-medium flex-wrap">
-                        <span className="text-slate-800 font-semibold">{t.originCountry}</span>
+                      <div className="flex items-center gap-3 text-xs text-slate-400 font-medium flex-wrap">
+                        <span className="text-slate-200 font-semibold">{t.originCountry}</span>
                         <span>•</span>
-                        <span className="text-slate-700">{t.supplierName}</span>
+                        <span className="text-slate-300">{t.supplierName}</span>
                         <span>•</span>
-                        <span className="font-semibold text-slate-800">{t.quantityLabel}</span>
+                        <span className="font-semibold text-slate-200 font-mono">{t.quantityLabel}</span>
                         {t.uiStatus === "Done" && (
                           <>
                             <span>•</span>
-                            <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                               ✓ Escrow Released & Settled
                             </span>
                           </>
@@ -482,17 +484,17 @@ export const TradesIndexPage: React.FC = () => {
                         {t.rawRequest?.carrier && (
                           <>
                             <span>•</span>
-                            <span className="text-slate-600 font-medium">Carrier: {t.rawRequest.carrier}</span>
+                            <span className="text-slate-400">Carrier: {t.rawRequest.carrier}</span>
                           </>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                  <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10 shrink-0">
                     <div className="text-left sm:text-right">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL VALUE</div>
-                      <div className="text-lg font-black text-slate-900 font-sans">
+                      <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">TOTAL VALUE</div>
+                      <div className="text-lg font-bold text-white font-mono">
                         ${t.totalAmount.toLocaleString()}
                       </div>
                     </div>

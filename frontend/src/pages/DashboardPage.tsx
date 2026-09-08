@@ -1,529 +1,438 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useWorkspace } from "@/context/WorkspaceContext";
-import { FLAGSHIP_DEMO_TRADE } from "@/data/mockTradeData";
 import { AppShell } from "@/components/layout/AppShell";
-import TradeGlobe from "@/components/TradeGlobe";
-import { cn } from "@/lib/utils";
 import { aiService, DestinationCountryInsight } from "@/services/api/aiService";
 import {
   LayoutDashboard,
   Compass,
-  Gauge,
+  Lock,
   ShieldCheck,
-  Handshake,
-  Landmark,
-  Settings,
-  ArrowDownLeft,
-  ArrowUpRight,
+  TrendingUp,
+  BrainCircuit,
   ArrowRight,
   Building2,
-  ChevronUp,
-  Globe as GlobeIcon,
-  TrendingUp,
+  Package,
+  Layers,
   Sparkles,
   AlertCircle,
-  Menu,
-  X,
+  CheckCircle2,
+  ExternalLink,
+  ChevronRight,
+  DollarSign,
+  Clock,
+  ArrowUpRight,
+  ShieldAlert,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-type SelectedMode = "import" | "export";
+import { motion } from "framer-motion";
 
 export const DashboardPage: React.FC = () => {
   const { user, activeDirection, setActiveDirection } = useWorkspace();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isDemo = useMemo(() => new URLSearchParams(location.search).get("demo") === "true", [location.search]);
 
-  const displayName = user?.companyName || (isDemo ? "Demo Trading Account" : "Globex Trading");
-
-  const [activeMode, setActiveMode] = useState<SelectedMode>(
-    activeDirection === "Import" ? "import" : "export"
-  );
-  // Detailed section expands when user clicks IMPORT or EXPORT
-  const [showDetails, setShowDetails] = useState<boolean>(false);
-
-  const handleSelectMode = (mode: SelectedMode) => {
-    setActiveMode(mode);
-    setActiveDirection(mode === "import" ? "Import" : "Export");
-    setShowDetails(true);
-    setTimeout(() => {
-      const el = document.getElementById("trade-details-panel");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
-  };
-
-  // Inbound / Import Trades (Visual Minimalist Format)
-  const importTrades = [
-    {
-      id: "TRD-LTC-CL-992",
-      title: "Lithium Carbonate 99.5%",
-      originIso2: "cl",
-      originCountry: "Chile",
-      destIso2: "in",
-      destCountry: "India",
-      route: "Chile → India",
-      valueText: "$3.20M",
-      statusText: "Awaiting Clearance",
-      statusColor: "bg-amber-500",
-      actionHref: "/documents",
-    },
-    {
-      id: "TRD-WHT-CA-501",
-      title: "Organic Red Wheat",
-      originIso2: "ca",
-      originCountry: "Canada",
-      destIso2: "in",
-      destCountry: "India",
-      route: "Canada → India",
-      valueText: "$920K",
-      statusText: "In Transit",
-      statusColor: "bg-sky-400",
-      actionHref: "/shipments",
-    },
-    {
-      id: "TRD-SOL-TW-331",
-      title: "Solar Inverter Modules",
-      originIso2: "tw",
-      originCountry: "Taiwan",
-      destIso2: "in",
-      destCountry: "India",
-      route: "Taiwan → India",
-      valueText: "$1.45M",
-      statusText: "Ready to Receive",
-      statusColor: "bg-emerald-500",
-      actionHref: "/escrow",
-    },
-  ];
-
-  // Outbound / Export Trades (Visual Minimalist Format)
-  const exportTrades = [
-    {
-      id: FLAGSHIP_DEMO_TRADE.id,
-      title: "1121 Basmati Rice",
-      originIso2: "in",
-      originCountry: "India",
-      destIso2: "ae",
-      destCountry: "UAE",
-      route: "India → UAE",
-      valueText: "$550K",
-      statusText: "Sailing (MSC ANNA)",
-      statusColor: "bg-emerald-500",
-      actionHref: "/trades/TRD-IND-UAE-550K",
-    },
-    {
-      id: "TRD-PEP-IN-442",
-      title: "Tellicherry Pepper",
-      originIso2: "in",
-      originCountry: "India",
-      destIso2: "nl",
-      destCountry: "Netherlands",
-      route: "India → Netherlands",
-      valueText: "$410K",
-      statusText: "Cleared for Export",
-      statusColor: "bg-emerald-500",
-      actionHref: "/documents",
-    },
-    {
-      id: "TRD-YRN-IN-780",
-      title: "Combed Cotton Yarn",
-      originIso2: "in",
-      originCountry: "India",
-      destIso2: "it",
-      destCountry: "Italy",
-      route: "India → Italy",
-      valueText: "$880K",
-      statusText: "Ready to Ship",
-      statusColor: "bg-amber-500",
-      actionHref: "/catalog",
-    },
-  ];
-
-  const currentTrades = activeMode === "import" ? importTrades : exportTrades;
-
-  // AI Market Signal — top-ranked destination corridor from the real XGBoost
-  // market-opportunity engine, shown as a compact dashboard tile so the ML
-  // pipeline is visible without navigating to Market Intelligence.
   const [topOpportunity, setTopOpportunity] = useState<DestinationCountryInsight | null>(null);
-  const [signalLoading, setSignalLoading] = useState<boolean>(true);
-  const [signalError, setSignalError] = useState<string | null>(null);
+  const [opportunityLoading, setOpportunityLoading] = useState(true);
+  const [selectedCorridor, setSelectedCorridor] = useState<"uae" | "usa" | "ksa">("uae");
 
   useEffect(() => {
-    let cancelled = false;
-    setSignalLoading(true);
-    setSignalError(null);
+    let active = true;
+    setOpportunityLoading(true);
     aiService
       .discoverMarketOpportunities("Basmati Rice", 50000, "balanced", 1)
       .then((res) => {
-        if (cancelled) return;
-        setTopOpportunity(res.top_recommendations?.[0] || null);
+        if (active) {
+          setTopOpportunity(res.top_recommendations?.[0] || null);
+        }
       })
-      .catch((err: any) => {
-        if (cancelled) return;
-        setSignalError(err?.message || "Market opportunity engine unreachable.");
+      .catch(() => {
+        if (active) setTopOpportunity(null);
       })
       .finally(() => {
-        if (!cancelled) setSignalLoading(false);
+        if (active) setOpportunityLoading(false);
       });
     return () => {
-      cancelled = true;
+      active = false;
     };
   }, []);
 
+  const corridors = {
+    uae: {
+      name: "India ⇄ United Arab Emirates",
+      treaty: "CEPA Bilateral Agreement",
+      dutyRate: "0.0% (Zero-Duty Preferential)",
+      transitDays: "4 - 5 Days",
+      portOrigin: "Nhava Sheva (JNPT)",
+      portDest: "Jebel Ali Port (DXB)",
+      activeTrades: 8,
+      volume: "$6.45M",
+      dutySaved: "$210,000",
+      complianceStatus: "Verified 100%",
+    },
+    usa: {
+      name: "India ⇄ United States",
+      treaty: "Standard WTO / Most Favoured Nation",
+      dutyRate: "3.8% Ad-Valorem",
+      transitDays: "18 - 22 Days",
+      portOrigin: "Mundra Port (INMUN)",
+      portDest: "Port of New York / New Jersey",
+      activeTrades: 4,
+      volume: "$5.10M",
+      dutySaved: "$45,000",
+      complianceStatus: "FDA & Phytosanitary Clear",
+    },
+    ksa: {
+      name: "India ⇄ Saudi Arabia",
+      treaty: "GCC Preferential Schedule",
+      dutyRate: "2.5% Preferential",
+      transitDays: "6 - 8 Days",
+      portOrigin: "Cochin Port (INCOK)",
+      portDest: "Jeddah Islamic Port",
+      activeTrades: 2,
+      volume: "$3.25M",
+      dutySaved: "$129,200",
+      complianceStatus: "SASO Certified",
+    },
+  };
+
+  const activeCorridorData = corridors[selectedCorridor];
+
+  // Active Trades Pipeline
+  const activePipelineTrades = [
+    {
+      id: "TRD-IND-UAE-550K",
+      title: "1121 Steam Basmati Rice (500 MT)",
+      hsCode: "1006.30.20",
+      counterparty: "Al-Bahar Global Logistics FZE",
+      country: "UAE",
+      flag: "🇦🇪",
+      value: "$550,000",
+      escrowLocked: "$550,000 (100%)",
+      currentStage: 3, // 1: Deposited, 2: BL Verified, 3: In Transit, 4: Settled
+      stageText: "Vessel In Transit (MSC ANNA)",
+      eta: "3 Days",
+      riskScore: "0.02 (Safe)",
+    },
+    {
+      id: "TRD-LTC-CL-992",
+      title: "Lithium Carbonate Tech Grade (99.5%)",
+      hsCode: "2836.91.00",
+      counterparty: "Sociedad Química Minera S.A.",
+      country: "Chile",
+      flag: "🇨🇱",
+      value: "$3,200,000",
+      escrowLocked: "$3,200,000 (100%)",
+      currentStage: 2,
+      stageText: "Bill of Lading Cryptographically Verified",
+      eta: "12 Days",
+      riskScore: "0.04 (Low)",
+    },
+    {
+      id: "TRD-PEP-IN-442",
+      title: "Tellicherry Black Pepper TGSEB",
+      hsCode: "0904.11.10",
+      counterparty: "Rotterdam Spice Trading BV",
+      country: "Netherlands",
+      flag: "🇳🇱",
+      value: "$410,000",
+      escrowLocked: "$410,000 (100%)",
+      currentStage: 4,
+      stageText: "Customs Cleared · Escrow Settled",
+      eta: "Completed",
+      riskScore: "0.01 (Clean)",
+    },
+  ];
+
+  const orgName = user?.companyName || "Aryan Global Trade & Commodity Exports Ltd";
+
   return (
-    <AppShell maxWidth="full" hideRail={true}>
-      {isDemo && (
-        <div className="w-full bg-amber-50 border-b border-amber-200 px-4 sm:px-6 py-2 text-center text-sm font-mono text-amber-900">
-          <span className="font-bold">DEMO MODE</span> • Preview of dashboard UI • <Link to="/home" className="underline hover:text-amber-700">Live version</Link>
+    <AppShell maxWidth="full" hideRail={false}>
+      <div className="space-y-6">
+        {/* 1. Header Command Ribbon */}
+        <div className="p-6 rounded-2xl bg-[#0E1422] border border-white/[0.08] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] pointer-events-none -z-10" />
+
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-400">
+                  Command Center · Live Terminal
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="text-xs font-mono text-slate-400">EVM Smart Escrow Active</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+                <span>{orgName}</span>
+                <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" title="Verified Trade Entity" />
+              </h1>
+              <p className="text-xs text-slate-400 font-mono">
+                Primary Trading Node: Nhava Sheva (JNPT), India · Network: Hardhat 31337 (Sepolia Mirror)
+              </p>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Link
+                to="/export-discover"
+                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI Destination Screener</span>
+              </Link>
+
+              <Link
+                to="/ml-research"
+                className="px-4 py-2 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-400 text-xs font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <BrainCircuit className="w-3.5 h-3.5" />
+                <span>Applied AI Models</span>
+              </Link>
+
+              <Link
+                to="/trades"
+                className="px-4 py-2 rounded-xl bg-[#151E33] hover:bg-[#1B263E] border border-white/10 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>View All 14 Trades</span>
+              </Link>
+            </div>
+          </div>
         </div>
-      )}
-      <div className="w-full min-h-screen bg-white text-slate-900 flex flex-col font-sans antialiased p-4 sm:p-6 gap-4 sm:gap-6 selection:bg-emerald-100 selection:text-emerald-900 relative">
-        
-        <main className="flex-1 min-w-0 flex flex-col gap-8 w-full max-w-7xl mx-auto">
-          {/* Top Actions Bar (Import/Export) */}
-          <section aria-label="Primary Actions" className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* ── IMPORT BUTTON ──────────────────────────────────────────────── */}
-            <button
-              type="button"
-              onClick={() => {
-                setActiveDirection("Import");
-                navigate("/discover");
-              }}
-              className={cn(
-                "p-6 rounded-3xl border transition-all duration-200 flex items-center justify-between text-left group cursor-pointer relative overflow-hidden",
-                activeMode === "import"
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xl"
-                  : "bg-white border-slate-200/80 text-slate-900 hover:border-slate-400 hover:bg-slate-50/50 shadow-sm"
-              )}
-            >
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0",
-                  activeMode === "import"
-                    ? "bg-emerald-500 text-slate-950"
-                    : "bg-slate-100 text-slate-900 group-hover:bg-slate-200"
-                )}>
-                  <ArrowDownLeft className="w-6 h-6 stroke-[2.5]" />
-                </div>
-                <div>
-                  <span className="text-xl font-extrabold tracking-tight uppercase block">
-                    IMPORT
-                  </span>
-                  <span className={cn(
-                    "text-xs font-medium block mt-0.5",
-                    activeMode === "import" ? "text-white/90" : "text-slate-500"
-                  )}>
-                    Shipments you're receiving
-                  </span>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "text-xs font-mono font-bold px-3 py-1 rounded-full uppercase",
-                  activeMode === "import" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
-                )}>
-                  {activeMode === "import" ? "Active" : "Select"}
-                </span>
-                <ArrowRight className={cn(
-                  "w-5 h-5 transition-transform group-hover:translate-x-1",
-                  activeMode === "import" ? "text-emerald-400" : "text-slate-400"
-                )} />
-              </div>
-            </button>
+        {/* 2. Top Executive Metric Cards (KPI Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="p-5 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-2 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span>Active Trade Volume</span>
+              <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 text-[10px]">
+                +14.2% MoM
+              </span>
+            </div>
+            <p className="text-3xl font-extrabold text-white tracking-tight">$14,800,000</p>
+            <p className="text-[11px] text-slate-400 font-mono">14 Active bilateral contracts</p>
+          </div>
 
-            {/* ── EXPORT BUTTON ──────────────────────────────────────────────── */}
-            <button
-              type="button"
-              onClick={() => {
-                setActiveDirection("Export");
-                navigate("/export-trades");
-              }}
-              className={cn(
-                "p-6 rounded-3xl border transition-all duration-200 flex items-center justify-between text-left group cursor-pointer relative overflow-hidden",
-                activeMode === "export"
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xl"
-                  : "bg-white border-slate-200/80 text-slate-900 hover:border-slate-400 hover:bg-slate-50/50 shadow-sm"
-              )}
-            >
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0",
-                  activeMode === "export"
-                    ? "bg-emerald-500 text-slate-950"
-                    : "bg-slate-100 text-slate-900 group-hover:bg-slate-200"
-                )}>
-                  <ArrowUpRight className="w-6 h-6 stroke-[2.5]" />
-                </div>
-                <div>
-                  <span className="text-xl font-extrabold tracking-tight uppercase block">
-                    EXPORT
-                  </span>
-                  <span className={cn(
-                    "text-xs font-medium block mt-0.5",
-                    activeMode === "export" ? "text-white/90" : "text-slate-500"
-                  )}>
-                    Shipments you're sending
-                  </span>
-                </div>
-              </div>
+          <div className="p-5 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-2 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span>Escrow Collateral Locked</span>
+              <span className="text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 text-[10px]">
+                100% Backed
+              </span>
+            </div>
+            <p className="text-3xl font-extrabold text-indigo-400 tracking-tight">$4,250,000</p>
+            <p className="text-[11px] text-slate-400 font-mono">Cryptographic milestone vault</p>
+          </div>
 
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "text-xs font-mono font-bold px-3 py-1 rounded-full uppercase",
-                  activeMode === "export" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
-                )}>
-                  {activeMode === "export" ? "Active" : "Select"}
-                </span>
-                <ArrowRight className={cn(
-                  "w-5 h-5 transition-transform group-hover:translate-x-1",
-                  activeMode === "export" ? "text-emerald-400" : "text-slate-400"
-                )} />
-              </div>
-            </button>
-          </section>
+          <div className="p-5 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-2 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span>CEPA Preferential Duty Saved</span>
+              <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 text-[10px]">
+                0% Tariff
+              </span>
+            </div>
+            <p className="text-3xl font-extrabold text-emerald-400 tracking-tight">$384,200</p>
+            <p className="text-[11px] text-slate-400 font-mono">Tariff exemption under FTA</p>
+          </div>
 
-          {/* ── AI MARKET SIGNAL: top-ranked corridor from the live XGBoost engine ── */}
-          <section aria-label="AI Market Signal" className="w-full">
+          <div className="p-5 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-2 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span>Anomaly Risk Rating</span>
+              <span className="text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20 text-[10px]">
+                TreeSHAP 0.02
+              </span>
+            </div>
+            <p className="text-3xl font-extrabold text-sky-400 tracking-tight">99.2% Clean</p>
+            <p className="text-[11px] text-slate-400 font-mono">0 transfer mispricing alerts</p>
+          </div>
+        </div>
+
+        {/* 3. Interactive Bilateral Corridor Navigator */}
+        <div className="p-6 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Compass className="w-5 h-5 text-emerald-400" />
+                <span>Bilateral Corridor Intelligence</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Live tariff schedules, freight transit velocity, and bilateral treaty optimizations
+              </p>
+            </div>
+
+            {/* Corridor Tabs */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#151E33] border border-white/[0.05]">
+              <button
+                type="button"
+                onClick={() => setSelectedCorridor("uae")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+                  selectedCorridor === "uae"
+                    ? "bg-emerald-500 text-slate-950 shadow-md"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                🇦🇪 India ⇄ UAE (CEPA)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCorridor("usa")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+                  selectedCorridor === "usa"
+                    ? "bg-emerald-500 text-slate-950 shadow-md"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                🇺🇸 India ⇄ USA
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCorridor("ksa")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+                  selectedCorridor === "ksa"
+                    ? "bg-emerald-500 text-slate-950 shadow-md"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                🇸🇦 India ⇄ Saudi
+              </button>
+            </div>
+          </div>
+
+          {/* Active Corridor Card */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-xl bg-[#151E33] border border-white/[0.06]">
+            <div className="space-y-1">
+              <p className="text-[11px] font-mono text-slate-400">Treaty Framework</p>
+              <p className="text-sm font-bold text-white">{activeCorridorData.treaty}</p>
+              <p className="text-xs text-emerald-400 font-mono">{activeCorridorData.dutyRate}</p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[11px] font-mono text-slate-400">Transit &amp; Ports</p>
+              <p className="text-sm font-bold text-white">{activeCorridorData.transitDays}</p>
+              <p className="text-xs text-slate-400 font-mono">
+                {activeCorridorData.portOrigin} → {activeCorridorData.portDest}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[11px] font-mono text-slate-400">Active Trade Volume</p>
+              <p className="text-sm font-bold text-white">{activeCorridorData.volume}</p>
+              <p className="text-xs text-slate-400 font-mono">{activeCorridorData.activeTrades} active shipments</p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[11px] font-mono text-slate-400">Cumulative Duty Saved</p>
+              <p className="text-sm font-bold text-emerald-400">{activeCorridorData.dutySaved}</p>
+              <p className="text-xs text-slate-400 font-mono">{activeCorridorData.complianceStatus}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Active Trades Pipeline with Visual Milestone Progress */}
+        <div className="p-6 rounded-2xl bg-[#0E1422] border border-white/[0.08] space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Layers className="w-5 h-5 text-sky-400" />
+                <span>Live Escrow &amp; Shipment Pipeline</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Milestone-gated execution: Funds Locked → Cryptographic BL → Customs Clearance → Payout
+              </p>
+            </div>
             <Link
-              to="/market-intelligence"
-              className="block p-4 sm:p-5 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-300 hover:shadow-md transition-all group"
+              to="/trades"
+              className="text-xs font-mono text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
             >
-              {signalLoading && (
-                <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-                  <span className="w-4 h-4 border-2 border-slate-300 border-t-emerald-500 rounded-full animate-spin" />
-                  <span>Running XGBoost demand forecast &amp; risk models…</span>
-                </div>
-              )}
-
-              {!signalLoading && signalError && (
-                <div className="flex items-center gap-2 text-xs font-mono text-amber-700">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>AI Market Signal unavailable — {signalError}</span>
-                </div>
-              )}
-
-              {!signalLoading && !signalError && topOpportunity && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block">
-                        AI Market Signal · Top Opportunity
-                      </span>
-                      <span className="text-sm font-bold text-slate-900">
-                        {topOpportunity.destination.country_name} — {topOpportunity.scores.final_score.toFixed(1)}/100 opportunity score
-                        <span
-                          className={cn(
-                            "ml-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full uppercase",
-                            topOpportunity.risk.risk_level === "LOW"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : topOpportunity.risk.risk_level === "MODERATE"
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-rose-100 text-rose-700"
-                          )}
-                        >
-                          {topOpportunity.risk.risk_level} RISK
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-slate-500 group-hover:text-emerald-600 flex items-center gap-1 shrink-0">
-                    View Market Intelligence <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-              )}
+              <span>View All Trades</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </section>
+          </div>
 
-          {/* ── 4. MIDDLE SECTION: LIGHTWEIGHT SUMMARY STATS & CENTRAL 3D GLOBE ── */}
-          <section aria-label="Trade Overview" className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-4 sm:gap-6 items-start lg:items-center pt-2">
-            {/* ── LEFT: IMPORT SUMMARY AREA (MINIMALIST VISUAL SUMMARY) ───────── */}
-            <div
-              onClick={() => handleSelectMode("import")}
-              className={cn(
-                "md:col-span-1 lg:col-span-3 p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all cursor-pointer space-y-4 sm:space-y-6 select-none",
-                activeMode === "import"
-                  ? "bg-slate-50/80 border border-slate-200 shadow-sm"
-                  : "hover:bg-slate-50/40"
-              )}
-            >
-              <div className="space-y-1">
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
-                  INCOMING SHIPMENTS
-                </span>
-                <h2 className="text-xs sm:text-sm font-bold text-slate-600 uppercase">
-                  What's arriving
-                </h2>
-              </div>
-
-              <div className="space-y-3 sm:space-y-4">
-                {/* 1. Total Imports */}
-                <div>
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Total Imports</span>
-                  <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight mt-0.5">
-                    $8.40M
-                  </div>
-                </div>
-
-                {/* 2. Profit & Loss */}
-                <div className="pt-2 sm:pt-3 border-t border-slate-200/60">
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Profit & Loss</span>
-                  <div className="text-base sm:text-lg font-bold text-emerald-600 font-mono flex items-center gap-1 mt-0.5">
-                    <TrendingUp className="w-4 h-4 text-emerald-600" />
-                    <span>+$1.24M (+14.8%)</span>
-                  </div>
-                </div>
-
-                {/* 3. Active Orders */}
-                <div className="pt-2 sm:pt-3 border-t border-slate-200/60">
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Active Orders</span>
-                  <div className="text-base sm:text-lg font-bold text-slate-800 font-mono mt-0.5">
-                    14 Active Orders
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 sm:pt-3 flex items-center gap-1 text-xs font-mono font-bold text-slate-600 group">
-                <span className="hidden sm:inline">View Summary</span>
-                <span className="sm:hidden">Summary</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </div>
-            </div>
-
-            {/* ── CENTER: LARGE 3D GLOBE (NATURAL ON WHITE PAGE, NO HEAVY CONTAINER) ── */}
-            <div aria-label="Central 3D Globe" className="md:col-span-1 lg:col-span-6 relative flex items-center justify-center min-h-[320px] sm:min-h-[400px] md:min-h-[480px] lg:min-h-[540px] order-2 md:order-2">
-              {/* Large Central 3D Globe matching reference asset media_1787681176665.png */}
-              <div className="w-full h-[320px] sm:h-[400px] md:h-[480px] lg:h-[540px] flex items-center justify-center">
-                <TradeGlobe
-                  selectedCountry={activeMode === "export" ? "Italy" : "India"}
-                  showArcs={true}
-                  autoRotate={true}
-                  className="w-full h-full"
-                />
-              </div>
-            </div>
-
-            {/* ── RIGHT: EXPORT SUMMARY AREA (MINIMALIST VISUAL SUMMARY) ──────── */}
-            <div
-              onClick={() => handleSelectMode("export")}
-              className={cn(
-                "md:col-span-1 lg:col-span-3 p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all cursor-pointer space-y-4 sm:space-y-6 select-none order-3 md:order-3",
-                activeMode === "export"
-                  ? "bg-slate-50/80 border border-slate-200 shadow-sm"
-                  : "hover:bg-slate-50/40"
-              )}
-            >
-              <div className="space-y-1">
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
-                  OUTGOING SHIPMENTS
-                </span>
-                <h2 className="text-xs sm:text-sm font-bold text-slate-600 uppercase">
-                  What you're selling
-                </h2>
-              </div>
-
-              <div className="space-y-3 sm:space-y-4">
-                {/* 1. Total Exports */}
-                <div>
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Total Exports</span>
-                  <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight mt-0.5">
-                    $14.20M
-                  </div>
-                </div>
-
-                {/* 2. Profit & Loss */}
-                <div className="pt-2 sm:pt-3 border-t border-slate-200/60">
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Profit & Loss</span>
-                  <div className="text-base sm:text-lg font-bold text-emerald-600 font-mono flex items-center gap-1 mt-0.5">
-                    <TrendingUp className="w-4 h-4 text-emerald-600" />
-                    <span>+$3.85M (+27.1%)</span>
-                  </div>
-                </div>
-
-                {/* 3. Active Shipments */}
-                <div className="pt-2 sm:pt-3 border-t border-slate-200/60">
-                  <span className="text-[10px] sm:text-[11px] font-mono font-medium text-slate-400 block">Active Shipments</span>
-                  <div className="text-base sm:text-lg font-bold text-slate-800 font-mono mt-0.5">
-                    18 Active Shipments
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 sm:pt-3 flex items-center gap-1 text-xs font-mono font-bold text-slate-600 group">
-                <span>View Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </div>
-            </div>
-          </section>
-
-          {/* ── 5. DETAILED TRADE SECTION BELOW (COLLAPSIBLE, SHOWN ON SELECTION) ── */}
-          {showDetails && (
-            <section
-              id="trade-details-panel"
-              aria-label="Recent Trade Details"
-              className="pt-6 border-t border-slate-100 space-y-4 animate-fade-in-up"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-slate-900" />
-                  <h3 className="font-extrabold text-sm text-slate-900 uppercase tracking-tight font-mono">
-                    Recent {activeMode.toUpperCase()} Trade Operations
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowDetails(false)}
-                  className="text-xs font-mono text-slate-400 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Hide Details</span>
-                  <ChevronUp className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Lightweight Trade Cards (3 Columns) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {currentTrades.slice(0, 3).map((trade) => (
-                  <Link
-                    key={trade.id}
-                    to={trade.actionHref}
-                    className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between gap-4 group cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-1.5 min-w-0 flex-wrap text-xs font-bold text-slate-700">
-                        <img
-                          src={`https://flagcdn.com/w40/${trade.originIso2}.png`}
-                          alt={trade.originCountry}
-                          className="w-5 h-3.5 object-cover rounded-xs border border-slate-200/70 shadow-2xs shrink-0"
-                        />
-                        <span className="truncate">{trade.originCountry}</span>
-                        <ArrowRight className="w-3 h-3 text-slate-300 shrink-0" />
-                        <img
-                          src={`https://flagcdn.com/w40/${trade.destIso2}.png`}
-                          alt={trade.destCountry}
-                          className="w-5 h-3.5 object-cover rounded-xs border border-slate-200/70 shadow-2xs shrink-0"
-                        />
-                        <span className="truncate">{trade.destCountry}</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors text-slate-400 shrink-0">
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    </div>
+          <div className="space-y-3">
+            {activePipelineTrades.map((trade) => (
+              <div
+                key={trade.id}
+                className="p-4 rounded-xl bg-[#151E33] border border-white/[0.06] hover:border-white/15 transition-all space-y-3"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{trade.flag}</span>
                     <div>
-                      <h4 className="font-bold text-sm text-slate-900 truncate mb-1">{trade.title}</h4>
-                      <span className="text-lg font-black font-mono text-slate-800">{trade.valueText}</span>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-white">{trade.title}</p>
+                        <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">
+                          {trade.hsCode}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Counterparty: <span className="text-slate-200">{trade.counterparty}</span> ({trade.country})
+                      </p>
                     </div>
-                  </Link>
-                ))}
+                  </div>
+
+                  <div className="flex items-center gap-4 text-right">
+                    <div>
+                      <p className="text-sm font-extrabold text-white font-mono">{trade.value}</p>
+                      <p className="text-[11px] text-emerald-400 font-mono">
+                        Escrow: {trade.escrowLocked}
+                      </p>
+                    </div>
+                    <Link
+                      to={`/trades/${trade.id}`}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-200 transition-colors"
+                    >
+                      Workspace →
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Visual Milestone Progress Bar */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                    <span className="text-emerald-400 font-semibold">{trade.stageText}</span>
+                    <span>ETA: {trade.eta}</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-800/80 overflow-hidden flex gap-1 p-0.5">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        trade.currentStage >= 1 ? "bg-emerald-400" : "bg-slate-700"
+                      }`}
+                      style={{ width: "25%" }}
+                      title="Stage 1: Escrow Deposited"
+                    />
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        trade.currentStage >= 2 ? "bg-emerald-400" : "bg-slate-700"
+                      }`}
+                      style={{ width: "25%" }}
+                      title="Stage 2: Bill of Lading Verified"
+                    />
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        trade.currentStage >= 3 ? "bg-sky-400" : "bg-slate-700"
+                      }`}
+                      style={{ width: "25%" }}
+                      title="Stage 3: In Transit"
+                    />
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        trade.currentStage >= 4 ? "bg-emerald-400" : "bg-slate-700"
+                      }`}
+                      style={{ width: "25%" }}
+                      title="Stage 4: Settled"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>1. Escrow Funded</span>
+                    <span>2. BL Verified</span>
+                    <span>3. In Transit</span>
+                    <span>4. Settlement</span>
+                  </div>
+                </div>
               </div>
-            </section>
-          )}
-        </main>
+            ))}
+          </div>
+        </div>
       </div>
     </AppShell>
   );
